@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 极简计算器</title>
+    <style>
+        /* 页面全局样式 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 计算器外壳 */
+        .calculator {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 320px;
+        }
+
+        /* 显示屏区域 */
+        .display {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            word-break: break-all;
+        }
+
+        .display .expression {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .display .result {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 按钮网格布局 */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            padding: 18px 0;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        /* 数字键样式 */
+        .btn-num {
+            background: #f0f2f5;
+            color: #333;
+        }
+        .btn-num:hover { background: #e4e6e9; }
+        .btn-num:active { background: #d5d7db; }
+
+        /* 运算符样式 */
+        .btn-op {
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: bold;
+        }
+        .btn-op:hover { background: #d2e3fc; }
+        .btn-op:active { background: #aecbfa; }
+
+        /* 等号样式 */
+        .btn-eq {
+            background: #1a73e8;
+            color: #fff;
+            font-weight: bold;
+        }
+        .btn-eq:hover { background: #1557b0; }
+        .btn-eq:active { background: #10468e; }
+
+        /* 清除键样式 */
+        .btn-clear {
+            background: #fce8e6;
+            color: #d93025;
+            font-weight: bold;
+        }
+        .btn-clear:hover { background: #f8d7da; }
+        .btn-clear:active { background: #f1b8b4; }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <!-- 显示屏 -->
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
+    </div>
+
+    <!-- 按钮区 -->
+    <div class="buttons">
+        <button class="btn-clear" onclick="clearAll()">AC</button>
+        <button class="btn-op" onclick="appendOp('/')">÷</button>
+        <button class="btn-op" onclick="appendOp('*')">×</button>
+        <button class="btn-op" onclick="backspace()">⌫</button>
+
+        <button class="btn-num" onclick="appendNum('7')">7</button>
+        <button class="btn-num" onclick="appendNum('8')">8</button>
+        <button class="btn-num" onclick="appendNum('9')">9</button>
+        <button class="btn-op" onclick="appendOp('-')">-</button>
+
+        <button class="btn-num" onclick="appendNum('4')">4</button>
+        <button class="btn-num" onclick="appendNum('5')">5</button>
+        <button class="btn-num" onclick="appendNum('6')">6</button>
+        <button class="btn-op" onclick="appendOp('+')">+</button>
+
+        <button class="btn-num" onclick="appendNum('1')">1</button>
+        <button class="btn-num" onclick="appendNum('2')">2</button>
+        <button class="btn-num" onclick="appendNum('3')">3</button>
+        <button class="btn-eq" style="grid-row: span 2;" onclick="calculate()">=</button>
+
+        <button class="btn-num" onclick="appendNum('0')" style="grid-column: span 2;">0</button>
+        <button class="btn-num" onclick="appendNum('.')">.</button>
+    </div>
+</div>
+
+<script>
+    // 状态变量
+    let currentInput = '0';
+    let expression = '';
+    let shouldResetInput = false;
+
+    // DOM 元素
+    const resultDisplay = document.getElementById('result');
+    const expressionDisplay = document.getElementById('expression');
+
+    // 更新界面显示
+    function updateDisplay() {
+        resultDisplay.textContent = currentInput;
+        // 将内部的 * 和 / 替换为 × 和 ÷ 方便阅读
+        expressionDisplay.textContent = expression.replace(/\*/g, '×').replace(/\//g, '÷');
+    }
+
+    // 输入数字
+    function appendNum(num) {
+        if (shouldResetInput) {
+            currentInput = '';
+            shouldResetInput = false;
+        }
+        // 防止输入多个小数点
+        if (num === '.' && currentInput.includes('.')) return;
+        // 防止输入多个前导零
+        if (currentInput === '0' && num !== '.') {
+            currentInput = num;
+        } else {
+            currentInput += num;
+        }
+        updateDisplay();
+    }
+
+    // 输入运算符
+    function appendOp(op) {
+        shouldResetInput = true;
+        // 如果表达式为空，把当前数字加进去
+        if (expression === '') {
+            expression = currentInput + op;
+        } else {
+            // 替换最后一个运算符（防止连续输入运算符）
+            expression = expression.replace(/[-+*/]$/, op);
+        }
+        updateDisplay();
+    }
+
+    // 退格键
+    function backspace() {
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
+        } else {
+            currentInput = '0';
+        }
+        updateDisplay();
+    }
+
+    // 清除全部
+    function clearAll() {
+        currentInput = '0';
+        expression = '';
+        shouldResetInput = false;
+        updateDisplay();
+    }
+
+    // 计算结果
+    function calculate() {
+        if (expression === '') return;
+        try {
+            // 拼接完整表达式并计算
+            const fullExpression = expression + currentInput;
+            // 使用 Function 安全计算（避免直接使用 eval）
+            const result = new Function('return ' + fullExpression)();
+            
+            // 处理浮点数精度问题，保留合理小数位
+            const formattedResult = parseFloat(result.toPrecision(12));
+            
+            expression = fullExpression;
+            currentInput = String(formattedResult);
+            shouldResetInput = true;
+            updateDisplay();
+        } catch (error) {
+            currentInput = 'Error';
+            expression = '';
+            updateDisplay();
+        }
+    }
+
+    // 支持键盘输入
+    document.addEventListener('keydown', (e) => {
+        if (e.key >= '0' && e.key <= '9') appendNum(e.key);
+        else if (e.key === '.') appendNum('.');
+        else if (['+', '-', '*', '/'].includes(e.key)) appendOp(e.key);
+        else if (e.key === 'Enter' || e.key === '=') calculate();
+        else if (e.key === 'Backspace') backspace();
+        else if (e.key === 'Escape') clearAll();
+    });
+</script>
+
+</body>
+</html>
