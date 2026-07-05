@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>🦊 狐狸抽卡机</title>
+<style>
+    body {
+        font-family: "Microsoft YaHei", sans-serif;
+        background: linear-gradient(135deg, #1e0533, #2a1b4a);
+        color: #fff;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .card {
+        width: 280px;
+        height: 400px;
+        margin: 30px auto;
+        perspective: 1000px;
+        cursor: pointer;
+    }
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .card.flipped .card-inner {
+        transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .card-front {
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        color: #000;
+    }
+    .card-back {
+        background: #111;
+        transform: rotateY(180deg);
+    }
+    button {
+        padding: 15px 40px;
+        font-size: 24px;
+        background: #ff3366;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        margin: 20px;
+    }
+    button:hover {
+        background: #ff6699;
+        transform: scale(1.05);
+    }
+    .history {
+        margin-top: 30px;
+        text-align: left;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .rarity-ssr { color: #ff00ff; }
+    .rarity-sr { color: #00ffff; }
+    .rarity-r { color: #ffff00; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🦊 狐狸的随机抽卡机</h1>
+    <p>点击下方抽取你的命运吧！</p>
+
+    <div id="card" class="card">
+        <div class="card-inner">
+            <div class="card-back">
+                <h2>？？？</h2>
+                <p>点击抽卡后揭晓</p>
+            </div>
+            <div class="card-front" id="result">
+                <!-- 结果动态插入 -->
+            </div>
+        </div>
+    </div>
+
+    <button onclick="drawCard()">🔥 抽卡一次</button>
+    <button onclick="drawCard(10)">✨ 十连抽</button>
+
+    <div class="history">
+        <h3>抽卡记录</h3>
+        <div id="history"></div>
+    </div>
+</div>
+
+<script>
+// 卡池配置（可自行扩展）
+const cardPool = [
+    {name: "狐狸娘SSR", rarity: "SSR", color: "#ff00ff", prob: 3},
+    {name: "闪光狐耳", rarity: "SR", color: "#00ffff", prob: 12},
+    {name: "普通狐狸", rarity: "R", color: "#ffff00", prob: 35},
+    {name: "神秘尾巴", rarity: "R", color: "#ffff00", prob: 30},
+    {name: "能量饮料", rarity: "N", color: "#aaaaaa", prob: 20}
+];
+
+function getRandomCard() {
+    let rand = Math.random() * 100;
+    let sum = 0;
+    for (let card of cardPool) {
+        sum += card.prob;
+        if (rand <= sum) return card;
+    }
+    return cardPool[cardPool.length-1];
+}
+
+function drawCard(times = 1) {
+    const cardElement = document.getElementById('card');
+    const resultDiv = document.getElementById('result');
+    const historyDiv = document.getElementById('history');
+
+    for (let i = 0; i < times; i++) {
+        setTimeout(() => {
+            const card = getRandomCard();
+            
+            resultDiv.innerHTML = `
+                <h2 style="color:\( {card.color}"> \){card.rarity}</h2>
+                <h1>${card.name}</h1>
+            `;
+            
+            // 翻转动画
+            cardElement.classList.remove('flipped');
+            void cardElement.offsetWidth; // 触发重绘
+            cardElement.classList.add('flipped');
+
+            // 记录历史
+            const record = document.createElement('div');
+            record.innerHTML = `<span class="\( {card.rarity.toLowerCase()}"> \){card.rarity}</span> ${card.name}`;
+            historyDiv.prepend(record);
+        }, i * 300);
+    }
+}
+
+// 初始化
+document.getElementById('result').innerHTML = `<h1 style="color:#666">准备好了吗？</h1>`;
+</script>
+</body>
+</html>
