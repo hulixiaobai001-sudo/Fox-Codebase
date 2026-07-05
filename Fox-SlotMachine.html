@@ -86,7 +86,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>🦊 狐狸的随机抽卡机</h1>
+    <h1>🦊 狐狸抽卡机</h1>
     <p>点击抽卡，揭开你的命运！</p>
 
     <div id="card" class="card">
@@ -111,13 +111,12 @@
 </div>
 
 <script>
-// 卡池（可自行修改）
 const cardPool = [
-    {name: "狐狸娘SSR", rarity: "SSR", color: "#ff00ff", prob: 5},
-    {name: "闪耀狐耳SR", rarity: "SR", color: "#00ffff", prob: 15},
-    {name: "金色尾巴R", rarity: "R", color: "#ffff00", prob: 35},
-    {name: "神秘狐狸R", rarity: "R", color: "#ffff00", prob: 25},
-    {name: "普通狐狸N", rarity: "N", color: "#bbbbbb", prob: 20}
+    {name: "狐狸娘SSR", rarity: "SSR", prob: 5},
+    {name: "闪耀狐耳SR", rarity: "SR", prob: 15},
+    {name: "金色尾巴R", rarity: "R", prob: 35},
+    {name: "神秘狐狸R", rarity: "R", prob: 25},
+    {name: "普通狐狸N", rarity: "N", prob: 20}
 ];
 
 function getRandomCard() {
@@ -132,24 +131,23 @@ function getRandomCard() {
 
 function showResult(card) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `
-        <h2 class="rarity-\( {card.rarity.toLowerCase()}"> \){card.rarity}</h2>
-        <h1 style="margin:15px 0;font-size:2em;">${card.name}</h1>
-    `;
+    let color = card.rarity === "SSR" ? "#ff00ff" : card.rarity === "SR" ? "#00ffff" : card.rarity === "R" ? "#ffff00" : "#cccccc";
+    resultDiv.innerHTML = '<h2 style="color:' + color + ';margin:10px 0;">' + card.rarity + '</h2><h1 style="margin:10px 0;font-size:2em;">' + card.name + '</h1>';
 }
 
 function addToHistory(card) {
     const historyDiv = document.getElementById('history');
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = `<span class="rarity-\( {card.rarity.toLowerCase()}">[ \){card.rarity}]</span> ${card.name}`;
+    let colorClass = card.rarity === "SSR" ? "rarity-ssr" : card.rarity === "SR" ? "rarity-sr" : card.rarity === "R" ? "rarity-r" : "rarity-n";
+    item.innerHTML = '<span class="' + colorClass + '">[' + card.rarity + ']</span> ' + card.name;
     historyDiv.prepend(item);
     if (historyDiv.children.length > 20) historyDiv.removeChild(historyDiv.lastChild);
 }
 
 function drawCard(times = 1) {
     const cardEl = document.getElementById('card');
-    cardEl.classList.remove('flipped'); // 重置
+    cardEl.classList.remove('flipped');
 
     for (let i = 0; i < times; i++) {
         setTimeout(() => {
@@ -161,9 +159,8 @@ function drawCard(times = 1) {
     }
 }
 
-
 // 初始化
-document.getElementById('result').innerHTML = `<h2 style="color:#666">点击按钮开始抽卡</h2>`;
+document.getElementById('result').innerHTML = '<h2 style="color:#666">点击按钮开始抽卡</h2>';
 </script>
 </body>
 </html>
