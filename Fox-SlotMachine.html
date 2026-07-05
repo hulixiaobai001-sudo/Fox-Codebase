@@ -5,114 +5,119 @@
 <title>🦊 狐狸抽卡机</title>
 <style>
     body {
-        font-family: "Microsoft YaHei", sans-serif;
+        font-family: "Microsoft YaHei", Arial, sans-serif;
         background: linear-gradient(135deg, #1e0533, #2a1b4a);
         color: #fff;
         text-align: center;
         margin: 0;
         padding: 20px;
+        min-height: 100vh;
     }
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-    }
+    .container { max-width: 620px; margin: 0 auto; }
+    h1 { margin: 20px 0; }
     .card {
         width: 280px;
-        height: 400px;
+        height: 380px;
         margin: 30px auto;
-        perspective: 1000px;
-        cursor: pointer;
+        perspective: 1200px;
     }
     .card-inner {
         position: relative;
         width: 100%;
         height: 100%;
-        transition: transform 0.8s;
+        transition: transform 0.85s cubic-bezier(0.25, 0.1, 0.25, 1);
         transform-style: preserve-3d;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.7);
     }
-    .card.flipped .card-inner {
-        transform: rotateY(180deg);
-    }
+    .card.flipped .card-inner { transform: rotateY(180deg); }
     .card-front, .card-back {
         position: absolute;
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
-        border-radius: 16px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-    }
-    .card-front {
-        background: linear-gradient(135deg, #ffd700, #ff8c00);
-        color: #000;
+        overflow: hidden;
     }
     .card-back {
-        background: #111;
+        background: linear-gradient(135deg, #2a1b4a, #1e0533);
+        color: #aaa;
+        font-size: 1.4em;
+    }
+    .card-front {
+        background: linear-gradient(135deg, #ffd700, #ff6b00);
+        color: #000;
         transform: rotateY(180deg);
     }
     button {
-        padding: 15px 40px;
-        font-size: 24px;
+        padding: 14px 36px;
+        font-size: 22px;
         background: #ff3366;
         color: white;
         border: none;
         border-radius: 50px;
         cursor: pointer;
-        margin: 20px;
+        margin: 10px;
+        box-shadow: 0 5px 15px rgba(255,51,102,0.4);
     }
     button:hover {
-        background: #ff6699;
-        transform: scale(1.05);
+        background: #ff5588;
+        transform: translateY(-2px);
     }
     .history {
-        margin-top: 30px;
+        margin-top: 40px;
         text-align: left;
-        max-height: 300px;
+        background: rgba(0,0,0,0.3);
+        padding: 15px;
+        border-radius: 12px;
+        max-height: 320px;
         overflow-y: auto;
     }
-    .rarity-ssr { color: #ff00ff; }
-    .rarity-sr { color: #00ffff; }
+    .history-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .rarity-ssr { color: #ff00ff; font-weight: bold; }
+    .rarity-sr { color: #00ffff; font-weight: bold; }
     .rarity-r { color: #ffff00; }
+    .rarity-n { color: #cccccc; }
 </style>
 </head>
 <body>
 <div class="container">
     <h1>🦊 狐狸的随机抽卡机</h1>
-    <p>点击下方抽取你的命运吧！</p>
+    <p>点击抽卡，揭开你的命运！</p>
 
     <div id="card" class="card">
-        <div class="card-inner">
+        <div class="card-inner" id="cardInner">
             <div class="card-back">
                 <h2>？？？</h2>
-                <p>点击抽卡后揭晓</p>
+                <p>准备好抽取了吗？</p>
             </div>
-            <div class="card-front" id="result">
-                <!-- 结果动态插入 -->
-            </div>
+            <div class="card-front" id="result"></div>
         </div>
     </div>
 
-    <button onclick="drawCard()">🔥 抽卡一次</button>
-    <button onclick="drawCard(10)">✨ 十连抽</button>
+    <div>
+        <button onclick="drawCard(1)">🔥 单抽</button>
+        <button onclick="drawCard(10)">✨ 十连抽</button>
+    </div>
 
     <div class="history">
-        <h3>抽卡记录</h3>
+        <h3>🎴 抽卡记录</h3>
         <div id="history"></div>
     </div>
 </div>
 
 <script>
-// 卡池配置（可自行扩展）
+// 卡池（可自行修改）
 const cardPool = [
-    {name: "狐狸娘SSR", rarity: "SSR", color: "#ff00ff", prob: 3},
-    {name: "闪光狐耳", rarity: "SR", color: "#00ffff", prob: 12},
-    {name: "普通狐狸", rarity: "R", color: "#ffff00", prob: 35},
-    {name: "神秘尾巴", rarity: "R", color: "#ffff00", prob: 30},
-    {name: "能量饮料", rarity: "N", color: "#aaaaaa", prob: 20}
+    {name: "狐狸娘SSR", rarity: "SSR", color: "#ff00ff", prob: 5},
+    {name: "闪耀狐耳SR", rarity: "SR", color: "#00ffff", prob: 15},
+    {name: "金色尾巴R", rarity: "R", color: "#ffff00", prob: 35},
+    {name: "神秘狐狸R", rarity: "R", color: "#ffff00", prob: 25},
+    {name: "普通狐狸N", rarity: "N", color: "#bbbbbb", prob: 20}
 ];
 
 function getRandomCard() {
@@ -122,38 +127,42 @@ function getRandomCard() {
         sum += card.prob;
         if (rand <= sum) return card;
     }
-    return cardPool[cardPool.length-1];
+    return cardPool[cardPool.length - 1];
+}
+
+function showResult(card) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `
+        <h2 class="rarity-\( {card.rarity.toLowerCase()}"> \){card.rarity}</h2>
+        <h1 style="margin:15px 0;font-size:2em;">${card.name}</h1>
+    `;
+}
+
+function addToHistory(card) {
+    const historyDiv = document.getElementById('history');
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `<span class="rarity-\( {card.rarity.toLowerCase()}">[ \){card.rarity}]</span> ${card.name}`;
+    historyDiv.prepend(item);
+    if (historyDiv.children.length > 20) historyDiv.removeChild(historyDiv.lastChild);
 }
 
 function drawCard(times = 1) {
-    const cardElement = document.getElementById('card');
-    const resultDiv = document.getElementById('result');
-    const historyDiv = document.getElementById('history');
+    const cardEl = document.getElementById('card');
+    cardEl.classList.remove('flipped'); // 重置
 
     for (let i = 0; i < times; i++) {
         setTimeout(() => {
             const card = getRandomCard();
-            
-            resultDiv.innerHTML = `
-                <h2 style="color:\( {card.color}"> \){card.rarity}</h2>
-                <h1>${card.name}</h1>
-            `;
-            
-            // 翻转动画
-            cardElement.classList.remove('flipped');
-            void cardElement.offsetWidth; // 触发重绘
-            cardElement.classList.add('flipped');
-
-            // 记录历史
-            const record = document.createElement('div');
-            record.innerHTML = `<span class="\( {card.rarity.toLowerCase()}"> \){card.rarity}</span> ${card.name}`;
-            historyDiv.prepend(record);
-        }, i * 300);
+            showResult(card);
+            cardEl.classList.add('flipped');
+            addToHistory(card);
+        }, i * 280);
     }
 }
 
 // 初始化
-document.getElementById('result').innerHTML = `<h1 style="color:#666">准备好了吗？</h1>`;
+document.getElementById('result').innerHTML = `<h2 style="color:#666">点击按钮开始抽卡</h2>`;
 </script>
 </body>
 </html>
