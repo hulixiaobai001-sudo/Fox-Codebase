@@ -18,7 +18,7 @@
 
 - **`computer.html`** —— 小型网页实验
 - **`deeoseek Chat System.html`** —— DeepSeek 聊天界面（输入 Key 即可使用）
-- **`Fox-SlotMachine.html`** —— 随机抽卡机（支持单抽 & 十连，带翻转动画）
+- **`Fox-SlotMachine.html`** —— 随机抽卡机（支持单抽 & 十连，带翻转动画，带个虚假排行榜）
 - 更多有趣项目正在路上...
 
 ---
