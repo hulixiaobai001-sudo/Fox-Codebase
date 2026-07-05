@@ -68,20 +68,21 @@
         background: #ff5588;
         transform: translateY(-2px);
     }
-    .history {
-        margin-top: 40px;
+    .history, .leaderboard {
+        margin-top: 30px;
         text-align: left;
         background: rgba(0,0,0,0.3);
         padding: 15px;
         border-radius: 12px;
-        max-height: 320px;
+        max-height: 280px;
         overflow-y: auto;
     }
-    .history-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .history-item, .lb-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .rarity-ssr { color: #ff00ff; font-weight: bold; }
     .rarity-sr { color: #00ffff; font-weight: bold; }
     .rarity-r { color: #ffff00; }
     .rarity-n { color: #cccccc; }
+    .lb-item { display: flex; justify-content: space-between; }
 </style>
 </head>
 <body>
@@ -108,9 +109,15 @@
         <h3>🎴 抽卡记录</h3>
         <div id="history"></div>
     </div>
+
+    <div class="leaderboard">
+        <h3>🏆 排行榜 (SSR 数量)</h3>
+        <div id="leaderboard"></div>
+    </div>
 </div>
 
 <script>
+// 卡池
 const cardPool = [
     {name: "狐狸娘SSR", rarity: "SSR", prob: 5},
     {name: "闪耀狐耳SR", rarity: "SR", prob: 15},
@@ -118,6 +125,29 @@ const cardPool = [
     {name: "神秘狐狸R", rarity: "R", prob: 25},
     {name: "普通狐狸N", rarity: "N", prob: 20}
 ];
+
+let ssrCount = 0;
+let totalDraws = 0;
+
+// 加载本地数据
+function loadStats() {
+    ssrCount = parseInt(localStorage.getItem('ssrCount')) || 0;
+    totalDraws = parseInt(localStorage.getItem('totalDraws')) || 0;
+    updateLeaderboard();
+}
+
+function saveStats() {
+    localStorage.setItem('ssrCount', ssrCount);
+    localStorage.setItem('totalDraws', totalDraws);
+}
+
+function updateLeaderboard() {
+    const lbDiv = document.getElementById('leaderboard');
+    lbDiv.innerHTML = `
+        <div class="lb-item"><span>你的 SSR 数量</span><strong>${ssrCount}</strong></div>
+        <div class="lb-item"><span>总抽卡次数</span><strong>${totalDraws}</strong></div>
+    `;
+}
 
 function getRandomCard() {
     let rand = Math.random() * 100;
@@ -132,7 +162,7 @@ function getRandomCard() {
 function showResult(card) {
     const resultDiv = document.getElementById('result');
     let color = card.rarity === "SSR" ? "#ff00ff" : card.rarity === "SR" ? "#00ffff" : card.rarity === "R" ? "#ffff00" : "#cccccc";
-    resultDiv.innerHTML = '<h2 style="color:' + color + ';margin:10px 0;">' + card.rarity + '</h2><h1 style="margin:10px 0;font-size:2em;">' + card.name + '</h1>';
+    resultDiv.innerHTML = '<h2 style="color:' + color + '; margin:10px 0;">' + card.rarity + '</h2><h1 style="margin:10px 0; font-size:2em;">' + card.name + '</h1>';
 }
 
 function addToHistory(card) {
@@ -142,7 +172,7 @@ function addToHistory(card) {
     let colorClass = card.rarity === "SSR" ? "rarity-ssr" : card.rarity === "SR" ? "rarity-sr" : card.rarity === "R" ? "rarity-r" : "rarity-n";
     item.innerHTML = '<span class="' + colorClass + '">[' + card.rarity + ']</span> ' + card.name;
     historyDiv.prepend(item);
-    if (historyDiv.children.length > 20) historyDiv.removeChild(historyDiv.lastChild);
+    if (historyDiv.children.length > 15) historyDiv.removeChild(historyDiv.lastChild);
 }
 
 function drawCard(times = 1) {
@@ -155,12 +185,19 @@ function drawCard(times = 1) {
             showResult(card);
             cardEl.classList.add('flipped');
             addToHistory(card);
+
+            totalDraws++;
+            if (card.rarity === "SSR") ssrCount++;
+
+            saveStats();
+            updateLeaderboard();
         }, i * 280);
     }
 }
 
 // 初始化
 document.getElementById('result').innerHTML = '<h2 style="color:#666">点击按钮开始抽卡</h2>';
+loadStats();
 </script>
 </body>
 </html>
