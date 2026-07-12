@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤠 西部对决 · 轮盘赌</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(135deg,#1a0a0a,#2d1010,#1a0a0a);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  color:#f0e6d3;overflow-x:hidden;padding:20px;
+}
+.game-container{width:100%;max-width:920px;padding:24px;background:rgba(40,20,15,0.85);border-radius:24px;border:2px solid #8b4513;box-shadow:0 20px 60px rgba(0,0,0,0.8);backdrop-filter:blur(8px);}
+.setup-screen{text-align:center;padding:40px 20px;max-width:560px;margin:0 auto;}
+.setup-screen h1{font-size:2.4em;color:#ff6b35;margin-bottom:2px;text-shadow:0 0 20px rgba(255,107,53,0.3);}
+.setup-screen .western-sub{font-size:0.85em;color:#8a6a50;margin-bottom:4px;letter-spacing:4px;}
+.setup-screen .game-sub{font-size:0.9em;color:#a08070;margin-bottom:24px;font-style:italic;}
+.mode-btns{display:flex;justify-content:center;gap:10px;margin-bottom:18px;}
+.mode-btn{padding:10px 28px;border-radius:20px;border:2px solid rgba(139,69,19,0.4);background:rgba(30,15,10,0.5);color:#a08070;cursor:pointer;font-size:0.95em;transition:0.2s;}
+.mode-btn:hover{border-color:#ff6b35;color:#f0e6d3;}
+.mode-btn.on{background:rgba(255,107,53,0.15);border-color:#ff6b35;color:#ff6b35;font-weight:bold;}
+.setup-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;max-width:480px;margin:0 auto;}
+.setup-grid label{font-size:0.85em;color:#c0a090;display:block;margin-bottom:4px;}
+.setup-grid input[type="text"]{background:rgba(60,30,20,0.6);border:1px solid #6b3a2a;border-radius:8px;padding:10px 14px;color:#f0e6d3;font-size:1em;width:100%;outline:none;transition:0.2s;}
+.setup-grid input[type="text"]:focus{border-color:#ff6b35;box-shadow:0 0 12px rgba(255,107,53,0.2);}
+.vs-text{font-size:1.6em;color:#ff6b35;font-weight:bold;}
+.setup-opt{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.mult-group{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+.mult-group label{font-size:0.9em;color:#c0a090;}
+.mult-group input[type="range"]{width:160px;accent-color:#ff6b35;}
+.mult-group .mult-v{font-size:1.4em;font-weight:bold;color:#ff6b35;min-width:30px;}
+.diff-group{display:none;align-items:center;gap:10px;}
+.diff-group.on{display:flex;justify-content:center;flex-wrap:wrap;}
+.diff-btn{padding:6px 16px;border-radius:16px;border:2px solid rgba(139,69,19,0.4);background:rgba(30,15,10,0.5);color:#a08070;cursor:pointer;font-size:0.85em;transition:0.2s;}
+.diff-btn:hover{border-color:#ff6b35;color:#f0e6d3;}
+.diff-btn.cur{background:rgba(255,107,53,0.15);border-color:#ff6b35;color:#ff6b35;font-weight:bold;}
+.flag-group{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;justify-content:center;}
+.flag-group input[type="text"]{background:rgba(60,30,20,0.6);border:1px solid #6b3a2a;border-radius:8px;padding:6px 10px;color:#f0e6d3;font-size:0.8em;width:140px;outline:none;}
+.flag-group input:focus{border-color:#ff6b35;}
+.flag-group .flag-status{font-size:0.8em;color:#6a5540;}
+.flag-group .flag-status.ok{color:#ffcc33;font-weight:bold;}
+.btn-start{margin-top:20px;background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:12px;padding:14px 48px;font-size:1.15em;font-weight:bold;color:#fff;cursor:pointer;transition:0.25s;box-shadow:0 6px 20px rgba(255,107,53,0.3);}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,107,53,0.5);}
+.footer-note{margin-top:18px;font-size:0.75em;color:#5a4030;line-height:1.8;}
+.footer-note a{color:#6a5540;cursor:pointer;text-decoration:underline;}
+.badge-tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:0.7em;font-weight:bold;margin:2px 4px;}
+.badge-tag.guild{background:rgba(255,200,50,0.12);color:#ffcc33;border:1px solid rgba(255,200,50,0.3);}
+.badge-tag.tester{background:rgba(100,200,255,0.12);color:#66ccff;border:1px solid rgba(100,200,255,0.3);}
+.rules-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:160;align-items:center;justify-content:center;}
+.rules-modal.on{display:flex;}
+.rules-box{background:linear-gradient(135deg,#2a1510,#1a0a08);border:2px solid #8b4513;border-radius:20px;padding:30px 36px;max-width:540px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 0 60px rgba(255,107,53,0.15);}
+.rules-box h2{font-size:1.4em;color:#ff6b35;margin-bottom:16px;text-align:center;}
+.rules-box h3{font-size:1em;color:#dd8844;margin:14px 0 6px;}
+.rules-box p{font-size:0.85em;color:#c0a090;line-height:1.7;margin-bottom:4px;}
+.rules-box .ruler{height:1px;background:rgba(139,69,19,0.3);margin:12px 0;}
+.rules-box .item-desc{font-size:0.82em;color:#b0a090;padding-left:12px;margin:2px 0;line-height:1.6;}
+.rules-close{display:block;margin:16px auto 0;background:rgba(255,107,53,0.15);border:1px solid #ff6b35;border-radius:8px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:0.9em;}
+.cert-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:180;align-items:center;justify-content:center;}
+.cert-overlay.on{display:flex;}
+.cert-box{background:linear-gradient(135deg,#3a2515,#2a1510);border:3px solid #c8943a;border-radius:20px;padding:36px 40px;max-width:460px;width:90%;text-align:center;box-shadow:0 0 80px rgba(200,148,58,0.2);position:relative;}
+.cert-box::before{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:1px solid rgba(200,148,58,0.2);border-radius:14px;pointer-events:none;}
+.cert-title{font-size:1.8em;color:#ffcc33;margin-bottom:2px;letter-spacing:4px;}
+.cert-sub{font-size:0.7em;color:#8a7a50;letter-spacing:6px;margin-bottom:18px;}
+.cert-body{font-size:1em;color:#d0c0a0;margin-bottom:4px;}
+.cert-game{font-size:2em;color:#ff6b35;font-weight:bold;margin:8px 0;}
+.cert-line{font-size:0.85em;color:#c8943a;letter-spacing:8px;margin-bottom:16px;}
+.cert-badges{margin:12px 0;}
+.cert-footer{font-size:0.8em;color:#8a7a50;font-style:italic;margin-top:12px;}
+.cert-date{font-size:0.7em;color:#6a5a40;margin-top:8px;}
+.cert-close-btn{margin-top:20px;background:rgba(200,148,58,0.15);border:1px solid #c8943a;border-radius:8px;padding:8px 24px;color:#c8943a;cursor:pointer;font-size:0.85em;}
+.game-board{display:none;}
+.game-header{display:flex;justify-content:space-between;align-items:center;padding:0 8px 10px 8px;border-bottom:1px solid rgba(139,69,19,0.4);margin-bottom:10px;flex-wrap:wrap;gap:4px;}
+.game-header .title-area{text-align:left;}
+.game-header .title-area .game-title{font-size:1.05em;color:#ff6b35;font-weight:bold;}
+.game-header .title-area .game-subtitle{font-size:0.6em;color:#5a4030;}
+.game-header .round-info{font-size:0.9em;color:#a08070;}
+.game-header .mult-info{color:#ff6b35;font-weight:bold;font-size:0.9em;}
+.players-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:10px;}
+.player-panel{background:rgba(30,15,10,0.6);border-radius:14px;padding:14px 16px;border:2px solid rgba(139,69,19,0.3);transition:0.3s;}
+.player-panel.on{border-color:#ff6b35;box-shadow:0 0 20px rgba(255,107,53,0.15);}
+.player-panel.dead{opacity:0.35;border-color:#500;}
+.player-panel.ai-panel{position:relative;}
+.player-panel.ai-panel::after{content:'🤖 AI';position:absolute;top:8px;right:10px;font-size:0.65em;padding:2px 8px;border-radius:6px;background:rgba(100,50,200,0.2);border:1px solid rgba(100,50,200,0.3);color:#bb88ff;}
+.pname{font-size:1.05em;font-weight:bold;margin-bottom:4px;}
+.pname .title-tags{display:inline-block;vertical-align:middle;}
+.hearts{font-size:1.3em;letter-spacing:2px;margin-bottom:4px;}
+.hearts .lost{opacity:0.12;}
+.hpt{font-size:0.8em;color:#a08070;margin-bottom:6px;}
+.items-row{display:flex;gap:6px;flex-wrap:wrap;}
+.itembtn{background:rgba(60,30,20,0.5);border:1px solid rgba(139,69,19,0.4);border-radius:8px;padding:4px 10px;font-size:0.72em;color:#c0a090;cursor:pointer;transition:0.2s;white-space:nowrap;}
+.itembtn:hover:not(:disabled){background:rgba(255,107,53,0.15);border-color:#ff6b35;color:#f0e6d3;}
+.itembtn:disabled{opacity:0.3;cursor:not-allowed;}
+.itembtn.done{opacity:0.2;text-decoration:line-through;}
+.gun-area{text-align:center;padding:12px 0;margin-bottom:10px;background:rgba(20,10,8,0.5);border-radius:14px;border:1px solid rgba(139,69,19,0.2);}
+.gun-label{font-size:0.85em;color:#a08070;margin-bottom:8px;}
+.gun-label .hl{color:#ff6b35;font-weight:bold;}
+.cha-box{display:flex;justify-content:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.cha{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75em;font-weight:bold;transition:0.3s;background:rgba(60,30,20,0.6);border:2px solid #5a3a2a;color:#5a3a2a;user-select:none;}
+.cha.cur{border-color:#ff6b35;box-shadow:0 0 12px rgba(255,107,53,0.3);color:#ff6b35;}
+.cha.fired{background:rgba(255,0,0,0.18);border-color:#ff2222;color:#ff4444;}
+.cha.unk{color:#3a3a3a;border-color:#3a3a3a;}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;}
+.abtn{background:linear-gradient(135deg,#3a2018,#2a1510);border:1px solid #6b3a2a;border-radius:10px;padding:9px 20px;font-size:0.88em;color:#f0e6d3;cursor:pointer;transition:0.2s;white-space:nowrap;}
+.abtn:hover:not(:disabled){background:linear-gradient(135deg,#4a3020,#3a2015);border-color:#ff6b35;}
+.abtn:disabled{opacity:0.25;cursor:not-allowed;}
+.abtn.shoot{background:linear-gradient(135deg,#8b2020,#5a1010);border-color:#8b2020;font-weight:bold;}
+.abtn.shoot:hover:not(:disabled){background:linear-gradient(135deg,#aa2828,#6a1515);border-color:#ff3333;}
+.abtn.skip-act{background:linear-gradient(135deg,#5a4a20,#3a2a10);border-color:#8a7a3a;}
+.abtn.skip-act:hover:not(:disabled){background:linear-gradient(135deg,#7a6a30,#4a3a1a);border-color:#bbaa55;}
+.abtn.duel{background:linear-gradient(135deg,#6a2a6a,#4a1a4a);border-color:#8a3a8a;font-weight:bold;}
+.abtn.duel:hover:not(:disabled){background:linear-gradient(135deg,#8a3a8a,#5a2a5a);border-color:#bb55bb;}
+.log-area{margin-top:10px;background:rgba(10,5,3,0.6);border-radius:10px;padding:8px 14px;border:1px solid rgba(139,69,19,0.15);max-height:120px;overflow-y:auto;}
+.log-area::-webkit-scrollbar{width:4px;}
+.log-area::-webkit-scrollbar-thumb{background:#5a3a2a;border-radius:4px;}
+.log-e{padding:3px 0;font-size:0.84em;color:#b0a090;border-bottom:1px solid rgba(139,69,19,0.06);}
+.log-e:last-child{border-bottom:none;}
+.log-e.hi{color:#ff6b35;font-weight:bold;}
+.log-e.da{color:#ff4444;font-weight:bold;}
+.log-e.su{color:#44cc66;font-weight:bold;}
+.log-e.in{color:#44aadd;}
+.log-e.du{color:#dd88ff;font-weight:bold;}
+.log-e.cr{color:#ffaa00;font-weight:bold;}
+.log-e.sk{color:#ccaa44;font-weight:bold;}
+.log-e.fl{color:#ffcc33;font-weight:bold;}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;flex-direction:column;}
+.overlay.on{display:flex;}
+.obox{background:linear-gradient(135deg,#2a1510,#1a0a08);border:2px solid #8b4513;border-radius:20px;padding:36px;text-align:center;max-width:420px;width:90%;box-shadow:0 0 60px rgba(255,107,53,0.2);}
+.obox h2{font-size:1.8em;margin-bottom:8px;}
+.obox .wn{color:#ff6b35;font-size:1.6em;font-weight:bold;margin:10px 0;}
+.obox .trophy{font-size:3em;margin-bottom:8px;}
+.obox .stats{color:#a08070;font-size:0.9em;margin-bottom:18px;line-height:1.6;}
+.bre{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:12px;padding:10px 32px;font-size:1em;font-weight:bold;color:#fff;cursor:pointer;transition:0.25s;}
+.bre:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,53,0.4);}
+.blind-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:150;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.blind-overlay.on{display:flex;}
+.blind-overlay .blind-title{font-size:1.6em;color:#ff6b35;margin-bottom:12px;}
+.blind-overlay .blind-hint{font-size:0.95em;color:#c0a090;margin-bottom:24px;line-height:1.6;max-width:400px;}
+.blind-cha-box{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;max-width:400px;}
+.blind-cha{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1em;font-weight:bold;cursor:pointer;transition:0.2s;user-select:none;background:rgba(60,30,20,0.6);border:2px solid #6a4a2a;color:#f0e6d3;}
+.blind-cha:hover{background:rgba(255,107,53,0.25);border-color:#ff6b35;transform:scale(1.12);}
+.blind-cha.picked{background:rgba(255,50,50,0.2);border-color:#ff3333;color:#ff4444;}
+.blind-cha.picked::after{content:' ✓';}
+.blind-overlay .blind-confirm{font-size:0.9em;color:#44cc66;margin-top:18px;min-height:22px;}
+.cred-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:200;overflow:hidden;}
+.cred-overlay.on{display:block;}
+.cred-scroll{position:absolute;left:50%;transform:translateX(-50%);text-align:center;animation:credRoll 25s linear forwards;width:90%;max-width:520px;}
+.cred-scroll .ct{font-size:2em;color:#ff6b35;margin-bottom:20px;}
+.cred-scroll .cn{font-size:1.3em;color:#f0e6d3;margin:6px 0;}
+.cred-scroll .cr{font-size:0.85em;color:#a08070;margin-bottom:20px;}
+.cred-scroll .cd{width:60px;height:2px;background:#ff6b35;margin:16px auto;}
+.cred-scroll .cf{font-size:1em;color:#dd88ff;margin-top:30px;}
+.cred-scroll .cs{font-size:0.8em;color:#6a5540;margin-top:10px;}
+@keyframes credRoll{0%{top:100%;}100%{top:-180%;}}
+.cred-close{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:210;background:rgba(255,107,53,0.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:0.9em;transition:0.2s;}
+.cred-close:hover{background:rgba(255,107,53,0.3);}
+.turn-banner{text-align:center;padding:8px;font-size:1em;font-weight:bold;border-radius:10px;margin-bottom:10px;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);}
+.turn-banner.dm{background:rgba(200,80,255,0.1);border-color:rgba(200,80,255,0.3);color:#dd88ff;}
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.6em;font-weight:bold;margin-left:4px;}
+.badge.wt{background:rgba(255,200,50,0.15);color:#ffcc33;border:1px solid rgba(255,200,50,0.3);}
+.badge.pe{background:rgba(255,50,50,0.12);color:#ff5555;border:1px solid rgba(255,50,50,0.2);}
+.badge.du{background:rgba(200,80,255,0.12);color:#dd88ff;border:1px solid rgba(200,80,255,0.2);}
+.badge.bk{background:rgba(50,255,100,0.12);color:#44dd66;border:1px solid rgba(50,255,100,0.2);}
+.badge.ct{background:rgba(255,170,0,0.12);color:#ffaa00;border:1px solid rgba(255,170,0,0.2);}
+.badge.fl{background:rgba(255,200,50,0.15);color:#ffcc33;border:1px solid rgba(255,200,50,0.3);}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+.shake{animation:shake 0.4s ease;}
+@media(max-width:640px){
+  body{padding:10px;}.game-container{padding:14px;border-radius:16px;}
+  .setup-screen{padding:24px 12px;}.setup-screen h1{font-size:1.8em;}
+  .players-row{grid-template-columns:1fr;gap:10px;}
+  .player-panel{padding:10px 12px;}
+  .cha{width:36px;height:36px;font-size:0.65em;}
+  .blind-cha{width:46px;height:46px;font-size:0.95em;}
+  .acts{gap:6px;}.abtn{padding:7px 14px;font-size:0.8em;}
+  .setup-grid{grid-template-columns:1fr;}.vs-text{padding:10px 0;font-size:1.3em;}
+  .mode-btn{padding:8px 16px;font-size:0.85em;}
+  .obox{padding:24px;}.rules-box{padding:20px 24px;}
+  .cert-box{padding:24px 20px;}.cert-game{font-size:1.6em;}
+}
+@media(min-width:1024px){
+  .game-container{padding:30px;max-width:960px;}
+  .player-panel{padding:16px 20px;}
+  .cha{width:48px;height:48px;font-size:0.8em;}
+  .abtn{padding:10px 24px;font-size:0.95em;}
+}
+</style>
+</head>
+<body>
+<div class="game-container" id="app">
+  <div class="setup-screen" id="setupScreen">
+    <h1>🤠 西部对决</h1>
+    <div class="western-sub">—— 轮盘赌 ——</div>
+    <div class="game-sub">🔫 装弹 · 博弈 · 活下来</div>
+    <div class="mode-btns">
+      <div class="mode-btn on" data-m="local" onclick="setM('local')">👥 本地对战</div>
+      <div class="mode-btn" data-m="ai" onclick="setM('ai')">🤖 人机对战</div>
+    </div>
+    <div class="setup-grid">
+      <div><label id="p1l">玩家1</label><input type="text" id="p1n" placeholder="输入你的名字" maxlength="10"></div>
+      <div class="vs-text">⚔️</div>
+      <div><label id="p2l">玩家2</label><input type="text" id="p2n" placeholder="输入对手名字" maxlength="10"></div>
+    </div>
+    <div class="setup-opt">
+      <div class="mult-group">
+        <label>伤害倍率</label>
+        <input type="range" id="mult" min="1" max="5" value="1" step="1">
+        <span class="mult-v" id="multD">×1</span>
+      </div>
+      <div class="diff-group" id="diffGroup">
+        <label style="font-size:0.85em;color:#c0a090;">AI难度</label>
+        <span class="diff-btn cur" data-d="easy" onclick="setDiff('easy')">🌱 简单</span>
+        <span class="diff-btn" data-d="medium" onclick="setDiff('medium')">🔥 中等</span>
+        <span class="diff-btn" data-d="hard" onclick="setDiff('hard')">💀 困难</span>
+      </div>
+      <div class="flag-group" id="flagGroup">
+        <label style="font-size:0.8em;color:#c0a090;">🏴 公会旗帜</label>
+        <input type="text" id="flagCode" placeholder="输入兑换码" maxlength="20">
+        <button class="abtn" onclick="redeemFlag()" style="font-size:0.75em;padding:4px 12px;">兑换</button>
+        <span class="flag-status" id="flagStatus">未解锁</span>
+      </div>
+      <div id="flagBadges"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <span onclick="showRules()" style="font-size:0.8em;color:#8a6a50;cursor:pointer;text-decoration:underline;padding:4px 8px;">📖 游戏规则</span>
+        <span onclick="showCred()" style="font-size:0.8em;color:#8a6a50;cursor:pointer;text-decoration:underline;padding:4px 8px;">📜 制作人员</span>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">🎯 开始对决</button>
+    <div class="footer-note">
+      第六届绒兽汇图一乐小游戏，仅供娱乐<br>
+      <span style="color:#5a4030;">这是个静态网页游戏，开发者懒得做联机模式，所以凑合玩吧嗷 ——白沁</span>
+    </div>
+  </div>
+
+  <div class="rules-modal" id="rulesModal">
+    <div class="rules-box">
+      <h2>🤠 西部对决 · 规则</h2>
+      <h3>🎯 基本玩法</h3>
+      <p>6发弹巢 · 1发子弹 · 每人5条命。轮流开枪，空枪过，中弹扣血，先没命的输。</p>
+      <div class="ruler"></div>
+      <h3>🔫 装弹</h3>
+      <p>系统随机指定一人装弹。屏幕遮盖，对手请闭眼——装弹者把子弹放入想放的弹仓。完成后弹仓全显示<b>?</b>，位置只有装弹者知道。</p>
+      <div class="ruler"></div>
+      <h3>⚠️ 跳过（新）</h3>
+      <p>觉得这发是真子弹？选择「跳过」——不击发，弹仓不推进，直接轮到对手。<b>代价：失去1HP</b>，补偿：随机获得一个已用道具。</p>
+      <div class="ruler"></div>
+      <h3>🏴 公会模式（新）</h3>
+      <p>开局弹窗询问是否开启公会模式。开启后双方获得「公会旗帜」道具。</p>
+      <p>在设置页输入兑换码 <b>英雄主义</b> 可永久解锁旗帜使用权，并获得 <b>【公会成员】【内测玩家】</b> 称号。首次激活旗帜会颁发 <b>🎖️ 内测证书</b>。</p>
+      <div class="ruler"></div>
+      <h3>⏱️ 道具</h3>
+      <div class="item-desc"><b>反转怀表</b> — 本枪指向对手。代价：下回合需开2枪</div>
+      <div class="item-desc"><b>我没死之书</b> — 激活后下次致命伤害豁免至1HP，可发起生死决斗</div>
+      <div class="item-desc"><b>查看子弹</b> — 显示子弹位置及剩余安全枪数</div>
+      <div class="item-desc"><b>🏴 公会旗帜</b> — 手动激活获得护盾，挡一次任何伤害，用后每3回合自动充能</div>
+      <div class="ruler"></div>
+      <h3>⚔️ 生死决斗</h3>
+      <p>书触发后可发起，持续1回合，期间每发伤害+2</p>
+      <div class="ruler"></div>
+      <h3>💥 暴击</h3>
+      <p>每枪10%概率暴击，伤害x1.5</p>
+      <div class="ruler"></div>
+      <h3>🤖 人机难度</h3>
+      <p>🌱简单：迷之操作多，经常浪费道具<br>🔥中等：合理判断，适度博弈<br>💀困难：精准跳过真子弹，最大化利用道具</p>
+      <button class="rules-close" onclick="hideRules()">✕ 知道了</button>
+    </div>
+  </div>
+
+  <div class="game-board" id="gameBoard">
+    <div class="game-header">
+      <div class="title-area">
+        <div class="game-title">🤠 西部对决</div>
+        <div class="game-subtitle">第六届绒兽汇图一乐小游戏</div>
+      </div>
+      <span class="round-info" id="rdInfo">第 0 回合</span>
+      <span class="mult-info" id="multI">💥 ×1</span>
+    </div>
+    <div class="turn-banner" id="ban">🎯 准备开始...</div>
+    <div class="players-row">
+      <div class="player-panel" id="p0">
+        <div class="pname"><span id="pn0">玩家1</span>
+          <span class="badge wt" id="wt0" style="display:none">⏱怀表</span>
+          <span class="badge pe" id="pe0" style="display:none">🔫×2</span>
+          <span class="badge du" id="du0" style="display:none">⚔️决斗</span>
+          <span class="badge bk" id="bk0" style="display:none">📖庇护</span>
+          <span class="badge ct" id="ct0" style="display:none">💥暴击</span>
+          <span class="badge fl" id="fl0" style="display:none">🏴护盾</span>
+          <span class="title-tags" id="tags0"></span>
+        </div>
+        <div class="hearts" id="ht0"></div>
+        <div class="hpt" id="hp0">HP: 5/5</div>
+        <div class="items-row" id="it0">
+          <button class="itembtn" data-p="0" data-i="watch" onclick="useI(0,'watch')">⏱ 反转怀表</button>
+          <button class="itembtn" data-p="0" data-i="book" onclick="useI(0,'book')">📖 我没死之书</button>
+          <button class="itembtn" data-p="0" data-i="check" onclick="useI(0,'check')">🔍 查看子弹</button>
+          <button class="itembtn" data-p="0" data-i="flag" onclick="useI(0,'flag')" style="display:none">🏴 公会旗帜</button>
+        </div>
+      </div>
+      <div class="player-panel" id="p1">
+        <div class="pname"><span id="pn1">玩家2</span>
+          <span class="badge wt" id="wt1" style="display:none">⏱怀表</span>
+          <span class="badge pe" id="pe1" style="display:none">🔫×2</span>
+          <span class="badge du" id="du1" style="display:none">⚔️决斗</span>
+          <span class="badge bk" id="bk1" style="display:none">📖庇护</span>
+          <span class="badge ct" id="ct1" style="display:none">💥暴击</span>
+          <span class="badge fl" id="fl1" style="display:none">🏴护盾</span>
+          <span class="title-tags" id="tags1"></span>
+        </div>
+        <div class="hearts" id="ht1"></div>
+        <div class="hpt" id="hp1">HP: 5/5</div>
+        <div class="items-row" id="it1">
+          <button class="itembtn" data-p="1" data-i="watch" onclick="useI(1,'watch')">⏱ 反转怀表</button>
+          <button class="itembtn" data-p="1" data-i="book" onclick="useI(1,'book')">📖 我没死之书</button>
+          <button class="itembtn" data-p="1" data-i="check" onclick="useI(1,'check')">🔍 查看子弹</button>
+          <button class="itembtn" data-p="1" data-i="flag" onclick="useI(1,'flag')" style="display:none">🏴 公会旗帜</button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="gun-area">
+      <div class="gun-label" id="gunL">🔫 等待装弹...</div>
+      <div class="cha-box" id="chaBox"></div>
+      <div id="bulI" style="font-size:0.75em;color:#6a5540;min-height:16px;"></div>
+    </div>
+    <div class="acts" id="actsBox">
+      <button class="abtn skip-act" id="btnSkip" onclick="doSkip()" disabled>⚠️ 跳过（-1HP得道具）</button>
+      <button class="abtn shoot" id="btnShoot" onclick="pull()" disabled>🎯 开枪</button>
+      <button class="abtn duel" id="btnDuel" onclick="doDuel()" disabled>⚔️ 发起决斗</button>
+      <button class="abtn" onclick="showRules()" style="font-size:0.75em;padding:8px 14px;">📖 规则</button>
+      <button class="abtn" onclick="showCred()" style="font-size:0.75em;padding:8px 14px;">📜 制作人员</button>
+    </div>
+    <div class="log-area" id="logA"></div>
+  </div>
+</div>
+
+<div class="blind-overlay" id="blindOverlay">
+  <div class="blind-title">🔫 装弹阶段</div>
+  <div class="blind-hint">请对手闭上眼睛或转过头去 🙈<br>装弹者点击下方一个弹仓放入子弹</div>
+  <div class="blind-cha-box" id="blindChaBox"></div>
+  <div class="blind-confirm" id="blindConfirm"></div>
+</div>
+
+<div class="cert-overlay" id="certOverlay">
+  <div class="cert-box">
+    <div class="cert-title">🎖️ 内测证书</div>
+    <div class="cert-sub">CERTIFICATE OF PARTICIPATION</div>
+    <div class="cert-body">感谢 <span id="certName" style="color:#ffcc33;font-weight:bold;">——</span> 参与</div>
+    <div class="cert-game">🤠 西部对决</div>
+    <div class="cert-line">封 闭 内 测</div>
+    <div class="cert-badges">
+      <span class="badge-tag guild">🏴 公会成员</span>
+      <span class="badge-tag tester">🎮 内测玩家</span>
+    </div>
+    <div class="cert-footer">本证书用来图一乐玩 🦊</div>
+    <div class="cert-date" id="certDate"></div>
+  </div>
+  <button class="cert-close-btn" onclick="hideCert()">✕ 收好</button>
+</div>
+
+<div class="overlay" id="goOverlay">
+  <div class="obox">
+    <div class="trophy">🏆</div>
+    <h2 id="goTitle">游戏结束</h2>
+    <div class="wn" id="wn">——</div>
+    <div class="stats" id="goStats"></div>
+    <button class="bre" onclick="rst()">🔄 再来一局</button>
+  </div>
+</div>
+
+<div class="cred-overlay" id="credOverlay">
+  <div class="cred-scroll" id="credSc">
+    <div class="ct">🤠 西部对决</div>
+    <div class="cd"></div>
+    <div class="cr">🎬 制作 & 设计 & 策划</div>
+    <div class="cn">白沁 🦊</div>
+    <div class="cd"></div>
+    <div class="cr">🔧 游戏调试</div>
+    <div class="cn">白沁 🦊</div>
+    <div class="cd"></div>
+    <div class="cr">🤖 使用AI模型</div>
+    <div class="cn">deepseek-V4fish</div>
+    <div class="cd"></div>
+    <div class="cr">📝 游戏测试鸣谢</div>
+    <div class="cn">英雄主义公会全体成员 ❤️</div>
+    <div class="cd"></div>
+    <div class="cf">🌟 感谢游玩！🌟</div>
+    <div class="cs">"爱与被爱，是这个世界上最温柔的事"</div>
+  </div>
+  <div class="cred-close" onclick="hideCred()">✕ 关闭</div>
+</div>
+
+<script>
+const S={
+  mode:'local',diff:'easy',phase:'setup',flagOk:false,guildMode:false,
+  p:[
+    {n:'',hp:5,mx:5,al:true,ai:false,it:{watch:1,book:1,check:1,flag:0},
+     wa:false,wp:0,ba:false,bu:false,crit:false,fa:false,fc:0,ft:0},
+    {n:'',hp:5,mx:5,al:true,ai:false,it:{watch:1,book:1,check:1,flag:0},
+     wa:false,wp:0,ba:false,bu:false,crit:false,fa:false,fc:0,ft:0}
+  ],
+  cp:0,ld:-1,mult:1,rd:0,ch:6,bp:-1,cc:0,br:false,rs:false,bf:false,
+  de:false,da:false,st:0,ps:0,tr:0,critC:0.1,certShown:false,log:[]
+};
+const $=id=>document.getElementById(id);
+try{S.flagOk=localStorage.getItem('wd_flag')==='1';}catch(e){}
+function saveFlag(){try{localStorage.setItem('wd_flag',S.flagOk?'1':'0');}catch(e){}}
+
+function setM(m){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  S.mode=m;
+  $('diffGroup').classList.toggle('on',m==='ai');
+  if(m==='ai'){$('p2n').value='';$('p2n').placeholder='人机001号';$('p2n').disabled=true;$('p2l').textContent='AI对手';}
+  else{$('p2n').disabled=false;$('p2n').placeholder='输入对手名字';$('p2l').textContent='玩家2';}
+  checkFlag();
+}
+function setDiff(d){S.diff=d;document.querySelectorAll('.diff-btn').forEach(b=>b.classList.toggle('cur',b.dataset.d===d));}
+
+function redeemFlag(){
+  const code=$('flagCode').value.trim();
+  if(code==='英雄主义'){S.flagOk=true;saveFlag();$('flagStatus').textContent='✅ 已解锁！获得永久使用权';$('flagStatus').className='flag-status ok';checkFlag();addL('🏴 公会旗帜已解锁！','fl');}
+  else{$('flagStatus').textContent='❌ 兑换码错误';$('flagStatus').className='flag-status';}
+}
+function checkFlag(){
+  const box=$('flagBadges');
+  if(S.flagOk){box.innerHTML='<span class="badge-tag guild">🏴 公会成员</span><span class="badge-tag tester">🎮 内测玩家</span>';$('flagStatus').textContent='✅ 已解锁';$('flagStatus').className='flag-status ok';}
+  else{box.innerHTML='';}
+}
+function showCred(){$('credOverlay').classList.add('on');const s=$('credSc');s.style.animation='none';void s.offsetWidth;s.style.animation='credRoll 25s linear forwards';}
+function hideCred(){$('credOverlay').classList.remove('on');}
+function showRules(){$('rulesModal').classList.add('on');}
+function hideRules(){$('rulesModal').classList.remove('on');}
+function showCert(name){$('certName').textContent=name;const d=new Date();$('certDate').textContent=`颁发日期: ${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;$('certOverlay').classList.add('on');}
+function hideCert(){$('certOverlay').classList.remove('on');}
+
+function startGame(){
+  if(S.flagOk&&!confirm('🏴 是否开启公会模式？\n\n开启后双方将获得「公会旗帜」道具\n（手动激活后挡一次伤害，每3回合自动充能）\n\n点「确定」开启 / 「取消」不使用')){
+    S.guildMode=false;
+  } else if(S.flagOk){
+    S.guildMode=true;
+  } else {
+    S.guildMode=false;
+  }
+  const n1=$('p1n').value.trim()||'玩家1';
+  const n2=S.mode==='ai'?'人机001号':($('p2n').value.trim()||'玩家2');
+  const m=parseInt($('mult').value)||1;
+  S.p[0].n=n1;S.p[1].n=n2;S.p[1].ai=(S.mode==='ai');
+  S.mult=m;S.rd=0;S.tr=0;S.certShown=false;
+  for(let i=0;i<2;i++){
+    const p=S.p[i];
+    p.hp=5;p.mx=5;p.al=true;
+    p.it={watch:1,book:1,check:1,flag:S.guildMode?1:0};
+    p.wa=false;p.wp=0;p.ba=false;p.bu=false;p.fa=false;p.fc=0;p.ft=0;
+  }
+  S.de=false;S.da=false;S.log=[];
+  $('setupScreen').style.display='none';
+  $('gameBoard').style.display='block';
+  $('goOverlay').classList.remove('on');
+  rdAll();
+  addL('🎮 西部对决开始！每人5条命','hi');
+  if(S.guildMode)addL('🏴 公会模式已开启！旗帜道具可用','fl');
+  S.phase='ready';nxtRd();
+}
+
+function useFlag(pidx){
+  const p=S.p[pidx];
+  if(p.fa){addL(`🏴 旗帜护盾已激活，无需重复使用`,'in');return false;}
+  if(p.fc>0||p.it.flag>0){
+    p.fa=true;p.fc=1;p.it.flag=0;
+    addL(`🏴 ${p.n} 激活了公会旗帜！下次伤害将被格挡`,'fl');
+    if(!S.certShown){S.certShown=true;setTimeout(()=>showCert(p.n),500);}
+    rdAll();return true;
+  }
+  addL(`🏴 旗帜正在充能中（${3-p.ft}回合后可用）`,'in');
+  return false;
+}
+function tryFlag(pidx){
+  const p=S.p[pidx];
+  if(p.fa&&p.fc>0){
+    p.fc=0;p.fa=false;p.ft=0;
+    addL(`🏴 公会旗帜发动！为 ${p.n} 挡下伤害`,'fl');
+    rdAll();return true;
+  }
+  return false;
+}
+function tickFlag(){
+  for(let i=0;i<2;i++){
+    const p=S.p[i];
+    if(p.it.flag>0||p.fa||p.fc>0){
+      p.ft++;
+      if(p.ft>=3&&p.fc<1&&!p.fa){p.fc=1;p.fa=true;p.ft=0;
+        addL(`🏴 ${p.n} 的公会旗帜已充能！`,'fl');rdAll();}
+    }
+  }
+}
+
+function nxtRd(){tickFlag();S.rd++;S.tr++;S.rs=false;S.bf=false;S.br=false;S.bp=-1;S.cc=0;S.st=0;S.p[0].wa=false;S.p[1].wa=false;
+  S.ld=Math.random()<0.5?0:1;addL(`🎲 第 ${S.rd} 回合 — ${S.p[S.ld].n} 装弹`,'hi');
+  $('rdInfo').textContent=`第 ${S.rd} 回合`;$('multI').textContent=`💥 ×${S.mult}${S.da?' ⚔️决斗':''}`;
+  S.phase='loading';rdAll();$('gunL').innerHTML=`🔫 <span class="hl">${S.p[S.ld].n}</span> 装弹中...`;showBlindLoad();
+}
+function showBlindLoad(){
+  const bo=$('blindOverlay');const isHuman=(S.mode==='local')||(S.mode==='ai'&&!S.p[S.ld].ai);
+  if(isHuman){bo.classList.add('on');const c=$('blindChaBox');c.innerHTML='';for(let i=0;i<S.ch;i++){const d=document.createElement('div');d.className='blind-cha';d.textContent=i+1;d.onclick=()=>pickBlind(i);c.appendChild(d);}$('blindConfirm').textContent='';}
+  else{const pref=[3,4,2,5,1,0];let pick=pref.find(p=>p<S.ch)||0;placeBullet(pick);}
+}
+let blindPick=-1;
+function pickBlind(idx){blindPick=idx;document.querySelectorAll('.blind-cha').forEach((d,i)=>d.classList.toggle('picked',i===idx));$('blindConfirm').textContent=`✅ 子弹已放入第 ${idx+1} 发位置`;setTimeout(()=>{$('blindOverlay').classList.remove('on');placeBullet(blindPick);},600);}
+function placeBullet(idx){S.bp=idx;S.cc=0;S.rs=true;S.bf=false;S.cp=S.ld===0?1:0;const cp=S.cp;S.ps=S.p[cp].wp;S.p[cp].wp=0;if(S.ps>0)addL(`⚠️ ${S.p[cp].n} 因怀表惩罚需开 ${S.ps+1} 枪!`,'da');addL(`💫 装弹完成，${S.p[cp].n} 先手`,'in');S.phase='play';rdAll();enActs();upBan();if(S.mode==='ai'&&S.p[cp].ai)setTimeout(()=>aiGo(),700);}
+
+function doSkip(){if(S.phase!=='play'||S.bf)return;const cp=S.cp;const p=S.p[cp];if(!p.al)return;
+  let dmg=1;if(p.fa&&tryFlag(cp))dmg=0;
+  p.hp=Math.max(0,p.hp-dmg);if(p.hp<=0&&p.ba){p.ba=false;p.bu=true;p.hp=1;S.de=true;addL('📖 我没死之书自动触发!','su');rdAll();}
+  if(p.hp<=0){p.al=false;const w=cp===0?1:0;addL(`☠️ ${p.n} 跳跳过但倒下了!`,'da');gameOver(w);return;}
+  if(dmg>0)addL(`⚠️ ${p.n} 跳过了！失去1HP`,'sk');else addL(`⚠️ ${p.n} 跳过了！旗帜挡下伤害`,'sk');
+  const items=['watch','book','check'];const avail=items.filter(it=>p.it[it]<=0&&!((it==='book')&&(p.ba||p.bu)));
+  if(avail.length>0){const got=avail[Math.floor(Math.random()*avail.length)];p.it[got]=1;addL(`🎁 获得道具：${{watch:'反转怀表',book:'我没死之书',check:'查看子弹'}[got]}`,'su');}
+  S.st=0;S.ps=0;S.cp=cp===0?1:0;const np=S.cp;if(S.p[np].wp>0){S.ps=S.p[np].wp;S.p[np].wp=0;addL(`⚠️ ${S.p[np].n} 因怀表惩罚需开${S.ps+1}枪!`,'da');}
+  rdAll();enActs();upBan();if(S.mode==='ai'&&S.cp===1)setTimeout(()=>aiGo(),700);}
+
+function pull(){if(S.phase!=='play'||S.bf)return;const cp=S.cp;const sh=S.p[cp];const ch=S.cc;const hit=(ch===S.bp);S.st++;let dt=cp;
+  if(sh.wa){dt=cp===0?1:0;addL(`⏱️ ${sh.n} 调转枪口 → ${S.p[dt].n}!`,'in');}const cd=ch+1;
+  if(hit){S.bf=true;let dmg=S.mult;if(S.da){dmg+=2;addL('⚔️ 决斗伤害+2!','du');}if(Math.random()<S.critC){dmg=Math.ceil(dmg*1.5);addL('💥 暴击! x1.5!','cr');}
+    const target=S.p[dt];const oh=target.hp;if(target.fa&&tryFlag(dt))dmg=0;
+    target.hp=Math.max(0,target.hp-dmg);if(dmg>0)addL(`💥 砰! 第${cd}发 — 击中${target.n}，${oh}→${target.hp}HP`,'da');else addL(`💥 砰! 第${cd}发 — 但旗帜挡下了!`,'fl');
+    if(target.hp<=0&&target.ba){target.ba=false;target.bu=true;target.hp=1;S.de=true;addL('📖 我没死之书发动! 回复至1HP','su');addL('⚔️ 下回合可发起生死决斗!','du');rdAll();}
+    if(target.hp<=0){target.al=false;const w=dt===0?1:0;addL(`☠️ ${target.n} 倒下了!`,'da');gameOver(w);return;}
+    addL('🔁 回合结束','in');if(S.da){S.da=false;addL('⚔️ 决斗结束','du');$('multI').textContent=`💥 ×${S.mult}`;}
+    if(S.de){S.phase='duel_prompt';rdAll();upDuel();}else{S.phase='ready';rdAll();setTimeout(()=>{if(S.phase!=='go')nxtRd();},600);}}
+  else{addL(`💨 第${cd}发 — 空枪! ${sh.n} 松了一口气`,'');S.cc++;if(S.cc>=S.ch){addL('⚠️ 异常: 全空','da');S.phase='ready';setTimeout(()=>nxtRd(),500);rdAll();return;}
+    if(S.st<=S.ps&&!S.bf){addL(`🔫 ${sh.n} 需再开${S.ps-S.st+1}枪`,'in');rdAll();enActs();upBan();if(S.mode==='ai'&&cp===1)setTimeout(()=>aiGo(),600);return;}
+    S.ps=0;S.cp=cp===0?1:0;S.st=0;const np=S.cp;if(S.p[np].wp>0){S.ps=S.p[np].wp;S.p[np].wp=0;addL(`⚠️ ${S.p[np].n} 因怀表惩罚需开${S.ps+1}枪!`,'da');}
+    rdAll();enActs();upBan();if(S.mode==='ai'&&S.cp===1)setTimeout(()=>aiGo(),600);}}
+
+function aiGo(){if(S.phase!=='play'||S.bf)return;const idx=1;const p=S.p[idx];if(!p.al||S.cp!==idx)return;const knows=S.ld===idx;let safe=-1;if(knows){safe=S.bp>=S.cc?S.bp-S.cc:S.ch-S.cc+S.bp;}
+  const diff=S.diff||'medium';const st={easy:0,medium:1,hard:2}[diff]||1;const uc={easy:0.3,medium:0.6,hard:0.9}[diff]||0.6;const uw={easy:0.3,medium:0.6,hard:0.85}[diff]||0.6;const bl={easy:0.4,medium:0.2,hard:0.05}[diff]||0.2;
+  if(knows&&safe<=0&&p.hp>st){doSkip();return;}if(knows&&safe>0&&Math.random()<bl&&p.hp>2){doSkip();return;}
+  if(!knows&&!S.br&&p.it.check>0&&Math.random()<uc){p.it.check=0;S.br=true;addL('🔍 AI查看了子弹','in');rdAll();setTimeout(()=>aiGo(),400);return;}
+  if(p.it.watch>0&&!p.wa&&((knows&&safe<=1)||(!knows&&S.cc>=3&&Math.random()<uw))){p.wa=true;p.it.watch=0;p.wp=1;addL('⏱️ AI用了反转怀表!','in');rdAll();setTimeout(()=>{if(S.phase==='play'&&!S.bf)pull();},300);return;}
+  if(p.hp<=2&&p.it.book>0&&!p.ba){p.it.book=0;p.ba=true;addL('📖 AI激活了我没死之书','su');rdAll();}
+  if(p.it.flag>0&&!p.fa&&p.hp<=2){useFlag(idx);setTimeout(()=>aiGo(),400);return;}
+  const sc=knows&&safe>=3?0.9:(knows&&safe>=1?0.65:0.4);const fc=diff==='hard'?Math.min(1,sc+0.2):(diff==='easy'?Math.max(0.1,sc-0.2):sc);
+  if(Math.random()<fc){setTimeout(()=>{if(S.phase==='play'&&!S.bf)pull();},500);}else{setTimeout(()=>{if(S.phase==='play'&&!S.bf)pull();},600);}}
+
+function useI(pidx,typ){if(S.phase!=='play'||S.bf)return;if(pidx!==S.cp)return;const p=S.p[pidx];if(!p.al||p.it[typ]<=0)return;
+  if(typ==='watch'){if(p.wa)return;p.wa=true;p.it.watch=0;p.wp=1;addL(`⏱️ ${p.n} 用了反转怀表!`,'in');addL('⚠️ 下回合需开2枪','pe');rdAll();}
+  else if(typ==='book'){if(p.bu||p.ba)return;p.it.book=0;p.ba=true;addL(`📖 ${p.n} 激活了我没死之书!`,'su');rdAll();}
+  else if(typ==='check'){if(S.br)return;p.it.check=0;S.br=true;const pos=S.bp+1,saf=S.bp>=S.cc?S.bp-S.cc:S.ch-S.cc+S.bp;addL(`🔍 ${p.n} 查看子弹: 第${pos}发，还有${saf}枪安全`,'in');rdAll();}
+  else if(typ==='flag'){useFlag(pidx);}}
+
+function doDuel(){if(S.phase!=='duel_prompt'||!S.de)return;S.da=true;S.de=false;addL('⚔️⚔️ 生死决斗开始!','du');nxtRd();}
+function skipDuel(){if(S.phase!=='duel_prompt')return;addL('⏭️ 跳过决斗','in');S.de=false;nxtRd();}
+function upDuel(){let init='';for(let i=0;i<2;i++)if(S.p[i].bu&&S.p[i].al)init=S.p[i].n;$('ban').innerHTML=`⚔️ ${init} 触发了书! 发起决斗? (+2伤害,1回合)`;$('ban').className='turn-banner dm';$('btnDuel').disabled=false;$('btnDuel').textContent='⚔️ 发起决斗';$('btnDuel').style.display='inline-block';let sb=document.getElementById('skipDuelBtn');if(!sb){sb=document.createElement('button');sb.id='skipDuelBtn';sb.className='abtn';sb.textContent='⏭️ 跳过';sb.onclick=skipDuel;$('actsBox').appendChild(sb);}sb.style.display='inline-block';}function hideSkipBtn(){const sb=document.getElementById('skipDuelBtn');if(sb)sb.style.display='none';}
+
+function gameOver(wi){
+  S.phase='go';const w=S.p[wi],l=S.p[wi===0?1:0];
+  $('goTitle').textContent='对决结束';$('wn').textContent=w.n;
+  $('goStats').innerHTML='总回合: '+S.tr+'<br>'+w.n+' 剩余 '+w.hp+'/'+w.mx+' HP <br>'+l.n+' 在第'+S.rd+'回合倒下';
+  $('goOverlay').classList.add('on');rdAll();
+}
+function rst(){
+  $('goOverlay').classList.remove('on');
+  $('gameBoard').style.display='none';$('setupScreen').style.display='block';
+  S.phase='setup';
+}
+
+function rdAll(){for(let i=0;i<2;i++)rdP(i);rdGun();}
+function rdP(idx){const p=S.p[idx];const pan=$('p'+idx);
+pan.classList.toggle('on',S.phase==='play'&&S.cp===idx&&p.al);
+pan.classList.toggle('dead',!p.al);pan.classList.toggle('ai-panel',p.ai);
+  $('pn'+idx).textContent=p.n+(p.al?'':' ☠️');
+  const tags=$('tags'+idx);
+  if(S.flagOk&&p.al){tags.innerHTML='<span class="badge-tag guild">🏴公会成员</span><span class="badge-tag tester">🎮内测玩家</span>';}else{tags.innerHTML='';}
+  let h='';for(let i=0;i<p.mx;i++)h+=i<p.hp?'❤️':'<span class="lost">🖤</span>';
+  $('ht'+idx).innerHTML=h;$('hp'+idx).textContent=`HP: ${p.hp}/${p.mx}`;
+  $('wt'+idx).style.display=p.wa?'inline-block':'none';$('pe'+idx).style.display=p.wp>0?'inline-block':'none';$('du'+idx).style.display=S.da?'inline-block':'none';
+  const bk=$('bk'+idx);bk.style.display=(p.ba||p.bu)?'inline-block':'none';bk.textContent=p.ba?'📖庇护中':(p.bu?'📖已触发':'📖庇护');
+  $('ct'+idx).style.display=S.critC>0?'inline-block':'none';$('fl'+idx).style.display=(p.fa&&p.al)?'inline-block':'none';
+  const flagBtn=$('it'+idx).querySelector('.itembtn[data-i="flag"]');
+  if(flagBtn){flagBtn.style.display=S.guildMode?'inline-block':'none';flagBtn.disabled=S.phase!=='play'||S.cp!==idx||!p.al||S.bf||p.fa;flagBtn.textContent=p.fa?'🏴 已激活':'🏴 公会旗帜';flagBtn.classList.toggle('done',p.fa);}
+  const btns=$('it'+idx).querySelectorAll('.itembtn:not([data-i="flag"])');
+  btns.forEach(b=>{const item=b.dataset.i;const used=p.it[item]<=0;b.disabled=used||S.phase!=='play'||S.cp!==idx||!p.al||S.bf;b.classList.toggle('done',used);if(item==='watch')b.textContent=`⏱ 反转怀表${p.it.watch>0?'':' ✓'}`;else if(item==='book')b.textContent=p.ba?'📖 守护中':`📖 我没死之书${p.it.book>0?'':' ✓'}`;else if(item==='check')b.textContent=`🔍 查看子弹${p.it.check>0?'':' ✓'}`;});}
+function rdGun(){const c=$('chaBox');c.innerHTML='';for(let i=0;i<S.ch;i++){const d=document.createElement('div');d.className='cha';if(i===S.cc&&S.rs)d.classList.add('cur');if(S.bf&&i===S.bp){d.classList.add('fired');d.textContent='💥';}else if(S.br&&i===S.bp){d.classList.add('fired');d.textContent='💥';}else if(!S.br&&S.bp>=0){d.classList.add('unk');d.textContent='?';}else d.textContent=i+1;c.appendChild(d);}
+  const bi=$('bulI');if(S.br)bi.textContent=`🔍 子弹在第${S.bp+1}发`;else if(S.bf)bi.textContent='💥 子弹已击发';else bi.textContent=S.phase==='loading'?'🔒 子弹位置已隐藏':(S.bp>=0?'弹仓已锁':'');}
+function upBan(){const b=$('ban');if(S.phase==='loading'){b.textContent=`🔫 ${S.p[S.ld].n} 正在秘密装弹...`;b.className='turn-banner';return;}if(S.phase==='play'){const cp=S.cp,p=S.p[cp];let t=`🎯 ${p.n} 的回合`;if(p.wa)t+=' ⏱️【逆转】';const r=S.ps-S.st+1;if(S.st>0&&r>0)t+=` 🔫(还需${r}枪)`;b.textContent=t;b.className='turn-banner'+(S.da?' dm':'');return;}if(S.phase==='ready'){b.textContent='🔄 准备下一回合...';b.className='turn-banner';}}
+function enActs(){hideSkipBtn();$('btnSkip').disabled=true;if(S.phase==='play'){const ca=S.p[S.cp].al;$('btnShoot').disabled=S.bf||!ca;$('btnSkip').disabled=S.bf||!ca;$('btnDuel').disabled=true;return;}$('btnShoot').disabled=true;$('btnDuel').disabled=true;if(S.phase!=='duel_prompt'){$('btnDuel').style.display='none';}}
+function addL(msg,cls=''){S.log.push({msg,cls,rd:S.rd});const a=$('logA');const e=document.createElement('div');e.className='log-e'+(cls?' '+cls:'');e.innerHTML=`<span style="color:#6a5540;font-size:0.8em">[R${S.rd}]</span> ${msg}`;a.appendChild(e);a.scrollTop=a.scrollHeight;}
+document.addEventListener('DOMContentLoaded',()=>{$('mult').addEventListener('input',function(){$('multD').textContent='×'+this.value;});checkFlag();setM('local');});
+</script>
+</body>
+</html>
