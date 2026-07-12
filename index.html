@@ -585,5 +585,6 @@ function enActs(){hideSkipBtn();$('btnSkip').disabled=true;if(S.phase==='play'){
 function addL(msg,cls=''){S.log.push({msg,cls,rd:S.rd});const a=$('logA');const e=document.createElement('div');e.className='log-e'+(cls?' '+cls:'');e.innerHTML=`<span style="color:#6a5540;font-size:0.8em">[R${S.rd}]</span> ${msg}`;a.appendChild(e);a.scrollTop=a.scrollHeight;}
 document.addEventListener('DOMContentLoaded',()=>{$('mult').addEventListener('input',function(){$('multD').textContent='×'+this.value;});checkFlag();setM('local');});
 </script>
+<script src="save.js"></script>
 </body>
 </html>
