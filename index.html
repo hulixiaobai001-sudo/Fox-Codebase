@@ -12,14 +12,14 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .gc{width:100%;max-width:920px;padding:20px;background:rgba(40,20,15,.85);border-radius:24px;border:2px solid #8b4513;box-shadow:0 20px 60px rgba(0,0,0,.8);backdrop-filter:blur(8px);position:relative}
 .scr{display:none}.scr.on{display:block}
 .setup{padding:30px 16px;text-align:center;max-width:540px;margin:0 auto}
-.setup h1{font-size:2.2em;color:#ff6b35;margin-bottom:2px;text-shadow:0 0 20px rgba(255,107,53,.3)}
-.setup .sub{font-size:.7em;color:#8a6a50;letter-spacing:4px;margin-bottom:4px}
-.setup .desc{font-size:.85em;color:#a08070;margin-bottom:20px;font-style:italic}
+.setup h1{font-size:2.2em;color:#ff6b35;text-shadow:0 0 20px rgba(255,107,53,.3)}
+.setup .sub{font-size:.7em;color:#8a6a50;letter-spacing:4px}
+.setup .desc{font-size:.85em;color:#a08070;margin-bottom:20px}
 .mtabs{display:flex;justify-content:center;gap:8px;margin-bottom:18px}
-.mtab{padding:8px 22px;border-radius:20px;border:2px solid rgba(139,69,19,.4);background:rgba(30,15,10,.5);color:#a08070;cursor:pointer;font-size:.85em;transition:.2s}
+.mtab{padding:8px 22px;border-radius:20px;border:2px solid rgba(139,69,19,.4);background:rgba(30,15,10,.5);color:#a08070;cursor:pointer;font-size:.85em}
 .mtab.on{background:rgba(255,107,53,.15);border-color:#ff6b35;color:#ff6b35;font-weight:bold}
 .sgrid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;max-width:460px;margin:0 auto 16px}
-.sgrid label{font-size:.8em;color:#c0a090;display:block;margin-bottom:2px}
+.sgrid label{font-size:.8em;color:#c0a090;display:block}
 .sgrid input{background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;padding:9px 12px;color:#f0e6d3;font-size:.95em;width:100%;outline:none}
 .sgrid input:focus{border-color:#ff6b35}
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px auto;max-width:460px;text-align:left}
@@ -28,16 +28,16 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .settings-grid input[type=number]:focus{border-color:#ff6b35}
 .settings-grid input[type=checkbox]{width:18px;height:18px;accent-color:#ff6b35}
 .btn-start{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:12px;padding:12px 44px;font-size:1.1em;font-weight:bold;color:#fff;cursor:pointer;margin-top:16px;box-shadow:0 6px 20px rgba(255,107,53,.3)}
-.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,107,53,.5)}
-.footer{font-size:.7em;color:#5a4030;margin-top:14px;line-height:1.8}
+.btn-start:hover{transform:translateY(-2px)}
+.footer{font-size:.7em;color:#5a4030;margin-top:14px}
 .footer a{color:#6a5540;cursor:pointer;text-decoration:underline}
 .item-select{padding:20px 16px;text-align:center;max-width:520px;margin:0 auto}
-.item-select h2{font-size:1.3em;color:#ff6b35;margin-bottom:4px}
+.item-select h2{font-size:1.3em;color:#ff6b35}
 .item-select .hint{font-size:.8em;color:#a08070;margin-bottom:16px}
-.item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 auto;max-width:480px}
-.item-card{background:rgba(30,15,10,.6);border:2px solid rgba(139,69,19,.3);border-radius:12px;padding:10px 12px;cursor:pointer;transition:.2s;text-align:left;position:relative}
+.item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto}
+.item-card{background:rgba(30,15,10,.6);border:2px solid rgba(139,69,19,.3);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;position:relative}
 .item-card.sel{border-color:#ff6b35;background:rgba(255,107,53,.08)}
-.item-card .iemoji{font-size:1.5em;margin-bottom:2px}
+.item-card .iemoji{font-size:1.5em}
 .item-card .iname{font-size:.85em;font-weight:bold;color:#f0e6d3}
 .item-card .idesc{font-size:.65em;color:#8a7a60;line-height:1.4}
 .item-card .icheck{position:absolute;top:6px;right:8px;color:#44cc66;display:none}
@@ -45,35 +45,35 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .item-confirm{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:10px;padding:10px 36px;font-size:1em;font-weight:bold;color:#fff;cursor:pointer;margin-top:16px}
 .item-confirm:disabled{opacity:.3;cursor:not-allowed}
 .p2p-screen{text-align:center;padding:30px 16px}
-.p2p-screen h2{font-size:1.3em;color:#ff6b35;margin-bottom:12px}
-.p2p-screen .p2p-steps{font-size:.85em;color:#c0a090;margin-bottom:16px;line-height:1.8}
-.p2p-screen .p2p-qr{background:#fff;padding:16px;border-radius:12px;display:inline-block;margin:8px 0}
-.p2p-screen .p2p-qr canvas{display:block;margin:0 auto}
-.p2p-screen .p2p-code{font-size:.7em;color:#6a5540;word-break:break-all;margin:8px auto;max-width:300px;background:rgba(0,0,0,.3);padding:8px 12px;border-radius:8px}
+.p2p-screen h2{font-size:1.3em;color:#ff6b35}
+.p2p-steps{font-size:.85em;color:#c0a090;margin-bottom:16px;line-height:1.8}
+.p2p-qr{background:#fff;padding:16px;border-radius:12px;display:inline-block;margin:8px 0}
+.p2p-qr canvas{display:block;margin:0 auto}
+.p2p-code{font-size:.7em;color:#6a5540;word-break:break-all;margin:8px auto;max-width:300px;background:rgba(0,0,0,.3);padding:8px 12px;border-radius:8px}
 .p2p-scan-btn{background:rgba(255,107,53,.15);border:1px solid #ff6b35;border-radius:10px;padding:10px 28px;color:#ff6b35;cursor:pointer;font-size:.9em;margin:8px 4px}
 .p2p-status{font-size:.85em;color:#44aadd;margin-top:8px}
 .p2p-video{max-width:300px;width:100%;border-radius:12px;margin:8px auto;display:block}
-.p2p-ready{background:linear-gradient(135deg,#2a5a3a,#1a3a2a);border:1px solid #3aaa5a;border-radius:10px;padding:10px 28px;color:#44cc66;cursor:pointer;font-size:.9em;margin-top:8px}
 .game{display:none;padding:0}
 .game.on{display:block}
 .ghdr{display:flex;justify-content:space-between;align-items:center;padding:0 8px 10px;border-bottom:1px solid rgba(139,69,19,.4);margin-bottom:10px;flex-wrap:wrap}
-.ghdr .gtit .gt{font-size:1em;color:#ff6b35;font-weight:bold}
-.ghdr .gtit .gsub{font-size:.55em;color:#5a4030}
+.ghdr .gt{font-size:1em;color:#ff6b35;font-weight:bold}
+.ghdr .gsub{font-size:.55em;color:#5a4030}
 .ghdr .rdi{font-size:.85em;color:#a08070}
 .ghdr .mli{color:#ff6b35;font-weight:bold;font-size:.85em}
 .ban{text-align:center;padding:7px;font-size:.95em;font-weight:bold;border-radius:10px;margin-bottom:10px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2)}
 .ban.dm{background:rgba(200,80,255,.1);border-color:rgba(200,80,255,.3);color:#dd88ff}
 .prow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
-.pp{background:rgba(30,15,10,.6);border-radius:14px;padding:12px 14px;border:2px solid rgba(139,69,19,.3);transition:.3s}
+.pp{background:rgba(30,15,10,.6);border-radius:14px;padding:12px 14px;border:2px solid rgba(139,69,19,.3)}
 .pp.on{border-color:#ff6b35;box-shadow:0 0 20px rgba(255,107,53,.15)}
 .pp.dead{opacity:.35;border-color:#500}
+.pp.aipp{position:relative}
 .pp.aipp::after{content:'AI';position:absolute;top:6px;right:8px;font-size:.55em;padding:1px 8px;border-radius:6px;background:rgba(100,50,200,.2);border:1px solid rgba(100,50,200,.3);color:#bb88ff}
-.pn{font-size:1em;font-weight:bold;margin-bottom:4px}
-.hearts{font-size:1.2em;letter-spacing:1px;margin-bottom:3px}
+.pn{font-size:1em;font-weight:bold}
+.hearts{font-size:1.2em;letter-spacing:1px}
 .hearts .lost{opacity:.12}
 .hpt{font-size:.75em;color:#a08070;margin-bottom:5px}
 .irow{display:flex;gap:4px;flex-wrap:wrap}
-.ibtn{background:rgba(60,30,20,.5);border:1px solid rgba(139,69,19,.4);border-radius:8px;padding:3px 8px;font-size:.68em;color:#c0a090;cursor:pointer;transition:.2s;white-space:nowrap;touch-action:manipulation}
+.ibtn{background:rgba(60,30,20,.5);border:1px solid rgba(139,69,19,.4);border-radius:8px;padding:3px 8px;font-size:.68em;color:#c0a090;cursor:pointer;white-space:nowrap;touch-action:manipulation}
 .ibtn:active{transform:scale(.95)}
 .ibtn:hover:not(:disabled){background:rgba(255,107,53,.15);border-color:#ff6b35;color:#f0e6d3}
 .ibtn:disabled{opacity:.3;cursor:not-allowed}
@@ -82,12 +82,12 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .gun-label{font-size:.8em;color:#a08070;margin-bottom:8px}
 .gun-label .hl{color:#ff6b35;font-weight:bold}
 .chb{display:flex;justify-content:center;gap:5px;margin-bottom:8px;flex-wrap:wrap}
-.ch{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7em;font-weight:bold;transition:.3s;background:rgba(60,30,20,.6);border:2px solid #5a3a2a;color:#5a3a2a;user-select:none}
+.ch{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7em;font-weight:bold;background:rgba(60,30,20,.6);border:2px solid #5a3a2a;color:#5a3a2a;user-select:none}
 .ch.cur{border-color:#ff6b35;box-shadow:0 0 12px rgba(255,107,53,.3);color:#ff6b35}
 .ch.fired{background:rgba(255,0,0,.18);border-color:#f22;color:#f44}
 .ch.unk{color:#3a3a3a;border-color:#3a3a3a}
 .acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}
-.abtn{background:linear-gradient(135deg,#3a2018,#2a1510);border:1px solid #6b3a2a;border-radius:10px;padding:8px 18px;font-size:.82em;color:#f0e6d3;cursor:pointer;transition:.2s;white-space:nowrap;touch-action:manipulation}
+.abtn{background:linear-gradient(135deg,#3a2018,#2a1510);border:1px solid #6b3a2a;border-radius:10px;padding:8px 18px;font-size:.82em;color:#f0e6d3;cursor:pointer;white-space:nowrap;touch-action:manipulation}
 .abtn:active{transform:scale(.95)}
 .abtn:hover:not(:disabled){background:linear-gradient(135deg,#4a3020,#3a2015);border-color:#ff6b35}
 .abtn:disabled{opacity:.25;cursor:not-allowed}
@@ -101,15 +101,12 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .loga::-webkit-scrollbar{width:3px}
 .loga::-webkit-scrollbar-thumb{background:#5a3a2a;border-radius:4px}
 .le{padding:2px 0;color:#b0a090;border-bottom:1px solid rgba(139,69,19,.05)}
-.le:last-child{border:none}
 .le.hi{color:#ff6b35;font-weight:bold}.le.da{color:#f44;font-weight:bold}.le.su{color:#4c6}.le.in{color:#4ad}.le.du{color:#d8f}.le.cr{color:#fa0}.le.sk{color:#ca4}.le.fl{color:#fc3}
 .ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center}
 .ov.on{display:flex}
 .obox{background:linear-gradient(135deg,#2a1510,#1a0a08);border:2px solid #8b4513;border-radius:20px;padding:30px;text-align:center;max-width:400px;width:90%}
-.obox h2{font-size:1.6em;margin-bottom:6px}
-.obox .wn{color:#ff6b35;font-size:1.5em;font-weight:bold;margin:8px 0}
-.obox .trophy{font-size:2.5em}
-.obox .stats{font-size:.85em;color:#a08070;margin-bottom:16px;line-height:1.6}
+.obox h2{font-size:1.6em}.obox .wn{color:#ff6b35;font-size:1.5em;font-weight:bold;margin:8px 0}
+.obox .trophy{font-size:2.5em}.obox .stats{font-size:.85em;color:#a08070;margin-bottom:16px;line-height:1.6}
 .bre{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:10px;padding:10px 30px;font-size:.95em;font-weight:bold;color:#fff;cursor:pointer}
 .hit-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;pointer-events:none}
 .hit-overlay.on{display:block;animation:hitFade .8s forwards}
@@ -118,22 +115,22 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 @keyframes hitText{0%{transform:translate(-50%,-50%) scale(3);opacity:0}30%{opacity:1}100%{opacity:0}}
 .blind-o{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:150;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .blind-o.on{display:flex}
-.blind-o .bt{font-size:1.5em;color:#ff6b35;margin-bottom:10px}
+.blind-o .bt{font-size:1.5em;color:#ff6b35}
 .blind-o .bh{font-size:.9em;color:#c0a090;margin-bottom:20px;line-height:1.6}
 .bchb{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 .bch{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:bold;cursor:pointer;background:rgba(60,30,20,.6);border:2px solid #6a4a2a;color:#f0e6d3}
 .bch:hover{background:rgba(255,107,53,.25);border-color:#ff6b35;transform:scale(1.12)}
 .bch.picked{background:rgba(255,50,50,.2);border-color:#f33;color:#f44}
-.bch.picked::after{content:'\u2713'}
+.bch.picked::after{content:'✓'}
 .blind-o .bcf{color:#4c6;margin-top:16px}
 .cert-o{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:180;align-items:center;justify-content:center}
 .cert-o.on{display:flex}
-.cert-box{background:linear-gradient(135deg,#3a2515,#2a1510);border:3px solid #c8943a;border-radius:20px;padding:30px;max-width:420px;width:90%;text-align:center;box-shadow:0 0 80px rgba(200,148,58,.2)}
-.cert-box .ct{font-size:1.6em;color:#fc3;letter-spacing:4px;margin-bottom:2px}
+.cert-box{background:linear-gradient(135deg,#3a2515,#2a1510);border:3px solid #c8943a;border-radius:20px;padding:30px;max-width:420px;text-align:center;box-shadow:0 0 80px rgba(200,148,58,.2)}
+.cert-box .ct{font-size:1.6em;color:#fc3;letter-spacing:4px}
 .cert-box .csb{font-size:.65em;color:#8a7a50;letter-spacing:6px;margin-bottom:14px}
-.cert-box .cbd{font-size:.9em;color:#d0c0a0;margin-bottom:4px}
+.cert-box .cbd{font-size:.9em;color:#d0c0a0}
 .cert-box .cgm{font-size:1.8em;color:#ff6b35;font-weight:bold;margin:6px 0}
-.cert-box .cln{font-size:.8em;color:#c8943a;letter-spacing:6px;margin-bottom:12px}
+.cert-box .cln{font-size:.8em;color:#c8943a;letter-spacing:6px}
 .cert-box .cft{font-size:.75em;color:#8a7a50;font-style:italic;margin-top:10px}
 .cert-box .cdt{font-size:.65em;color:#6a5a40;margin-top:6px}
 .cert-box .cbtns{display:flex;gap:10px;justify-content:center;margin-top:14px}
@@ -141,30 +138,25 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crdo{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:200;overflow:hidden}
 .crdo.on{display:block}
 .crds{position:absolute;left:50%;transform:translateX(-50%);text-align:center;animation:crdR 25s forwards;width:90%;max-width:500px}
-.crds .cct{font-size:2em;color:#ff6b35;margin-bottom:20px}
-.crds .ccn{font-size:1.2em;color:#f0e6d3;margin:6px 0}
-.crds .ccr{font-size:.8em;color:#a08070;margin-bottom:18px}
-.crds .ccd{width:50px;height:2px;background:#ff6b35;margin:14px auto}
-.crds .ccf{font-size:.95em;color:#d8f;margin-top:24px}
-.crds .ccs{font-size:.75em;color:#6a5540;margin-top:8px}
+.crds .cct{font-size:2em;color:#ff6b35}.crds .ccn{font-size:1.2em;color:#f0e6d3;margin:6px 0}
+.crds .ccr{font-size:.8em;color:#a08070}.crds .ccd{width:50px;height:2px;background:#ff6b35;margin:14px auto}
+.crds .ccf{font-size:.95em;color:#d8f;margin-top:24px}.crds .ccs{font-size:.75em;color:#6a5540;margin-top:8px}
 @keyframes crdR{0%{top:100%}100%{top:-180%}}
 .crdc{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:210;background:rgba(255,107,53,.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:.85em}
 .itip{display:none;position:fixed;z-index:50;background:rgba(10,5,3,.95);border:1px solid #8b4513;border-radius:10px;padding:10px 14px;max-width:220px;font-size:.75em;color:#c0a090;pointer-events:none;backdrop-filter:blur(4px)}
-.itip.on{display:block}
-.itip .itn{font-weight:bold;color:#ff6b35;margin-bottom:2px}
+.itip.on{display:block}.itip .itn{font-weight:bold;color:#ff6b35}
 .tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.88);color:#ff6b35;padding:14px 28px;border-radius:12px;font-size:1em;z-index:9999;border:1px solid #8b4513;pointer-events:none;animation:tf 1.5s forwards}
 @keyframes tf{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
-@media(max-width:640px){.gc{padding:14px;border-radius:16px}.prow{grid-template-columns:1fr;gap:10px}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
+@media(max-width:640px){.gc{padding:14px}.prow{grid-template-columns:1fr}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
 </style>
 </head>
 <body>
 <div class="gc" id="app">
-
 <div class="scr on" id="scrSetup">
   <div class="setup">
     <h1>西部对决</h1>
     <div class="sub">—— 轮盘赌 ——</div>
-    <div class="desc">装弹 博弈 活下来</div>
+    <div class="desc">装弹 · 博弈 · 活下来</div>
     <div class="mtabs">
       <div class="mtab on" data-m="local" onclick="setMode('local')">本地</div>
       <div class="mtab" data-m="ai" onclick="setMode('ai')">人机</div>
@@ -175,7 +167,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
       <div style="font-size:1.4em;color:#ff6b35">VS</div>
       <div><label id="p2l">玩家2</label><input type="text" id="p2n" placeholder="输入名字" maxlength="10"></div>
     </div>
-    <div style="font-size:.85em;color:#dd8844;font-weight:bold">自定义规则</div>
+    <div style="color:#dd8844;font-size:.85em;font-weight:bold;margin:10px 0 6px">自定义规则</div>
     <div class="settings-grid">
       <label>初始血量 <input type="number" id="sHP" value="5" min="1" max="99"></label>
       <label>弹巢大小 <input type="number" id="sCh" value="6" min="2" max="99"></label>
@@ -188,7 +180,6 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div class="footer">第六届绒兽汇图一乐小游戏<br><a onclick="showCred()">制作人员</a></div>
   </div>
 </div>
-
 <div class="scr" id="scrItems">
   <div class="item-select">
     <h2>选择道具</h2>
@@ -197,7 +188,6 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <button class="item-confirm" id="btnItemConfirm" onclick="confirmItems()" disabled>确认</button>
   </div>
 </div>
-
 <div class="scr" id="scrP2P">
   <div class="p2p-screen">
     <h2 id="p2pTitle">联机对战</h2>
@@ -211,7 +201,6 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div><button class="abtn" onclick="cancelP2P()">返回</button></div>
   </div>
 </div>
-
 <div class="game" id="gameBoard">
   <div class="ghdr">
     <div class="gtit"><div class="gt">西部对决</div><div class="gsub">第六届绒兽汇</div></div>
@@ -228,16 +217,13 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
   <div class="acts" id="actsBox"></div>
   <div class="loga" id="logA"></div>
 </div>
-
 <div class="blind-o" id="blindO">
   <div class="bt">装弹阶段</div>
   <div class="bh">请对手闭上眼睛<br>装弹者点击弹仓放入子弹</div>
   <div class="bchb" id="bchb"></div>
   <div class="bcf" id="bcf"></div>
 </div>
-
 <div class="hit-overlay" id="hitO"><div class="hit-text" id="hitT"></div></div>
-
 <div class="ov" id="goO">
   <div class="obox">
     <div class="trophy">🏆</div>
@@ -247,37 +233,23 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <button class="bre" onclick="rst()">再来一局</button>
   </div>
 </div>
-
 <div class="ov" id="rulesO">
   <div class="obox" style="text-align:left;max-width:460px">
-    <h2 style="text-align:center;font-size:1.3em">📖 西部对决 · 教程</h2>
+    <h2 style="text-align:center;font-size:1.3em">📖 教程</h2>
     <div style="font-size:.82em;color:#c0a090;line-height:1.8;max-height:50vh;overflow-y:auto;margin:12px 0">
-      <b style="color:#dd8844">🎯 基本玩法</b><br>
-      6发弹巢·1发子弹·每人5条命。轮流开枪，空枪过，中弹扣血，先没命的输。<br><br>
-      <b style="color:#dd8844">🔫 装弹</b><br>
-      系统随机指定一人装弹。屏幕遮盖，对手请闭眼——装弹者把子弹放入想放的弹仓。完成后所有弹仓显示 <b>?</b>，位置只有装弹者知道。<br><br>
-      <b style="color:#dd8844">⚠️ 跳过</b><br>
-      觉得这发是真子弹？选择「跳过」——不击发，弹仓不推进，直接轮到对手。代价：失去1HP，随机获得一个已用道具。<br><br>
-      <b style="color:#dd8844">🔄 洗枪（新）</b><br>
-      使用后系统自动随机重置子弹位置，显示「系统已转枪」，无人知道新位置。<br><br>
-      <b style="color:#dd8844">📦 道具池（10选N）</b><br>
-      开局从10种道具中自选N个：怀表、书、旗帜、子弹、洗枪、急救包、防弹衣、连射、冰冻、交换。<br>
-      长按道具按钮查看说明。<br><br>
-      <b style="color:#dd8844">⚔️ 生死决斗</b><br>
-      我没死之书触发后可发起，持续1回合，期间每发伤害+2。<br><br>
-      <b style="color:#dd8844">💥 暴击</b><br>
-      每枪10%概率暴击，伤害x1.5。<br><br>
-      <b style="color:#dd8844">🎮 当前规则</b><br>
-      HP:<span id="rHp"></span> 弹巢:<span id="rCh"></span> 子弹:<span id="rBu"></span> 跳过:<span id="rSk"></span> 道具:<span id="rIt"></span><br><br>
-      <b style="color:#dd8844">🌐 联机</b><br>
-      P2P扫码直连，零服务器。同WiFi连，异地建议开腾讯会议共享屏幕玩。<br><br>
-      <b style="color:#dd8844">🦊 制作</b><br>
-      白沁 · deepseek-V4fish · 英雄主义公会全体成员
+      <b style="color:#dd8844">基本玩法</b><br>6发弹巢·1发子弹·每人5条命。轮流开枪，空枪过，中弹扣血。<br><br>
+      <b style="color:#dd8844">装弹</b><br>系统随机指定装弹。对手请闭眼，装弹者选弹仓。完成后弹仓显示?，位置只有装弹者知道。<br><br>
+      <b style="color:#dd8844">跳过</b><br>觉得这发是真子弹可选择跳过，不击发弹仓不推进。代价扣1HP，随机获得一个已用道具。<br><br>
+      <b style="color:#dd8844">洗枪</b><br>使用后系统随机重置子弹位置，显示"系统已转枪"，无人知道新位置。<br><br>
+      <b style="color:#dd8844">道具池10选N</b><br>怀表、书、旗帜、查看、洗枪、急救包、防弹衣、连射、冰冻、交换。长按看说明。<br><br>
+      <b style="color:#dd8844">决斗</b><br>书触发后可发起，伤害+2持续1回合。暴击10%概率x1.5。<br><br>
+      <b style="color:#dd8844">当前规则</b><br>HP:<span id="rHp"></span> 弹巢:<span id="rCh"></span> 子弹:<span id="rBu"></span> 跳过:<span id="rSk"></span> 道具:<span id="rIt"></span><br><br>
+      <b style="color:#dd8844">联机</b><br>P2P扫码直连零服务器。同WiFi稳连，异地建议开腾讯会议。<br><br>
+      <b style="color:#dd8844">制作</b><br>白沁 · deepseek-V4fish · 英雄主义公会全体成员
     </div>
     <button class="bre" onclick="hideRules()" style="display:block;margin:0 auto">知道了</button>
   </div>
 </div>
-
 <div class="cert-o" id="certO">
   <div class="cert-box">
     <div class="ct">内测证书</div>
@@ -285,111 +257,1363 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div class="cbd">感谢 <span id="cName" style="color:#fc3;font-weight:bold">——</span> 参与</div>
     <div class="cgm">西部对决</div>
     <div class="cln">封 闭 内 测</div>
-    <div class="cbdg"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;font-weight:bold;background:rgba(255,200,50,.12);color:#fc3;border:1px solid rgba(255,200,50,.3)">公会成员</span><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;font-weight:bold;background:rgba(100,200,255,.12);color:#6cf;border:1px solid rgba(100,200,255,.3)">内测玩家</span></div>
+    <div class="cbdg"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;background:rgba(255,200,50,.12);color:#fc3;border:1px solid rgba(255,200,50,.3);margin:2px">公会成员</span><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;background:rgba(100,200,255,.12);color:#6cf;border:1px solid rgba(100,200,255,.3);margin:2px">内测玩家</span></div>
     <div class="cft">本证书用来图一乐玩</div>
     <div class="cdt" id="cDate"></div>
     <div class="cbtns"><button onclick="hideCert()">关闭</button><button onclick="dlCert()">下载图片</button></div>
   </div>
 </div>
-
 <div class="crdo" id="credO">
   <div class="crds" id="credS">
     <div class="cct">西部对决</div><div class="ccd"></div>
-    <div class="ccr">制作 设计 策划 调试</div><div class="ccn">白沁</div><div class="ccd"></div>
+    <div class="ccr">制作设计策划调试</div><div class="ccn">白沁</div><div class="ccd"></div>
     <div class="ccr">AI模型</div><div class="ccn">deepseek-V4fish</div><div class="ccd"></div>
     <div class="ccr">游戏测试</div><div class="ccn">英雄主义公会全体成员</div><div class="ccd"></div>
     <div class="ccf">感谢游玩！</div><div class="ccs">"爱与被爱，是这个世界上最温柔的事"</div>
   </div>
   <div class="crdc" onclick="hideCred()">关闭</div>
 </div>
-
 <div class="itip" id="tip"><div class="itn" id="tipN"></div><div id="tipD"></div></div>
 </div>
 <script>
-var ITEMS=[
-  {id:'watch',name:'反转怀表',desc:'枪口指向对手，代价下回合开2枪',ico:'w'},
-  {id:'book',name:'我没死之书',desc:'致命伤害豁免至1HP，可发起生死决斗',ico:'B'},
-  {id:'flag',name:'公会旗帜',desc:'挡一次伤害，每3回合自动充能',ico:'F'},
-  {id:'check',name:'查看子弹',desc:'显示子弹当前所在位置',ico:'E'},
-  {id:'wash',name:'洗枪',desc:'随机重置子弹位置，无人知晓新位置',ico:'W'},
-  {id:'medkit',name:'急救包',desc:'立即回复2HP',ico:'M'},
-  {id:'armor',name:'防弹衣',desc:'挡一次伤害，一次性消耗',ico:'A'},
-  {id:'rapid',name:'连射',desc:'空枪后本回合可再开一枪',ico:'R'},
-  {id:'freeze',name:'冰冻',desc:'击中后对手下回合强制跳过',ico:'Z'},
-  {id:'swap',name:'交换',desc:'与对手交换当前HP',ico:'S'}
+var ITEMS = [
+  {id:'watch', name:'反转怀表', desc:'枪口指向对手，代价下回合开2枪', ico:'w'},
+  {id:'book',  name:'我没死之书', desc:'致命伤害豁免至1HP，可发起生死决斗', ico:'B'},
+  {id:'flag',  name:'公会旗帜', desc:'挡一次任何伤害，每3回合自动充能', ico:'F'},
+  {id:'check', name:'查看子弹', desc:'显示子弹当前所在位置', ico:'E'},
+  {id:'wash',  name:'洗枪', desc:'随机重置子弹位置，无人知晓新位置', ico:'W'},
+  {id:'medkit',name:'急救包', desc:'立即回复2HP', ico:'M'},
+  {id:'armor', name:'防弹衣', desc:'挡一次伤害，一次性消耗', ico:'A'},
+  {id:'rapid', name:'连射', desc:'空枪后本回合可再开一枪', ico:'R'},
+  {id:'freeze',name:'冰冻', desc:'击中后对手下回合强制跳过', ico:'Z'},
+  {id:'swap',  name:'交换', desc:'与对手交换当前HP', ico:'S'}
 ];
-var iI={w:'⏱',B:'📖',F:'🏴',E:'🔍',W:'🔄',M:'💉',A:'🛡',R:'🔫',Z:'❄',S:'🌪'};
-var G={mode:'local',phase:'setup',isHost:true,
-  p:[{n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0},{n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0}],
-  s:{hp:5,ch:6,bu:1,sk:1,it:4,noSk:false},cp:0,ld:-1,mult:1,rd:0,bp:-1,cc:0,br:false,rs:false,bf:false,
-  de:false,da:false,st:0,ps:0,tr:0,crC:0.1,certShown:false,log:[],p2p:null,dc:null,connStep:0};
-function $(id){return document.getElementById(id)}
-function T(m){var e=document.createElement('div');e.className='tst';e.textContent=m;document.body.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},1600)}
-function setMode(m){document.querySelectorAll('.mtab').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});G.mode=m;if(m==='ai'){$('p2n').value='';$('p2n').placeholder='人机001号';$('p2n').disabled=true;$('p2l').textContent='AI'}else{$('p2n').disabled=false;$('p2n').placeholder='名字';$('p2l').textContent='玩家2'}}
-function startGame(){var n1=$('p1n').value.trim()||'玩家1';var n2=G.mode==='ai'?'人机001号':($('p2n').value.trim()||'玩家2');G.p[0].n=n1;G.p[1].n=n2;G.p[1].ai=(G.mode==='ai');G.s.hp=parseInt($('sHP').value)||5;G.s.ch=parseInt($('sCh').value)||6;G.s.bu=parseInt($('sBu').value)||1;G.s.sk=parseInt($('sSk').value)||1;G.s.noSk=$('sNoSk').checked;var ic=parseInt($('sIt').value)||4;G.s.it=Math.min(10,Math.max(1,ic));if(G.mode==='p2p'){startP2P();return}if(G.mode==='ai'){G.p[1].sel=autoPick(G.s.it)}showItemSelect(0)}
-function autoPick(n){var p=ITEMS.slice(),r=[];while(r.length<n&&p.length>0){var i=Math.floor(Math.random()*p.length);r.push(p[i].id);p.splice(i,1)}return r}
-var sP=0,sI=[],sC=0;
-function showItemSelect(pi){sP=pi;sI=[];sC=0;$('scrSetup').classList.remove('on');$('scrItems').classList.add('on');$('itemHint').textContent=G.p[pi].n+' 选'+G.s.it+'个';var g=$('itemGrid');g.innerHTML='';ITEMS.forEach(function(it){var c=document.createElement('div');c.className='item-card';c.innerHTML='<div class="iemoji">'+iI[it.ico]+'</div><div class="iname">'+it.name+'</div><div class="idesc">'+it.desc+'</div><div class="icheck">✓</div>';c.onclick=function(){var idx=sI.indexOf(it.id);if(idx>=0){sI.splice(idx,1);sC--;c.classList.remove('sel')}else if(sC<G.s.it){sI.push(it.id);sC++;c.classList.add('sel')}$('btnItemConfirm').disabled=sC!==G.s.it};g.appendChild(c)});$('btnItemConfirm').disabled=true;if(G.mode==='ai'&&pi===1){G.p[1].sel=autoPick(G.s.it);nextPly()}}
-function confirmItems(){G.p[sP].sel=sI.slice();nextPly()}
-function nextPly(){if(sP===0&&G.mode!=='p2p'){showItemSelect(1)}else{$('scrItems').classList.remove('on');if(G.mode==='p2p')startP2PGame();else initGame()}}
-var pc=null,dc=null,p2pS=0,scI=null;
-function startP2P(){$('scrSetup').classList.remove('on');$('scrP2P').classList.add('on');$('p2pTitle').textContent='联机';$('p2pSteps').textContent='创建或加入房间';$('p2pQrArea').innerHTML='';$('p2pCode').textContent='';$('p2pScanBtn').style.display='none';$('p2pStatus').textContent='';$('p2pVideo').style.display='none';p2pS=0;$('p2pActions').innerHTML='<button class="p2p-scan-btn" onclick="hostP2P()">创建房间</button><button class="p2p-scan-btn" onclick="joinP2P()">加入房间</button>'}
-function cancelP2P(){if(pc){try{pc.close()}catch(e){}pc=null}if(scI){clearInterval(scI);scI=null}sC();$('scrP2P').classList.remove('on');$('scrSetup').classList.add('on')}
-function hostP2P(){G.isHost=true;$('p2pSteps').textContent='创建中...';$('p2pStatus').textContent='';cPC(true)}
-function joinP2P(){G.isHost=false;$('p2pSteps').textContent='扫描主机二维码';$('p2pScanBtn').style.display='inline-block';$('p2pScanBtn').textContent='扫描';$('p2pScanBtn').onclick=function(){sPS()};sPS()}
-function cPC(isO){var cfg={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};try{pc=new RTCPeerConnection(cfg)}catch(e){T('不支持WebRTC');return}pc.onicecandidate=function(e){if(e.candidate)return;if(isO&&p2pS===0){p2pS=1;sOff()}else if(!isO&&p2pS===0){p2pS=1;sAns()}};pc.ondatachannel=function(e){dc=e.channel;dc.onmessage=function(ev){rM(JSON.parse(ev.data))};dc.onopen=function(){onP2P()}};if(isO){dc=pc.createDataChannel('game',{ordered:true});dc.onmessage=function(ev){rM(JSON.parse(ev.data))};dc.onopen=function(){onP2P()};pc.createOffer().then(function(d){pc.setLocalDescription(d)}).catch(function(){})}}
-function sOff(){var s=JSON.stringify(pc.localDescription);$('p2pSteps').textContent='让对方扫此码或复制下方文本';sQR(s);$('p2pScanBtn').style.display='inline-block';$('p2pScanBtn').textContent='扫对方应答码';$('p2pScanBtn').onclick=function(){sPS()};$('p2pStatus').textContent='等待对方...';$('p2pActions').innerHTML=''}
-function sAns(){var s=JSON.stringify(pc.localDescription);$('p2pSteps').textContent='让主机扫此码或复制下方文本';sQR(s);$('p2pScanBtn').style.display='none';$('p2pStatus').textContent='等待主机...';$('p2pActions').innerHTML=''}
-function sQR(d){var a=$('p2pQrArea');a.innerHTML='';var c=document.createElement('div');c.className='p2p-qr';var cv=document.createElement('canvas');cv.width=230;cv.height=230;c.appendChild(cv);a.appendChild(c);$('p2pCode').textContent='';try{dQR(cv,d,230)}catch(e){tQR(cv,d)}}
-function tQR(cv,d){var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,230,230);x.fillStyle='#333';x.font='14px sans-serif';x.textAlign='center';x.fillText('二维码生成失败',115,80);x.fillText('请使用下方文本代码',115,110);$('p2pCode').textContent=d}
-function dQR(cv,d,s){var q=gQD(d);var x=cv.getContext('2d');var m=4,cs=(s-m*2)/q.length;x.fillStyle='#fff';x.fillRect(0,0,s,s);for(var y=0;y<q.length;y++)for(var x2=0;x2<q.length;x2++){x.fillStyle=q[y][x2]?'#000':'#fff';x.fillRect(m+x2*cs,m+y*cs,Math.ceil(cs),Math.ceil(cs))}}
-function gQD(t){var d=t.split('').map(function(c){return c.charCodeAt(0)});d.unshift(4);var l=d.length;d.unshift(l>>4&15,l&15);while(d.length<106)d.push(236,17);var s=25,grid=[];for(var y=0;y<s;y++){grid[y]=[];for(var x=0;x<s;x++)grid[y][x]=0}function fp(ox,oy){for(var y=-1;y<=7;y++)for(var x=-1;x<=7;x++){var v=(Math.abs(x)<2&&Math.abs(y)<2)||(Math.abs(x)>4&&Math.abs(y)>4)||(x===0||x===6||y===0||y===6);if(ox+x>=0&&ox+x<25&&oy+y>=0&&oy+y<25)grid[oy+y][ox+x]=v?1:0}}fp(1,1);fp(17,1);fp(1,17);for(var i=8;i<17;i++){grid[6][i]=1-(i%2);grid[i][6]=1-(i%2)}grid[17][8]=1;var bits=[];for(var i=0;i<d.length;i++)for(var b=7;b>=0;b--)bits.push((d[i]>>b)&1);var bi=0;for(var y=0;y<25&&bi<bits.length;y++)for(var x=0;x<25&&bi<bits.length;x++){if(grid[y][x]!==0||(x>=6&&x<=8&&y>=6&&y<=8))continue;if((x<8&&y<8)||(x>16&&y<8)||(x<8&&y>16))continue;grid[y][x]=bits[bi++]?1:0}for(var y=0;y<25;y++)for(var x=0;x<25;x++){if(grid[y][x]<0||(x>=6&&x<=8&&y>=6&&y<=8))continue;if(grid[y][x]===0||grid[y][x]===1){if((x+y)%2===0)grid[y][x]=grid[y][x]?0:1}}return grid}
-function sPS(){if('BarcodeDetector'in window){try{var d=new BarcodeDetector({formats:['qr_code']});navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:640,height:480}}).then(function(s){var v=$('p2pVideo');v.srcObject=s;v.style.display='block';v.play();$('p2pStatus').textContent='扫描二维码...';scI=setInterval(function(){if(v.readyState<2)return;d.detect(v).then(function(c){if(c.length>0){sC();pS(c[0].rawValue)}}).catch(function(){})},300)}).catch(function(e){T('摄像头:'+e.message)});return}catch(e){}}sTI()}
-function sTI(){sC();$('p2pVideo').style.display='none';$('p2pStatus').textContent='';$('p2pSteps').textContent='摄像头不可用，请手动输入对方代码';$('p2pQrArea').innerHTML='';var i=document.createElement('textarea');i.style.cssText='width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';i.placeholder='粘贴对方代码...';i.id='p2pTI';var b=document.createElement('button');b.className='p2p-scan-btn';b.textContent='确认';b.onclick=function(){var v=document.getElementById('p2pTI');if(v&&v.value.trim())pS(v.value.trim())};$('p2pQrArea').appendChild(i);$('p2pQrArea').appendChild(b)}
-function sC(){if(scI){clearInterval(scI);scI=null}var v=$('p2pVideo');if(v&&v.srcObject){v.srcObject.getTracks().forEach(function(t){t.stop()});v.srcObject=null;v.style.display='none'}}
-function pS(d){try{var ds=JSON.parse(d);if(ds.type==='offer'){pc=null;p2pS=0;cPC(false);setTimeout(function(){pc.setRemoteDescription(new RTCSessionDescription(ds)).then(function(){pc.createAnswer().then(function(d){pc.setLocalDescription(d)})})},300)}else if(ds.type==='answer'&&pc){pc.setRemoteDescription(new RTCSessionDescription(ds)).then(function(){})}}catch(e){T('无效')}}
-function onP2P(){$('p2pStatus').textContent='已连接！';$('p2pSteps').textContent='与对手建立连接';$('p2pQrArea').innerHTML='';$('p2pCode').textContent='';$('p2pScanBtn').style.display='none';sC();if(G.isHost){$('scrP2P').classList.remove('on');showItemSelect(0)}else{$('p2pStatus').textContent='等待主机开始...'}}
-function startP2PGame(){$('scrP2P').classList.remove('on');G.p[0].sel=sI.slice();sP2P({type:'init',p0sel:G.p[0].sel,p1sel:G.p[1].sel,s:G.s,p0n:G.p[0].n,p1n:G.p[1].n});initGame()}
-function rM(m){if(m.type==='init'&&!G.isHost){G.p[0].sel=m.p0sel;G.p[1].sel=m.p1sel;G.s=m.s;G.p[0].n=m.p0n;G.p[1].n=m.p1n;initGame()}else if(m.type==='action'){rA(m.action)}else if(m.type==='state'){G.p[1].hp=m.hp;G.p[1].al=m.al;rdAll()}}
-function sP2P(m){if(dc&&dc.readyState==='open')dc.send(JSON.stringify(m))}
-function sA(a){sP2P({type:'action',action:a})}
-function sST(){sP2P({type:'state',hp:G.p[1].hp,al:G.p[1].al})}
-function initGame(){for(var i=0;i<2;i++){var p=G.p[i];p.hp=G.s.hp;p.mx=G.s.hp;p.al=true;p.wa=false;p.wp=0;p.ba=false;p.bu=false;p.fa=false;p.fc=0;p.ft=0;p.fr=0;p.it={};p.sel.forEach(function(s){p.it[s]=1})}G.mult=1;G.rd=0;G.tr=0;G.de=false;G.da=false;G.log=[];G.certShown=false;G.crC=0.1;$('gameBoard').classList.add('on');$('goO').classList.remove('on');rdAll();addL('开始！HP:'+G.s.hp,'hi');G.phase='ready';nxtRd()}
-function nxtRd(){tF();G.rd++;G.tr++;G.rs=false;G.bf=false;G.br=false;G.bp=-1;G.cc=0;G.st=0;G.p[0].wa=false;G.p[1].wa=false;G.ld=Math.random()<0.5?0:1;addL('R'+G.rd+' '+G.p[G.ld].n+'装弹','hi');$('rdInfo').textContent='R'+G.rd;$('mli').textContent='x'+G.mult+(G.da?' D':'');G.phase='loading';rdAll();$('gunL').innerHTML='<span class="hl">'+G.p[G.ld].n+'</span> 装弹';sBL()}
-function sBL(){var h=(G.mode!=='p2p'&&G.mode!=='ai')||(G.mode==='ai'&&!G.p[G.ld].ai)||(G.mode==='p2p'&&((G.isHost&&G.ld===0)||(!G.isHost&&G.ld===1)));if(h){$('blindO').classList.add('on');var c=$('bchb');c.innerHTML='';for(var i=0;i<G.s.ch;i++){var d=document.createElement('div');d.className='bch';d.textContent=i+1;d.onclick=function(ii){return function(){pB(ii)}}(i);c.appendChild(d)}$('bcf').textContent=''}else{var pos=Math.floor(G.s.ch*0.6);if(pos>=G.s.ch)pos=G.s.ch-1;pB(pos)}}
-var bP=-1;function pB(i){bP=i;document.querySelectorAll('.bch').forEach(function(d,idx){d.classList.toggle('picked',idx===i)});$('bcf').textContent='已放入第'+(i+1)+'发';setTimeout(function(){$('blindO').classList.remove('on');pB2(bP)},500)}
-function pB2(i){G.bp=i;G.cc=0;G.rs=true;G.bf=false;G.eB=[];if(G.s.bu>1){for(var j=0;j<G.s.bu-1;j++){var bp;do{bp=Math.floor(Math.random()*G.s.ch)}while(bp===G.bp||G.eB.indexOf(bp)>=0);G.eB.push(bp)}}G.cp=G.ld===0?1:0;var cp=G.cp;G.ps=G.p[cp].wp;G.p[cp].wp=0;if(G.ps>0)addL(G.p[cp].n+'惩罚开'+(G.ps+1)+'枪','da');addL(G.p[cp].n+'先手','in');G.phase='play';rdAll();eA();uB();if(G.mode==='ai'&&G.p[cp].ai)setTimeout(function(){aG()},700);if(G.mode==='p2p')sA({type:'load',pos:i,cp:cp,ps:G.ps,ld:G.ld})}
-function iH(c){if(c===G.bp)return true;if(G.eB&&G.eB.indexOf(c)>=0)return true;return false}
-function pull(){if(G.phase!=='play'||G.bf)return;var cp=G.cp,sh=G.p[cp],ch=G.cc,hit=iH(ch);G.st++;var dt=cp;if(sh.wa){dt=cp===0?1:0;addL(sh.n+'->'+G.p[dt].n,'in')}var cd=ch+1;if(hit){G.bf=true;var dmg=G.mult;if(G.da){dmg+=2;addL('决斗+2','du')}if(Math.random()<G.crC){dmg=Math.ceil(dmg*1.5);addL('暴击!','cr')}var t=G.p[dt],oh=t.hp;if(t.fa&&tF(dt))dmg=0;t.hp=Math.max(0,t.hp-dmg);if(dmg>0)addL('砰!第'+cd+'发'+t.n+':'+oh+'->'+t.hp+'HP','da');else addL('砰!旗帜挡下','fl');sH();addL('回合结束','in');if(t.hp<=0&&t.ba){t.ba=false;t.bu=true;t.hp=1;G.de=true;addL('书发动!','su');addL('可决斗','du');rdAll()}if(t.hp<=0){t.al=false;addL(t.n+'倒了!','da');var w=dt===0?1:0;gO(w);return}if(G.da){G.da=false;addL('决斗结束','du');$('mli').textContent='x'+G.mult}if(G.de){G.phase='duel_prompt';rdAll();uD()}else{G.phase='ready';rdAll();setTimeout(function(){if(G.phase!=='go'){tF();nxtRd()}},600)}if(G.mode==='p2p'){sA({type:'shoot',hit:true,dmg:dmg,dt:dt});sST()}}else{addL('空枪','');G.cc++;if(G.cc>=G.s.ch){addL('全空','da');G.phase='ready';setTimeout(function(){nxtRd()},500);rdAll();return}if(sh.it.rapid>0&&G.st<=1){sh.it.rapid--;addL(sh.n+'连射','in');rdAll();eA();uB();if(G.mode==='ai'&&cp===1)setTimeout(function(){aG()},600);return}if(G.st<=G.ps&&!G.bf){addL(sh.n+'再开'+(G.ps-G.st+1)+'枪','in');rdAll();eA();uB();if(G.mode==='ai'&&cp===1)setTimeout(function(){aG()},600);return}G.ps=0;G.cp=cp===0?1:0;G.st=0;var np=G.cp;if(G.ftT!==undefined&&np===G.ftT){G.ftT=undefined;addL(G.p[np].n+'冰冻跳过','sk');G.cp=np===0?1:0;G.st=0}if(G.p[np].wp>0){G.ps=G.p[np].wp;G.p[np].wp=0;addL(G.p[np].n+'惩罚'+(G.ps+1)+'枪','da')}rdAll();eA();uB();if(G.mode==='ai'&&G.cp===1)setTimeout(function(){aG()},600);if(G.mode==='p2p')sA({type:'shoot',hit:false,cc:G.cc,cp:G.cp})}}
-function sH(){var o=$('hitO'),t=$('hitT');o.classList.remove('on');void o.offsetWidth;t.textContent='砰!!';o.classList.add('on');try{navigator.vibrate(200)}catch(e){}setTimeout(function(){o.classList.remove('on')},800)}
-function uI(pi,id){if(G.phase!=='play'||G.bf)return;if(pi!==G.cp)return;var p=G.p[pi];if(!p.al||!p.it[id])return;if(id==='watch'){if(p.wa)return;p.wa=true;p.it.watch=0;p.wp=1;addL(p.n+'怀表','in');rdAll()}else if(id==='book'){if(p.bu||p.ba)return;p.it.book=0;p.ba=true;addL(p.n+'激活书','su');rdAll()}else if(id==='check'){if(G.br)return;p.it.check=0;G.br=true;addL(p.n+'查看:第'+(G.bp+1)+'发','in');rdAll()}else if(id==='wash'){p.it.wash=0;var np;do{np=Math.floor(Math.random()*G.s.ch)}while(np===G.bp);G.bp=np;G.br=false;addL('系统已转枪!','sk');rdAll()}else if(id==='medkit'){p.it.medkit=0;p.hp=Math.min(p.mx,p.hp+2);addL(p.n+'急救包+2HP','su');rdAll()}else if(id==='armor'){p.it.armor=0;p.fa=true;p.fc=1;addL(p.n+'防弹衣','fl');rdAll()}else if(id==='rapid'){p.it.rapid=1;addL(p.n+'连射','in');rdAll()}else if(id==='freeze'){p.it.freeze=0;G.ftT=pi===0?1:0;addL(p.n+'冰冻','in');rdAll()}else if(id==='swap'){p.it.swap=0;var op=G.p[pi===0?1:0],oh=p.hp;p.hp=op.hp;op.hp=oh;addL(p.n+'交换HP!','du');rdAll()}else if(id==='flag'){if(p.fa){addL('已激活','in');return}if(p.fc>0||p.it.flag>0){p.fa=true;p.fc=1;p.it.flag=0;addL(p.n+'旗帜!','fl');if(!G.certShown){G.certShown=true;setTimeout(function(){sC2(p.n)},500)}rdAll()}else addL('充能中','in')}if(G.mode==='p2p')sA({type:'item',pi:pi,id:id})}
-function tF(pi){var p=G.p[pi];if(p.fa&&p.fc>0){p.fc=0;p.fa=false;p.ft=0;addL('旗帜挡下!','fl');rdAll();return true}return false}
-function tF2(){for(var i=0;i<2;i++){var p=G.p[i];if(p.it.flag>0||p.fa||p.fc>0){p.ft++;if(p.ft>=3&&p.fc<1&&!p.fa){p.fc=1;p.fa=true;p.ft=0;addL(p.n+'旗帜充能!','fl');rdAll()}}}}
-function dS(){if(G.phase!=='play'||G.bf)return;var cp=G.cp,p=G.p[cp];if(!p.al)return;var dmg=G.s.sk;if(G.s.noSk){T('禁止跳过');return}if(p.fa&&tF(cp))dmg=0;p.hp=Math.max(0,p.hp-dmg);if(p.hp<=0&&p.ba){p.ba=false;p.bu=true;p.hp=1;G.de=true;addL('书触发!','su');rdAll()}if(p.hp<=0){p.al=false;addL(p.n+'倒了!','da');gO(cp===0?1:0);return}addL(p.n+'跳过-'+dmg+'HP','sk');var av=ITEMS.filter(function(it){return p.it[it.id]<=0&&it.id!=='flag'}).map(function(it){return it.id});if(av.length>0){var gt=av[Math.floor(Math.random()*av.length)];p.it[gt]=1;var nm={};ITEMS.forEach(function(it){nm[it.id]=it.name});addL('得:'+nm[gt],'su')}G.st=0;G.ps=0;G.cp=cp===0?1:0;var np=G.cp;if(G.p[np].wp>0){G.ps=G.p[np].wp;G.p[np].wp=0;addL(G.p[np].n+'惩罚'+(G.ps+1)+'枪','da')}rdAll();eA();uB();aG();if(G.mode==='p2p')sA({type:'skip',cp:G.cp})}
-function aG(){if(G.phase!=='play'||G.bf)return;var idx=1,p=G.p[idx];if(!p.al||G.cp!==idx)return;var kn=G.ld===idx,sf=-1;if(kn){sf=G.bp>=G.cc?G.bp-G.cc:G.s.ch-G.cc+G.bp}if(kn&&sf<=1&&p.hp>1){dS();return}if(!kn&&!G.br&&p.it.check>0&&Math.random()<0.6){p.it.check=0;G.br=true;addL('AI看子弹','in');rdAll();setTimeout(function(){aG()},400);return}if(p.it.watch>0&&!p.wa&&((kn&&sf<=1)||(!kn&&G.cc>=G.s.ch-3))){p.wa=true;p.it.watch=0;p.wp=1;addL('AI怀表','in');rdAll();setTimeout(function(){pull()},300);return}if(p.hp<=2&&p.it.book>0&&!p.ba){p.it.book=0;p.ba=true;addL('AI激活书','su');rdAll()}if(p.it.wash>0&&kn&&sf<=1){p.it.wash=0;var np;do{np=Math.floor(Math.random()*G.s.ch)}while(np===G.bp);G.bp=np;G.br=false;addL('AI洗枪!','sk');rdAll();setTimeout(function(){aG()},400);return}if(p.it.medkit>0&&p.hp<=2){p.it.medkit=0;p.hp=Math.min(p.mx,p.hp+2);addL('AI急救包','su');rdAll();setTimeout(function(){aG()},400);return}if(p.it.flag>0&&!p.fa&&p.hp<=2){p.fa=true;p.fc=1;p.it.flag=0;addL('AI旗帜','fl');rdAll();setTimeout(function(){aG()},400);return}if((kn&&sf>=2)||(!kn&&Math.random()<0.5)){setTimeout(function(){pull()},500)}else{setTimeout(function(){pull()},600)}}
-function dD(){if(G.phase!=='duel_prompt'||!G.de)return;G.da=true;G.de=false;addL('决斗开始!','du');nxtRd()}
-function sD(){if(G.phase!=='duel_prompt')return;addL('跳过决斗','in');G.de=false;nxtRd()}
-function uD(){var i='';for(var j=0;j<2;j++)if(G.p[j].bu&&G.p[j].al)i=G.p[j].n;$('ban').innerHTML=i+'触发书!决斗?(+2)';$('ban').className='ban dm';var a=$('actsBox');a.innerHTML='<button class="abtn duel" onclick="dD()">决斗</button><button class="abtn" onclick="sD()">跳过</button>'}
-function gO(w){G.phase='go';var w2=G.p[w],l=G.p[w===0?1:0];$('goT').textContent='结束';$('goW').textContent=w2.n;$('goS').innerHTML='回合:'+G.tr+' '+w2.n+'剩余'+w2.hp+'/'+w2.mx+' HP '+l.n+' R'+G.rd+'倒';$('goO').classList.add('on');rdAll()}
-function rst(){$('goO').classList.remove('on');$('gameBoard').classList.remove('on');$('scrSetup').classList.add('on');G.phase='setup';if(G.mode==='p2p'){try{pc.close()}catch(e){}pc=null;dc=null}}
-function sC2(n){$('cName').textContent=n;var d=new Date();$('cDate').textContent=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();$('certO').classList.add('on')}
-function hC(){$('certO').classList.remove('on')}
-function dC(){var c=document.createElement('canvas');c.width=600;c.height=400;var x=c.getContext('2d');x.fillStyle='#2a1510';x.fillRect(0,0,600,400);x.strokeStyle='#c8943a';x.lineWidth=4;x.strokeRect(10,10,580,380);x.fillStyle='#fc3';x.font='bold 36px serif';x.textAlign='center';x.fillText('内测证书',300,70);x.fillStyle='#8a7a50';x.font='14px sans-serif';x.fillText('CERTIFICATE',300,95);x.fillStyle='#d0c0a0';x.font='20px sans-serif';x.fillText('感谢 '+$('cName').textContent+' 参与',300,150);x.fillStyle='#ff6b35';x.font='bold 42px serif';x.fillText('西部对决',300,210);x.fillStyle='#c8943a';x.font='16px sans-serif';x.fillText('封 闭 内 测',300,240);x.fillStyle='#8a7a50';x.font='14px sans-serif';x.fillText('本证书用来图一乐玩',300,280);x.fillStyle='#6a5a40';x.font='12px sans-serif';x.fillText($('cDate').textContent,300,310);c.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='cert.png';a.click()})}
-function rdAll(){rP();rG()}
-function rP(){var r=$('prow');r.innerHTML='';for(var i=0;i<2;i++){var p=G.p[i];var d=document.createElement('div');d.className='pp'+(G.phase==='play'&&G.cp===i&&p.al?' on':'')+(p.al?'':' dead')+(p.ai?' aipp':'');var nm='<span>'+p.n+(p.al?'':'X')+'</span>';var bg='';if(p.wa)bg+='<span style="color:#fc3;font-size:.6em">W</span>';if(p.wp>0)bg+='<span style="color:#f55;font-size:.6em">x2</span>';if(G.da)bg+='<span style="color:#d8f;font-size:.6em">D</span>';if(p.ba||p.bu)bg+='<span style="color:#4d6;font-size:.6em">B</span>';if(p.fa)bg+='<span style="color:#fc3;font-size:.6em">F</span>';nm+=bg;var h='';for(var j=0;j<p.mx;j++)h+=j<p.hp?'❤':'<span class="lost">x</span>';d.innerHTML='<div class="pn">'+nm+'</div><div class="hearts">'+h+'</div><div class="hpt">HP:'+p.hp+'/'+p.mx+'</div>';var iw='';ITEMS.forEach(function(it){var c=p.it[it.id]||0;var dis=G.phase!=='play'||G.cp!==i||!p.al||G.bf||c<=0||(G.mode==='p2p'&&i!==1);iw+='<button class="ibtn'+(c<=0?' done':'')+'" onclick="uI('+i+',\''+it.id+'\')"'+(dis?' disabled':'')+' ontouchstart="sT(event,\''+it.name+'\',\''+it.desc+'\')" ontouchend="hT()">'+iI[it.ico]+(c>1?' x'+c:'')+'</button>'});d.innerHTML+='<div class="irow">'+iw+'</div>';r.appendChild(d)}}
-function rG(){var c=$('chb');c.innerHTML='';for(var i=0;i<G.s.ch;i++){var d=document.createElement('div');d.className='ch';if(i===G.cc&&G.rs)d.classList.add('cur');if(G.bf&&iH(i)){d.classList.add('fired');d.textContent='X'}else if(G.br&&i===G.bp){d.classList.add('fired');d.textContent='X'}else if(!G.br&&G.bp>=0){d.classList.add('unk');d.textContent='?'}else d.textContent=i+1;c.appendChild(d)}var bi=$('bulI');if(G.br)bi.textContent='第'+(G.bp+1)+'发';else if(G.bf)bi.textContent='已击发';else bi.textContent=G.phase==='loading'?'隐藏':'已锁'}
-function uB(){var b=$('ban');if(G.phase==='loading'){b.textContent=G.p[G.ld].n+'装弹...';return}if(G.phase==='play'){var cp=G.cp;b.textContent=G.p[cp].n+'回合';b.className='ban'+(G.da?' dm':'')}else if(G.phase==='ready'){b.textContent='准备...'}}
-function eA(){var a=$('actsBox');a.innerHTML='';if(G.phase==='play'){a.innerHTML='<button class="abtn skip-act" onclick="dS()"'+(G.s.noSk||G.bf||!G.p[G.cp].al?' disabled':'')+'>跳过</button><button class="abtn shoot" onclick="pull()"'+(G.bf||!G.p[G.cp].al?' disabled':'')+'>开枪</button>'}else{a.innerHTML='<button class="abtn" onclick="showRules()">教程</button><button class="abtn" onclick="showCred()">制作</button>'}}
-function addL(m,c){G.log.push({m:m,c:c,rd:G.rd});var a=$('logA'),e=document.createElement('div');e.className='le'+(c?' '+c:'');e.innerHTML='<span>[R'+G.rd+']</span>'+m;a.appendChild(e);a.scrollTop=a.scrollHeight}
-function sT(e,n,d){var t=$('tip');$('tipN').textContent=n;$('tipD').textContent=d;var x=e.touches?e.touches[0].clientX:e.clientX;var y=e.touches?e.touches[0].clientY:e.clientY;t.style.left=Math.min(x+10,window.innerWidth-230)+'px';t.style.top=Math.max(y-80,10)+'px';t.classList.add('on')}
-var tT=null;function hT(){clearTimeout(tT);tT=setTimeout(function(){$('tip').classList.remove('on')},100)}
-function showCred(){$('credO').classList.add('on');var s=$('credS');s.style.animation='none';void s.offsetWidth;s.style.animation='crdR 25s forwards'}
-function hideCred(){$('credO').classList.remove('on')}
-function showRules(){$('rHp').textContent=G.s.hp;$('rCh').textContent=G.s.ch;$('rBu').textContent=G.s.bu;$('rSk').textContent=G.s.noSk?'禁止':G.s.sk;$('rIt').textContent=G.s.it;$('rulesO').classList.add('on')}
-function hideRules(){$('rulesO').classList.remove('on')}
-function rA(a){if(a.type==='load'){G.bp=a.pos;G.cc=0;G.rs=true;G.bf=false;G.ld=a.ld;G.cp=a.cp;G.ps=a.ps||0;addL('对手装弹','in');G.phase='play';rdAll();eA();uB()}else if(a.type==='shoot'){if(a.hit){G.bf=true;G.p[a.dt].hp=Math.max(0,G.p[a.dt].hp-a.dmg);addL('对手击中!','da');if(G.p[a.dt].hp<=0){G.p[a.dt].al=false;addL(G.p[a.dt].n+'倒!','da');gO(a.dt===0?1:0);return}G.phase='ready';rdAll();setTimeout(function(){nxtRd()},600)}else{addL('对手空枪','');G.cc=a.cc;G.cp=a.cp;rdAll();eA();uB()}}else if(a.type==='skip'){G.cp=a.cp;rdAll();eA();uB()}else if(a.type==='item'){var nm={};ITEMS.forEach(function(it){nm[it.id]=it.name});addL('对手:'+nm[a.id],'in')}}
-document.addEventListener('DOMContentLoaded',function(){setMode('local')});
+var itemIco = {w:'⏱',B:'📖',F:'🏴',E:'🔍',W:'🔄',M:'💉',A:'🛡',R:'🔫',Z:'❄',S:'🌪'};
+
+var G = {
+  mode:'local', phase:'setup', isHost:true,
+  p: [
+    {n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0},
+    {n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0}
+  ],
+  s: {hp:5, ch:6, bu:1, sk:1, it:4, noSk:false},
+  cp:0, ld:-1, mult:1, rd:0, bp:-1, cc:0, br:false, rs:false, bf:false,
+  de:false, da:false, st:0, ps:0, tr:0, crC:0.1, certShown:false, log:[],
+  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[]
+};
+
+function $(id) { return document.getElementById(id); }
+
+function T(msg) {
+  var e = document.createElement('div');
+  e.className = 'tst';
+  e.textContent = msg;
+  document.body.appendChild(e);
+  setTimeout(function() {
+    if (e.parentNode) e.parentNode.removeChild(e);
+  }, 1600);
+}
+
+function setMode(m) {
+  document.querySelectorAll('.mtab').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.m === m);
+  });
+  G.mode = m;
+  if (m === 'ai') {
+    $('p2n').value = '';
+    $('p2n').placeholder = '人机001号';
+    $('p2n').disabled = true;
+    $('p2l').textContent = 'AI';
+  } else {
+    $('p2n').disabled = false;
+    $('p2n').placeholder = '输入名字';
+    $('p2l').textContent = '玩家2';
+  }
+}
+
+// ====== START ======
+function startGame() {
+  var n1 = $('p1n').value.trim() || '玩家1';
+  var n2 = G.mode === 'ai' ? '人机001号' : ($('p2n').value.trim() || '玩家2');
+  G.p[0].n = n1;
+  G.p[1].n = n2;
+  G.p[1].ai = (G.mode === 'ai');
+
+  G.s.hp = parseInt($('sHP').value) || 5;
+  G.s.ch = parseInt($('sCh').value) || 6;
+  G.s.bu = parseInt($('sBu').value) || 1;
+  G.s.sk = parseInt($('sSk').value) || 1;
+  G.s.noSk = $('sNoSk').checked;
+  var ic = parseInt($('sIt').value) || 4;
+  G.s.it = Math.min(10, Math.max(1, ic));
+
+  if (G.mode === 'p2p') { startP2P(); return; }
+  if (G.mode === 'ai') { G.p[1].sel = autoPick(G.s.it); }
+  showItemSelect(0);
+}
+
+function autoPick(n) {
+  var pool = ITEMS.slice();
+  var pick = [];
+  while (pick.length < n && pool.length > 0) {
+    var i = Math.floor(Math.random() * pool.length);
+    pick.push(pool[i].id);
+    pool.splice(i, 1);
+  }
+  return pick;
+}
+
+// ====== ITEM SELECT ======
+var selPly = 0, selItems = [], selCount = 0;
+
+function showItemSelect(pi) {
+  selPly = pi;
+  selItems = [];
+  selCount = 0;
+  $('scrSetup').classList.remove('on');
+  $('scrItems').classList.add('on');
+  $('itemHint').textContent = G.p[pi].n + ' 请选择 ' + G.s.it + ' 个道具';
+
+  var grid = $('itemGrid');
+  grid.innerHTML = '';
+  ITEMS.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = '<div class="iemoji">' + itemIco[item.ico] + '</div>' +
+      '<div class="iname">' + item.name + '</div>' +
+      '<div class="idesc">' + item.desc + '</div>' +
+      '<div class="icheck">✓</div>';
+    card.onclick = function() {
+      var idx = selItems.indexOf(item.id);
+      if (idx >= 0) {
+        selItems.splice(idx, 1);
+        selCount--;
+        card.classList.remove('sel');
+      } else if (selCount < G.s.it) {
+        selItems.push(item.id);
+        selCount++;
+        card.classList.add('sel');
+      }
+      $('btnItemConfirm').disabled = (selCount !== G.s.it);
+    };
+    grid.appendChild(card);
+  });
+
+  $('btnItemConfirm').disabled = true;
+  if (G.mode === 'ai' && pi === 1) {
+    G.p[1].sel = autoPick(G.s.it);
+    nextPly();
+  }
+}
+
+function confirmItems() {
+  G.p[selPly].sel = selItems.slice();
+  nextPly();
+}
+
+function nextPly() {
+  if (selPly === 0 && G.mode !== 'p2p') {
+    showItemSelect(1);
+  } else {
+    $('scrItems').classList.remove('on');
+    if (G.mode === 'p2p') {
+      startP2PGame();
+    } else {
+      initGame();
+    }
+  }
+}
+
+// ====== P2P ======
+var pc = null, dc = null, p2pStep = 0, scanInt = null;
+
+function startP2P() {
+  $('scrSetup').classList.remove('on');
+  $('scrP2P').classList.add('on');
+  $('p2pTitle').textContent = '联机对战';
+  $('p2pSteps').textContent = '选择创建或加入房间';
+  $('p2pQrArea').innerHTML = '';
+  $('p2pCode').textContent = '';
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pStatus').textContent = '';
+  $('p2pVideo').style.display = 'none';
+  p2pStep = 0;
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="hostP2P()">创建房间</button>' +
+    '<button class="p2p-scan-btn" onclick="joinP2P()">加入房间</button>';
+}
+
+function cancelP2P() {
+  if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+  if (scanInt) { clearInterval(scanInt); scanInt = null; }
+  stopCam();
+  $('scrP2P').classList.remove('on');
+  $('scrSetup').classList.add('on');
+}
+
+function hostP2P() {
+  G.isHost = true;
+  $('p2pSteps').textContent = '正在创建连接...';
+  $('p2pStatus').textContent = '';
+  createPC(true);
+}
+
+function joinP2P() {
+  G.isHost = false;
+  $('p2pSteps').textContent = '请扫描主机的二维码';
+  $('p2pScanBtn').style.display = 'inline-block';
+  $('p2pScanBtn').textContent = '扫描主机二维码';
+  $('p2pScanBtn').onclick = function() { startScanner(); };
+  startScanner();
+}
+
+function createPC(isOffer) {
+  var cfg = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+  };
+  try {
+    pc = new RTCPeerConnection(cfg);
+  } catch (e) {
+    T('浏览器不支持WebRTC');
+    return;
+  }
+
+  pc.onicecandidate = function(e) {
+    if (e.candidate) return;
+    if (isOffer && p2pStep === 0) { p2pStep = 1; showOffer(); }
+    else if (!isOffer && p2pStep === 0) { p2pStep = 1; showAnswer(); }
+  };
+
+  pc.ondatachannel = function(e) {
+    dc = e.channel;
+    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
+    dc.onopen = function() { onP2PConnect(); };
+  };
+
+  if (isOffer) {
+    dc = pc.createDataChannel('game', { ordered: true });
+    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
+    dc.onopen = function() { onP2PConnect(); };
+    pc.createOffer().then(function(d) { pc.setLocalDescription(d); }).catch(function(e) {});
+  }
+}
+
+function showOffer() {
+  var data = JSON.stringify(pc.localDescription);
+  $('p2pSteps').textContent = '让对方扫描此二维码，然后点"扫描应答"';
+  showQR(data);
+  $('p2pScanBtn').style.display = 'inline-block';
+  $('p2pScanBtn').textContent = '扫描应答二维码';
+  $('p2pScanBtn').onclick = function() { startScanner(); };
+  $('p2pStatus').textContent = '等待对方扫描...';
+  $('p2pActions').innerHTML = '';
+}
+
+function showAnswer() {
+  var data = JSON.stringify(pc.localDescription);
+  $('p2pSteps').textContent = '让主机扫描此二维码完成连接';
+  showQR(data);
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pStatus').textContent = '等待主机扫描...';
+  $('p2pActions').innerHTML = '';
+}
+
+function showQR(data) {
+  var area = $('p2pQrArea');
+  area.innerHTML = '';
+  var wrap = document.createElement('div');
+  wrap.className = 'p2p-qr';
+  var canvas = document.createElement('canvas');
+  canvas.width = 230;
+  canvas.height = 230;
+  wrap.appendChild(canvas);
+  area.appendChild(wrap);
+  $('p2pCode').textContent = '';
+  drawQR(canvas, data, 230);
+}
+
+function drawQR(canvas, data, size) {
+  try {
+    var qr = generateQRMatrix(data);
+    var ctx = canvas.getContext('2d');
+    var margin = 4;
+    var cellSize = (size - margin * 2) / qr.length;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    for (var y = 0; y < qr.length; y++) {
+      for (var x = 0; x < qr.length; x++) {
+        ctx.fillStyle = qr[y][x] ? '#000' : '#fff';
+        ctx.fillRect(margin + x * cellSize, margin + y * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
+      }
+    }
+  } catch (e) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#333';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('二维码生成失败', size / 2, size / 2 - 20);
+    ctx.fillText('请使用下方文本代码', size / 2, size / 2 + 10);
+    $('p2pCode').textContent = data;
+  }
+}
+
+function generateQRMatrix(text) {
+  var data = text.split('').map(function(c) { return c.charCodeAt(0); });
+  data.unshift(4);
+  var len = data.length;
+  data.unshift(len >> 4 & 15, len & 15);
+  while (data.length < 106) data.push(236, 17);
+
+  var size = 25;
+  var grid = [];
+  for (var y = 0; y < size; y++) {
+    grid[y] = [];
+    for (var x = 0; x < size; x++) grid[y][x] = 0;
+  }
+
+  function drawFinder(ox, oy) {
+    for (var y = -1; y <= 7; y++) {
+      for (var x = -1; x <= 7; x++) {
+        var v = (Math.abs(x) < 2 && Math.abs(y) < 2) ||
+          (Math.abs(x) > 4 && Math.abs(y) > 4) ||
+          (x === 0 || x === 6 || y === 0 || y === 6);
+        if (ox + x >= 0 && ox + x < size && oy + y >= 0 && oy + y < size) {
+          grid[oy + y][ox + x] = v ? 1 : 0;
+        }
+      }
+    }
+  }
+
+  drawFinder(1, 1);
+  drawFinder(17, 1);
+  drawFinder(1, 17);
+
+  for (var i = 8; i < 17; i++) {
+    grid[6][i] = 1 - (i % 2);
+    grid[i][6] = 1 - (i % 2);
+  }
+  grid[17][8] = 1;
+
+  var bits = [];
+  for (var i = 0; i < data.length; i++) {
+    for (var b = 7; b >= 0; b--) bits.push((data[i] >> b) & 1);
+  }
+
+  var bi = 0;
+  for (var y = 0; y < size && bi < bits.length; y++) {
+    for (var x = 0; x < size && bi < bits.length; x++) {
+      if (grid[y][x] !== 0) continue;
+      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
+      if ((x < 8 && y < 8) || (x > 16 && y < 8) || (x < 8 && y > 16)) continue;
+      grid[y][x] = bits[bi++] ? 1 : 0;
+    }
+  }
+
+  for (var y = 0; y < size; y++) {
+    for (var x = 0; x < size; x++) {
+      if (grid[y][x] < 0) continue;
+      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
+      if ((x + y) % 2 === 0) grid[y][x] = grid[y][x] ? 0 : 1;
+    }
+  }
+  return grid;
+}
+
+function startScanner() {
+  if ('BarcodeDetector' in window) {
+    try {
+      var detector = new BarcodeDetector({ formats: ['qr_code'] });
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: 640, height: 480 }
+      }).then(function(stream) {
+        var video = $('p2pVideo');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        video.play();
+        $('p2pStatus').textContent = '正在扫描二维码...';
+        scanInt = setInterval(function() {
+          if (video.readyState < 2) return;
+          detector.detect(video).then(function(codes) {
+            if (codes.length > 0) {
+              stopCam();
+              processScan(codes[0].rawValue);
+            }
+          }).catch(function() {});
+        }, 300);
+      }).catch(function(e) {
+        T('无法打开摄像头: ' + e.message);
+      });
+      return;
+    } catch (e) {}
+  }
+  fallbackToTextInput();
+}
+
+function fallbackToTextInput() {
+  stopCam();
+  $('p2pVideo').style.display = 'none';
+  $('p2pStatus').textContent = '';
+  $('p2pSteps').textContent = '摄像头不可用，请手动输入对方显示的代码';
+  $('p2pQrArea').innerHTML = '';
+  var input = document.createElement('textarea');
+  input.style.cssText = 'width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';
+  input.placeholder = '粘贴对方显示的代码...';
+  input.id = 'p2pTextInput';
+  var btn = document.createElement('button');
+  btn.className = 'p2p-scan-btn';
+  btn.textContent = '确认';
+  btn.onclick = function() {
+    var v = document.getElementById('p2pTextInput');
+    if (v && v.value.trim()) processScan(v.value.trim());
+  };
+  $('p2pQrArea').appendChild(input);
+  $('p2pQrArea').appendChild(btn);
+}
+
+function stopCam() {
+  if (scanInt) { clearInterval(scanInt); scanInt = null; }
+  var video = $('p2pVideo');
+  if (video && video.srcObject) {
+    video.srcObject.getTracks().forEach(function(t) { t.stop(); });
+    video.srcObject = null;
+    video.style.display = 'none';
+  }
+}
+
+function processScan(data) {
+  try {
+    var desc = JSON.parse(data);
+    if (desc.type === 'offer') {
+      pc = null;
+      p2pStep = 0;
+      createPC(false);
+      setTimeout(function() {
+        pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {
+          pc.createAnswer().then(function(d) { pc.setLocalDescription(d); });
+        });
+      }, 300);
+    } else if (desc.type === 'answer' && pc) {
+      pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {});
+    }
+  } catch (e) {
+    T('二维码无效或代码格式错误');
+  }
+}
+
+function onP2PConnect() {
+  $('p2pStatus').textContent = '连接成功！';
+  $('p2pSteps').textContent = '已与对手建立连接';
+  $('p2pQrArea').innerHTML = '';
+  $('p2pCode').textContent = '';
+  $('p2pScanBtn').style.display = 'none';
+  stopCam();
+  if (G.isHost) {
+    $('scrP2P').classList.remove('on');
+    showItemSelect(0);
+  } else {
+    $('p2pStatus').textContent = '等待主机开始游戏...';
+  }
+}
+
+function startP2PGame() {
+  $('scrP2P').classList.remove('on');
+  G.p[0].sel = selItems.slice();
+  sendP2P({
+    type: 'init',
+    p0sel: G.p[0].sel,
+    p1sel: G.p[1].sel,
+    s: G.s,
+    p0n: G.p[0].n,
+    p1n: G.p[1].n
+  });
+  initGame();
+}
+
+function recvMsg(msg) {
+  if (msg.type === 'init' && !G.isHost) {
+    G.p[0].sel = msg.p0sel;
+    G.p[1].sel = msg.p1sel;
+    G.s = msg.s;
+    G.p[0].n = msg.p0n;
+    G.p[1].n = msg.p1n;
+    G.mode = 'p2p';
+    initGame();
+  } else if (msg.type === 'action') {
+    recvAction(msg.action);
+  } else if (msg.type === 'state') {
+    G.p[1].hp = msg.hp;
+    G.p[1].al = msg.al;
+    rdAll();
+  }
+}
+
+function sendP2P(msg) {
+  if (dc && dc.readyState === 'open') dc.send(JSON.stringify(msg));
+}
+
+function sendAction(a) { sendP2P({ type: 'action', action: a }); }
+function sendState() { sendP2P({ type: 'state', hp: G.p[1].hp, al: G.p[1].al }); }
+
+// ====== INIT GAME ======
+function initGame() {
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    p.hp = G.s.hp;
+    p.mx = G.s.hp;
+    p.al = true;
+    p.wa = false;
+    p.wp = 0;
+    p.ba = false;
+    p.bu = false;
+    p.fa = false;
+    p.fc = 0;
+    p.ft = 0;
+    p.fr = 0;
+    p.it = {};
+    p.sel.forEach(function(sid) { p.it[sid] = 1; });
+  }
+  G.mult = 1;
+  G.rd = 0;
+  G.tr = 0;
+  G.de = false;
+  G.da = false;
+  G.log = [];
+  G.certShown = false;
+  G.crC = 0.1;
+  G.freezeTarget = undefined;
+  G.extraBullets = [];
+
+  $('gameBoard').classList.add('on');
+  $('goO').classList.remove('on');
+  rdAll();
+  addL('游戏开始！每人 ' + G.s.hp + ' HP', 'hi');
+  G.phase = 'ready';
+  nxtRd();
+}
+
+// ====== ROUND ======
+function nxtRd() {
+  tickFlag();
+  G.rd++;
+  G.tr++;
+  G.rs = false;
+  G.bf = false;
+  G.br = false;
+  G.bp = -1;
+  G.cc = 0;
+  G.st = 0;
+  G.p[0].wa = false;
+  G.p[1].wa = false;
+  G.ld = Math.random() < 0.5 ? 0 : 1;
+
+  addL('第 ' + G.rd + ' 回合 — ' + G.p[G.ld].n + ' 装弹', 'hi');
+  $('rdInfo').textContent = '第 ' + G.rd + ' 回合';
+  $('mli').textContent = 'x' + G.mult + (G.da ? ' 决斗' : '');
+  G.phase = 'loading';
+  rdAll();
+  $('gunL').innerHTML = '<span class="hl">' + G.p[G.ld].n + '</span> 装弹中...';
+  showBL();
+}
+
+function showBL() {
+  var isHuman = (G.mode !== 'p2p' && G.mode !== 'ai') ||
+    (G.mode === 'ai' && !G.p[G.ld].ai) ||
+    (G.mode === 'p2p' && ((G.isHost && G.ld === 0) || (!G.isHost && G.ld === 1)));
+
+  if (isHuman) {
+    $('blindO').classList.add('on');
+    var box = $('bchb');
+    box.innerHTML = '';
+    for (var i = 0; i < G.s.ch; i++) {
+      var btn = document.createElement('div');
+      btn.className = 'bch';
+      btn.textContent = i + 1;
+      btn.onclick = (function(idx) {
+        return function() { pickB(idx); };
+      })(i);
+      box.appendChild(btn);
+    }
+    $('bcf').textContent = '';
+  } else {
+    var pos = Math.floor(G.s.ch * 0.6);
+    if (pos >= G.s.ch) pos = G.s.ch - 1;
+    placeB(pos);
+  }
+}
+
+var bPick = -1;
+
+function pickB(idx) {
+  bPick = idx;
+  document.querySelectorAll('.bch').forEach(function(d, i) {
+    d.classList.toggle('picked', i === idx);
+  });
+  $('bcf').textContent = '子弹已放入第 ' + (idx + 1) + ' 发位置';
+  setTimeout(function() {
+    $('blindO').classList.remove('on');
+    placeB(bPick);
+  }, 500);
+}
+
+function placeB(idx) {
+  G.bp = idx;
+  G.cc = 0;
+  G.rs = true;
+  G.bf = false;
+
+  G.extraBullets = [];
+  if (G.s.bu > 1) {
+    for (var i = 0; i < G.s.bu - 1; i++) {
+      var bp;
+      do {
+        bp = Math.floor(Math.random() * G.s.ch);
+      } while (bp === G.bp || G.extraBullets.indexOf(bp) >= 0);
+      G.extraBullets.push(bp);
+    }
+  }
+
+  G.cp = (G.ld === 0) ? 1 : 0;
+  var cp = G.cp;
+  G.ps = G.p[cp].wp;
+  G.p[cp].wp = 0;
+
+  if (G.ps > 0) addL(G.p[cp].n + ' 因怀表惩罚需开 ' + (G.ps + 1) + ' 枪', 'da');
+  addL('装弹完成，' + G.p[cp].n + ' 先手', 'in');
+  G.phase = 'play';
+  rdAll();
+  enActs();
+  upBan();
+
+  if (G.mode === 'ai' && G.p[cp].ai) setTimeout(function() { aiGo(); }, 700);
+  if (G.mode === 'p2p') sendAction({ type: 'load', pos: idx, cp: cp, ps: G.ps, ld: G.ld });
+}
+
+function isHit(ch) {
+  if (ch === G.bp) return true;
+  if (G.extraBullets && G.extraBullets.indexOf(ch) >= 0) return true;
+  return false;
+}
+
+// ====== SHOOT ======
+function pull() {
+  if (G.phase !== 'play' || G.bf) return;
+  var cp = G.cp;
+  var sh = G.p[cp];
+  var ch = G.cc;
+  var hit = isHit(ch);
+  G.st++;
+  var dt = cp;
+
+  if (sh.wa) {
+    dt = (cp === 0) ? 1 : 0;
+    addL(sh.n + ' 调转枪口 → ' + G.p[dt].n, 'in');
+  }
+
+  var cd = ch + 1;
+
+  if (hit) {
+    G.bf = true;
+    var dmg = G.mult;
+    if (G.da) { dmg += 2; addL('决斗伤害+2!', 'du'); }
+    if (Math.random() < G.crC) { dmg = Math.ceil(dmg * 1.5); addL('暴击! x1.5!', 'cr'); }
+
+    var target = G.p[dt];
+    var oh = target.hp;
+    if (target.fa && tryFlag(dt)) dmg = 0;
+    target.hp = Math.max(0, target.hp - dmg);
+
+    if (dmg > 0) addL('砰! 第' + cd + '发 — 击中' + target.n + '，' + oh + '→' + target.hp + 'HP', 'da');
+    else addL('砰! 第' + cd + '发 — 旗帜挡下了!', 'fl');
+
+    showHit();
+
+    if (G.freezeTarget !== undefined && dt === G.freezeTarget) {
+      G.freezeTarget = undefined;
+      addL(target.n + ' 被冰冻! 下回合强制跳过', 'sk');
+    }
+
+    if (target.hp <= 0 && target.ba) {
+      target.ba = false;
+      target.bu = true;
+      target.hp = 1;
+      G.de = true;
+      addL('我没死之书发动! 回复至1HP', 'su');
+      addL('下回合可发起生死决斗!', 'du');
+      rdAll();
+    }
+
+    if (target.hp <= 0) {
+      target.al = false;
+      addL(target.n + ' 倒下了!', 'da');
+      var w = (dt === 0) ? 1 : 0;
+      gameOver(w);
+      return;
+    }
+
+    addL('回合结束', 'in');
+    if (G.da) { G.da = false; addL('决斗结束', 'du'); $('mli').textContent = 'x' + G.mult; }
+
+    if (G.de) {
+      G.phase = 'duel_prompt';
+      rdAll();
+      upDuel();
+    } else {
+      G.phase = 'ready';
+      rdAll();
+      setTimeout(function() {
+        if (G.phase !== 'go') { tickFlag(); nxtRd(); }
+      }, 600);
+    }
+
+    if (G.mode === 'p2p') { sendAction({ type: 'shoot', hit: true, dmg: dmg, dt: dt, oh: oh }); sendState(); }
+    return;
+  }
+
+  // MISS
+  addL('第' + cd + '发 — 空枪! ' + sh.n + ' 松了一口气', '');
+  G.cc++;
+
+  if (G.cc >= G.s.ch) {
+    addL('异常: 所有弹巢已空', 'da');
+    G.phase = 'ready';
+    setTimeout(function() { nxtRd(); }, 500);
+    rdAll();
+    return;
+  }
+
+  // Rapid fire
+  if (sh.it.rapid > 0 && G.st <= 1) {
+    sh.it.rapid--;
+    addL(sh.n + ' 连射! 可再开一枪', 'in');
+    rdAll();
+    enActs();
+    upBan();
+    if (G.mode === 'ai' && cp === 1) setTimeout(function() { aiGo(); }, 600);
+    return;
+  }
+
+  // Penalty shots
+  if (G.st <= G.ps && !G.bf) {
+    addL(sh.n + ' 需再开 ' + (G.ps - G.st + 1) + ' 枪(惩罚)', 'in');
+    rdAll();
+    enActs();
+    upBan();
+    if (G.mode === 'ai' && cp === 1) setTimeout(function() { aiGo(); }, 600);
+    return;
+  }
+
+  G.ps = 0;
+  G.cp = (cp === 0) ? 1 : 0;
+  G.st = 0;
+  var np = G.cp;
+
+  if (G.freezeTarget !== undefined && np === G.freezeTarget) {
+    G.freezeTarget = undefined;
+    addL(G.p[np].n + ' 被冰冻! 跳过本回合', 'sk');
+    G.cp = (np === 0) ? 1 : 0;
+    G.st = 0;
+  }
+
+  if (G.p[np].wp > 0) {
+    G.ps = G.p[np].wp;
+    G.p[np].wp = 0;
+    addL(G.p[np].n + ' 因怀表惩罚需开 ' + (G.ps + 1) + ' 枪', 'da');
+  }
+
+  rdAll();
+  enActs();
+  upBan();
+
+  if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 600);
+  if (G.mode === 'p2p') sendAction({ type: 'shoot', hit: false, cc: G.cc, cp: G.cp });
+}
+
+function showHit() {
+  var o = $('hitO');
+  var t = $('hitT');
+  o.classList.remove('on');
+  void o.offsetWidth;
+  t.textContent = '砰!!';
+  o.classList.add('on');
+  try { navigator.vibrate(200); } catch (e) {}
+  setTimeout(function() { o.classList.remove('on'); }, 800);
+}
+
+// ====== ITEMS ======
+function useI(pidx, typ) {
+  if (G.phase !== 'play' || G.bf) return;
+  if (pidx !== G.cp) return;
+  var p = G.p[pidx];
+  if (!p.al || !p.it[typ] || p.it[typ] <= 0) return;
+
+  if (typ === 'watch') {
+    if (p.wa) return;
+    p.wa = true;
+    p.it.watch = 0;
+    p.wp = 1;
+    addL(p.n + ' 用了反转怀表!', 'in');
+    addL('代价: 下回合需开2枪', 'pe');
+    rdAll();
+  } else if (typ === 'book') {
+    if (p.bu || p.ba) return;
+    p.it.book = 0;
+    p.ba = true;
+    addL(p.n + ' 激活了我没死之书!', 'su');
+    rdAll();
+  } else if (typ === 'check') {
+    if (G.br) return;
+    p.it.check = 0;
+    G.br = true;
+    var pos = G.bp + 1;
+    var saf = (G.bp >= G.cc) ? (G.bp - G.cc) : (G.s.ch - G.cc + G.bp);
+    addL(p.n + ' 查看子弹: 第' + pos + '发，还有' + saf + '枪安全', 'in');
+    rdAll();
+  } else if (typ === 'wash') {
+    p.it.wash = 0;
+    var np;
+    do { np = Math.floor(Math.random() * G.s.ch); } while (np === G.bp);
+    G.bp = np;
+    G.br = false;
+    addL('系统已转枪! 子弹位置已改变', 'sk');
+    rdAll();
+  } else if (typ === 'medkit') {
+    p.it.medkit = 0;
+    p.hp = Math.min(p.mx, p.hp + 2);
+    addL(p.n + ' 使用急救包，回复2HP', 'su');
+    rdAll();
+  } else if (typ === 'armor') {
+    p.it.armor = 0;
+    p.fa = true;
+    p.fc = 1;
+    addL(p.n + ' 穿上防弹衣', 'fl');
+    rdAll();
+  } else if (typ === 'rapid') {
+    p.it.rapid = 1;
+    addL(p.n + ' 装填连射，空枪后可再开一枪', 'in');
+    rdAll();
+  } else if (typ === 'freeze') {
+    p.it.freeze = 0;
+    G.freezeTarget = (pidx === 0) ? 1 : 0;
+    addL(p.n + ' 使用了冰冻! 击中后对手强制跳过', 'in');
+    rdAll();
+  } else if (typ === 'swap') {
+    p.it.swap = 0;
+    var op = G.p[(pidx === 0) ? 1 : 0];
+    var oh = p.hp;
+    p.hp = op.hp;
+    op.hp = oh;
+    addL(p.n + ' 与对手交换了HP!', 'du');
+    rdAll();
+  } else if (typ === 'flag') {
+    if (p.fa) { addL('旗帜护盾已激活，无需重复使用', 'in'); return; }
+    if (p.fc > 0 || p.it.flag > 0) {
+      p.fa = true;
+      p.fc = 1;
+      p.it.flag = 0;
+      addL(p.n + ' 激活了公会旗帜!', 'fl');
+      if (!G.certShown) {
+        G.certShown = true;
+        setTimeout(function() { showCert(p.n); }, 500);
+      }
+      rdAll();
+    } else {
+      addL('旗帜正在充能中(' + (3 - p.ft) + '回合后可用)', 'in');
+    }
+  }
+
+  if (G.mode === 'p2p') sendAction({ type: 'item', pi: pidx, id: typ });
+}
+
+function tryFlag(pidx) {
+  var p = G.p[pidx];
+  if (p.fa && p.fc > 0) {
+    p.fc = 0;
+    p.fa = false;
+    p.ft = 0;
+    addL('公会旗帜发动! 为 ' + p.n + ' 挡下伤害', 'fl');
+    rdAll();
+    return true;
+  }
+  return false;
+}
+
+function tickFlag() {
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    if (p.it.flag > 0 || p.fa || p.fc > 0) {
+      p.ft++;
+      if (p.ft >= 3 && p.fc < 1 && !p.fa) {
+        p.fc = 1;
+        p.fa = true;
+        p.ft = 0;
+        addL(p.n + ' 的公会旗帜已充能!', 'fl');
+        rdAll();
+      }
+    }
+  }
+}
+
+// ====== SKIP ======
+function doSkip() {
+  if (G.phase !== 'play' || G.bf) return;
+  var cp = G.cp;
+  var p = G.p[cp];
+  if (!p.al) return;
+  var dmg = G.s.sk;
+  if (G.s.noSk) { T('本局禁止跳过'); return; }
+
+  if (p.fa && tryFlag(cp)) dmg = 0;
+  p.hp = Math.max(0, p.hp - dmg);
+
+  if (p.hp <= 0 && p.ba) {
+    p.ba = false;
+    p.bu = true;
+    p.hp = 1;
+    G.de = true;
+    addL('我没死之书自动触发!', 'su');
+    rdAll();
+  }
+
+  if (p.hp <= 0) {
+    p.al = false;
+    addL(p.n + ' 跳过但倒下了!', 'da');
+    gameOver((cp === 0) ? 1 : 0);
+    return;
+  }
+
+  if (dmg > 0) addL(p.n + ' 跳过了! 失去' + dmg + 'HP', 'sk');
+  else addL(p.n + ' 跳过了! 旗帜挡下伤害', 'sk');
+
+  var avail = ITEMS.filter(function(it) {
+    return p.it[it.id] <= 0 && it.id !== 'flag';
+  }).map(function(it) { return it.id; });
+
+  if (avail.length > 0) {
+    var got = avail[Math.floor(Math.random() * avail.length)];
+    p.it[got] = 1;
+    var names = {};
+    ITEMS.forEach(function(it) { names[it.id] = it.name; });
+    addL('获得道具: ' + names[got], 'su');
+  }
+
+  G.st = 0;
+  G.ps = 0;
+  G.cp = (cp === 0) ? 1 : 0;
+  var np = G.cp;
+  if (G.p[np].wp > 0) {
+    G.ps = G.p[np].wp;
+    G.p[np].wp = 0;
+    addL(G.p[np].n + ' 因怀表惩罚需开' + (G.ps + 1) + '枪', 'da');
+  }
+  rdAll();
+  enActs();
+  upBan();
+  if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 700);
+  if (G.mode === 'p2p') sendAction({ type: 'skip', cp: G.cp });
+}
+
+// ====== AI ======
+function aiGo() {
+  if (G.phase !== 'play' || G.bf) return;
+  var idx = 1;
+  var p = G.p[idx];
+  if (!p.al || G.cp !== idx) return;
+
+  var knows = (G.ld === idx);
+  var safe = -1;
+  if (knows) {
+    safe = (G.bp >= G.cc) ? (G.bp - G.cc) : (G.s.ch - G.cc + G.bp);
+  }
+
+  if (knows && safe <= 0 && p.hp > 1) { doSkip(); return; }
+  if (!knows && !G.br && p.it.check > 0 && Math.random() < 0.6) {
+    p.it.check = 0;
+    G.br = true;
+    addL('AI查看了子弹', 'in');
+    rdAll();
+    setTimeout(function() { aiGo(); }, 400);
+    return;
+  }
+  if (p.it.watch > 0 && !p.wa && ((knows && safe <= 1) || (!knows && G.cc >= G.s.ch - 3 && Math.random() < 0.5))) {
+    p.wa = true;
+    p.it.watch = 0;
+    p.wp = 1;
+    addL('AI用了反转怀表!', 'in');
+    rdAll();
+    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 300);
+    return;
+  }
+  if (p.hp <= 2 && p.it.book > 0 && !p.ba) {
+    p.it.book = 0;
+    p.ba = true;
+    addL('AI激活了我没死之书', 'su');
+    rdAll();
+  }
+  if (p.it.wash > 0 && knows && safe <= 1) {
+    p.it.wash = 0;
+    var np;
+    do { np = Math.floor(Math.random() * G.s.ch); } while (np === G.bp);
+    G.bp = np;
+    G.br = false;
+    addL('AI用了洗枪! 系统已转枪', 'sk');
+    rdAll();
+    setTimeout(function() { aiGo(); }, 400);
+    return;
+  }
+  if (p.it.medkit > 0 && p.hp <= 2) {
+    p.it.medkit = 0;
+    p.hp = Math.min(p.mx, p.hp + 2);
+    addL('AI使用急救包', 'su');
+    rdAll();
+    setTimeout(function() { aiGo(); }, 400);
+    return;
+  }
+  if (p.it.flag > 0 && !p.fa && p.hp <= 2) {
+    p.fa = true;
+    p.fc = 1;
+    p.it.flag = 0;
+    addL('AI激活了公会旗帜', 'fl');
+    rdAll();
+    setTimeout(function() { aiGo(); }, 400);
+    return;
+  }
+
+  if ((knows && safe >= 2) || (!knows && Math.random() < 0.5)) {
+    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 500);
+  } else {
+    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 600);
+  }
+}
+
+// ====== DUEL ======
+function doDuel() {
+  if (G.phase !== 'duel_prompt' || !G.de) return;
+  G.da = true;
+  G.de = false;
+  addL('⚔️⚔️ 生死决斗开始!', 'du');
+  nxtRd();
+}
+
+function skipDuel() {
+  if (G.phase !== 'duel_prompt') return;
+  addL('跳过决斗', 'in');
+  G.de = false;
+  nxtRd();
+}
+
+function upDuel() {
+  var init = '';
+  for (var i = 0; i < 2; i++) {
+    if (G.p[i].bu && G.p[i].al) init = G.p[i].n;
+  }
+  $('ban').innerHTML = init + ' 触发了书! 发起决斗? (+2伤害, 1回合)';
+  $('ban').className = 'ban dm';
+  var a = $('actsBox');
+  a.innerHTML = '<button class="abtn duel" onclick="doDuel()">发起决斗</button>' +
+    '<button class="abtn" onclick="skipDuel()">跳过</button>';
+}
+
+// ====== GAME OVER ======
+function gameOver(wi) {
+  G.phase = 'go';
+  var w = G.p[wi];
+  var l = G.p[(wi === 0) ? 1 : 0];
+  $('goT').textContent = '游戏结束';
+  $('goW').textContent = w.n;
+  $('goS').innerHTML = '总回合: ' + G.tr + '<br>' +
+    w.n + ' 剩余 ' + w.hp + '/' + w.mx + ' HP ❤️<br>' +
+    l.n + ' 在第' + G.rd + '回合倒下 ☠️';
+  $('goO').classList.add('on');
+  rdAll();
+}
+
+function rst() {
+  $('goO').classList.remove('on');
+  $('gameBoard').classList.remove('on');
+  $('scrSetup').classList.add('on');
+  G.phase = 'setup';
+  if (G.mode === 'p2p') {
+    try { pc.close(); } catch (e) {}
+    pc = null;
+    dc = null;
+  }
+}
+
+// ====== CERTIFICATE ======
+function showCert(name) {
+  $('cName').textContent = name;
+  var d = new Date();
+  $('cDate').textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+  $('certO').classList.add('on');
+}
+
+function hideCert() { $('certO').classList.remove('on'); }
+
+function dlCert() {
+  var c = document.createElement('canvas');
+  c.width = 600;
+  c.height = 400;
+  var cx = c.getContext('2d');
+
+  cx.fillStyle = '#2a1510';
+  cx.fillRect(0, 0, 600, 400);
+  cx.strokeStyle = '#c8943a';
+  cx.lineWidth = 4;
+  cx.strokeRect(10, 10, 580, 380);
+
+  cx.fillStyle = '#ffcc33';
+  cx.font = 'bold 36px serif';
+  cx.textAlign = 'center';
+  cx.fillText('内测证书', 300, 70);
+
+  cx.fillStyle = '#8a7a50';
+  cx.font = '14px sans-serif';
+  cx.fillText('CERTIFICATE', 300, 95);
+
+  cx.fillStyle = '#d0c0a0';
+  cx.font = '20px sans-serif';
+  cx.fillText('感谢 ' + $('cName').textContent + ' 参与', 300, 150);
+
+  cx.fillStyle = '#ff6b35';
+  cx.font = 'bold 42px serif';
+  cx.fillText('西部对决', 300, 210);
+
+  cx.fillStyle = '#c8943a';
+  cx.font = '16px sans-serif';
+  cx.fillText('封 闭 内 测', 300, 240);
+
+  cx.fillStyle = '#8a7a50';
+  cx.font = '14px sans-serif';
+  cx.fillText('本证书用来图一乐玩', 300, 280);
+
+  cx.fillStyle = '#6a5a40';
+  cx.font = '12px sans-serif';
+  cx.fillText($('cDate').textContent, 300, 310);
+
+  c.toBlob(function(blob) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cert.png';
+    a.click();
+  });
+}
+
+// ====== RENDER ======
+function rdAll() { renderPlayers(); renderGun(); }
+
+function renderPlayers() {
+  var row = $('prow');
+  row.innerHTML = '';
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    var div = document.createElement('div');
+    div.className = 'pp';
+    if (G.phase === 'play' && G.cp === i && p.al) div.classList.add('on');
+    if (!p.al) div.classList.add('dead');
+    if (p.ai) div.classList.add('aipp');
+
+    var nm = '<span>' + p.n + (p.al ? '' : ' ☠️') + '</span>';
+    if (p.wa) nm += '<span style="color:#fc3;font-size:.6em;margin-left:4px">⏱</span>';
+    if (p.wp > 0) nm += '<span style="color:#f55;font-size:.6em;margin-left:4px">×2</span>';
+    if (G.da) nm += '<span style="color:#d8f;font-size:.6em;margin-left:4px">⚔</span>';
+    if (p.ba || p.bu) nm += '<span style="color:#4d6;font-size:.6em;margin-left:4px">📖</span>';
+    if (p.fa) nm += '<span style="color:#fc3;font-size:.6em;margin-left:4px">🏴</span>';
+
+    var hearts = '';
+    for (var j = 0; j < p.mx; j++) {
+      hearts += (j < p.hp) ? '❤️' : '<span class="lost">🖤</span>';
+    }
+
+    div.innerHTML = '<div class="pn">' + nm + '</div>' +
+      '<div class="hearts">' + hearts + '</div>' +
+      '<div class="hpt">HP: ' + p.hp + '/' + p.mx + '</div>';
+
+    var itemsHtml = '';
+    ITEMS.forEach(function(it) {
+      var cnt = p.it[it.id] || 0;
+      var disabled = (G.phase !== 'play' || G.cp !== i || !p.al || G.bf || cnt <= 0);
+      var cls = 'ibtn' + (cnt <= 0 ? ' done' : '');
+      itemsHtml += '<button class="' + cls + '" onclick="useI(' + i + ',\'' + it.id + '\')"' +
+        (disabled ? ' disabled' : '') +
+        ' ontouchstart="showTip(event,\'' + it.name + '\',\'' + it.desc + '\')"' +
+        ' ontouchend="hideTip()">' +
+        itemIco[it.ico] + ' ' + it.name + (cnt > 1 ? ' ×' + cnt : '') + '</button>';
+    });
+    div.innerHTML += '<div class="irow">' + itemsHtml + '</div>';
+    row.appendChild(div);
+  }
+}
+
+function renderGun() {
+  var c = $('chb');
+  c.innerHTML = '';
+  for (var i = 0; i < G.s.ch; i++) {
+    var d = document.createElement('div');
+    d.className = 'ch';
+    if (i === G.cc && G.rs) d.classList.add('cur');
+    if (G.bf && isHit(i)) { d.classList.add('fired'); d.textContent = '💥'; }
+    else if (G.br && i === G.bp) { d.classList.add('fired'); d.textContent = '💥'; }
+    else if (!G.br && G.bp >= 0) { d.classList.add('unk'); d.textContent = '?'; }
+    else d.textContent = i + 1;
+    c.appendChild(d);
+  }
+  var bi = $('bulI');
+  if (G.br && G.bp >= 0) bi.textContent = '🔍 子弹在第' + (G.bp + 1) + '发';
+  else if (G.bf) bi.textContent = '💥 子弹已击发';
+  else bi.textContent = (G.phase === 'loading') ? '🔒 子弹位置已隐藏' : (G.bp >= 0 ? '弹仓已锁' : '');
+}
+
+function upBan() {
+  var b = $('ban');
+  if (G.phase === 'loading') {
+    b.textContent = '🔫 ' + G.p[G.ld].n + ' 正在秘密装弹...';
+    b.className = 'ban';
+    return;
+  }
+  if (G.phase === 'play') {
+    var cp = G.cp;
+    var p = G.p[cp];
+    var t = '🎯 ' + p.n + ' 的回合';
+    if (p.wa) t += ' ⏱️【逆转】';
+    var r = G.ps - G.st + 1;
+    if (G.st > 0 && r > 0) t += ' 🔫(还需' + r + '枪)';
+    b.textContent = t;
+    b.className = 'ban' + (G.da ? ' dm' : '');
+    if (G.mode === 'ai' && cp === 1) b.textContent += ' 🤔 AI思考中...';
+    return;
+  }
+  if (G.phase === 'ready') {
+    b.textContent = '🔄 准备下一回合...';
+    b.className = 'ban';
+  }
+}
+
+function enActs() {
+  var a = $('actsBox');
+  a.innerHTML = '';
+  if (G.phase === 'play') {
+    a.innerHTML =
+      '<button class="abtn skip-act" onclick="doSkip()"' +
+      (G.s.noSk || G.bf || !G.p[G.cp].al ? ' disabled' : '') +
+      '>⚠️ 跳过</button>' +
+      '<button class="abtn shoot" onclick="pull()"' +
+      (G.bf || !G.p[G.cp].al ? ' disabled' : '') +
+      '>🎯 开枪</button>';
+    return;
+  }
+  a.innerHTML =
+    '<button class="abtn" onclick="showRules()">📖 教程</button>' +
+    '<button class="abtn" onclick="showCred()">📜 制作人员</button>';
+}
+
+function addL(msg, cls) {
+  G.log.push({ msg: msg, cls: cls, rd: G.rd });
+  var area = $('logA');
+  var entry = document.createElement('div');
+  entry.className = 'le' + (cls ? ' ' + cls : '');
+  entry.innerHTML = '<span style="color:#6a5540;font-size:.8em">[R' + G.rd + ']</span> ' + msg;
+  area.appendChild(entry);
+  area.scrollTop = area.scrollHeight;
+}
+
+// ====== TOOLTIP ======
+function showTip(e, n, d) {
+  var tip = $('tip');
+  $('tipN').textContent = n;
+  $('tipD').textContent = d;
+  var x = e.touches ? e.touches[0].clientX : e.clientX;
+  var y = e.touches ? e.touches[0].clientY : e.clientY;
+  tip.style.left = Math.min(x + 10, window.innerWidth - 230) + 'px';
+  tip.style.top = Math.max(y - 80, 10) + 'px';
+  tip.classList.add('on');
+}
+var tipTimer = null;
+
+function hideTip() {
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(function() { $('tip').classList.remove('on'); }, 100);
+}
+
+// ====== MISC ======
+function showRules() {
+  $('rHp').textContent = G.s.hp;
+  $('rCh').textContent = G.s.ch;
+  $('rBu').textContent = G.s.bu;
+  $('rSk').textContent = G.s.noSk ? '禁止' : G.s.sk;
+  $('rIt').textContent = G.s.it;
+  $('rulesO').classList.add('on');
+}
+
+function hideRules() { $('rulesO').classList.remove('on'); }
+
+function showCred() {
+  $('credO').classList.add('on');
+  var s = $('credS');
+  s.style.animation = 'none';
+  void s.offsetWidth;
+  s.style.animation = 'crdR 25s linear forwards';
+}
+
+function hideCred() { $('credO').classList.remove('on'); }
+
+// ====== P2P RECV ======
+function recvAction(a) {
+  if (a.type === 'load') {
+    G.bp = a.pos;
+    G.cc = 0;
+    G.rs = true;
+    G.bf = false;
+    G.ld = a.ld;
+    G.cp = a.cp;
+    G.ps = a.ps || 0;
+    addL('对手装弹完毕', 'in');
+    G.phase = 'play';
+    rdAll();
+    enActs();
+    upBan();
+  } else if (a.type === 'shoot') {
+    if (a.hit) {
+      G.bf = true;
+      G.p[a.dt].hp = Math.max(0, G.p[a.dt].hp - a.dmg);
+      addL('对手开枪: 击中!', 'da');
+      if (G.p[a.dt].hp <= 0) {
+        G.p[a.dt].al = false;
+        addL(G.p[a.dt].n + ' 倒下了!', 'da');
+        gameOver(a.dt === 0 ? 1 : 0);
+        return;
+      }
+      G.phase = 'ready';
+      rdAll();
+      setTimeout(function() { nxtRd(); }, 600);
+    } else {
+      addL('对手开枪: 空枪', '');
+      G.cc = a.cc;
+      G.cp = a.cp;
+      rdAll();
+      enActs();
+      upBan();
+    }
+  } else if (a.type === 'skip') {
+    G.cp = a.cp;
+    rdAll();
+    enActs();
+    upBan();
+  } else if (a.type === 'item') {
+    var names = {};
+    ITEMS.forEach(function(it) { names[it.id] = it.name; });
+    addL('对手使用了 ' + names[a.id], 'in');
+  }
+}
+
+// ====== INIT ======
+document.addEventListener('DOMContentLoaded', function() {
+  setMode('local');
+});
 </script>
 </body>
-<script src="save.js"></script>   
 </html>
