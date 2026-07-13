@@ -1,23 +1,46 @@
-BQ-CNfurry1.0 Global Open Source Agreement
+**BQ-CNfurry1.0 Additional License Agreement**
 
-The Copyright Holder grants a perpetual, worldwide, nonexclusive, free of charge, royalty free, irrevocable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute the work and such derivative works in source code or object code form. This agreement operates independently and harmonizes with mainstream open source licenses. In the event of any conflict with another recognized open source license applied to the same work, the terms of the other recognized open source license shall prevail.
+This Additional License Agreement supplements the primary open source license chosen by the user (e.g., MIT, Apache-2.0). In case of any conflict between this agreement and the primary license, the terms of the primary license shall prevail.
 
-The Copyright Holder grants a perpetual, worldwide, nonexclusive, free of charge, royalty free, irrevocable patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the work. This license applies only to those patent claims licensable by the Copyright Holder that are necessarily infringed by their contributions alone or by combination of their contributions with the work to which such contributions were submitted. If any entity institutes patent litigation against any entity alleging that the work constitutes direct or contributory patent infringement, then any patent licenses granted to that entity under this agreement for that work shall terminate as of the date such litigation is filed.
+### 1. Grant of Rights
+The Copyright Holder grants a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to:
+- Use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the Work and derivative works thereof, in source code or object code form.
+- Make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, with patent rights limited to those claims licensable by the Copyright Holder that are necessarily infringed by the Work.
 
-The code provided under this agreement is entirely neutral regarding themes, purposes, and cultural attributes. It may be utilized for any lawful activity, including artificial intelligence training, commercial enterprise, and noncultural projects. This agreement does not impose additional restrictions on the underlying code and defers to the primary license terms in any jurisdictional or contractual conflicts.
+### 2. Usage Restrictions
+The Work may not be used for:
+- Child sexual exploitation or child pornography
+- Promotion of extreme violence or terrorism
+- Hate speech or systematic discrimination against protected groups
+- Any other universally illegal activities
 
-Users are not required to provide attribution to the original anonymous author. The author explicitly disclaims all responsibility for downstream usage, and users retain all rights granted herein. The work must not be used to generate, distribute, or promote content involving child exploitation, extreme violence, hate speech, nonconsensual acts, or any universally illegal activities. Any such malicious use immediately and automatically terminates all rights granted under this agreement.
+Any violation immediately and automatically terminates all rights granted under this agreement.
 
-Users must retain all original copyright notices and this agreement file within any distributed copies or substantial portions of the work. Deliberate removal, alteration, or obscuring of these legal notices renders the distribution invalid and voids the user license.
+### 3. Furry Community Additional Terms (Triggered Only When Applicable)
+These terms apply exclusively when the Work is used for Furry-themed creations, anthropomorphic character generation, Furry community tools, or related derivative projects:
+- Users must not intentionally distort, defame, or remove the core cultural features and positive identity representations of the Furry community.
+- If a modified derivative work significantly deviates from the original Furry theme, it must include a prominent notice stating: “This work is a modification of a Furry community open source project but has deviated from the original Furry theme.”
+- Commercial use (including packaging into commercial AI services, enterprise deployments, or paid products) is strongly encouraged to obtain prior written consent from the Copyright Holder. However, even without such consent, use is still permitted provided the user fully complies with the primary open source license and retains all copyright notices and this Additional License.
 
-The following rules activate exclusively when the work is explicitly applied to Furry oriented creations, anthropomorphic character generation, or community tool development. Users must not deliberately distort, defame, or strip the core cultural expressions and identity representations of the Furry community. Modified works that lose these essential cultural traits must prominently display a notice stating the work has deviated from the original Furry orientation. Individual, noncommercial artificial intelligence invocation, training, and derivation between natural persons are fully permitted. Commercial artificial intelligence packaging, service deployments by enterprises, institutions, or collectives require explicit written consent. Built in community features, identity certificates, and connectivity mechanisms must be protected from forgery, unauthorized resale, or unendorsed commercial promotion.
+### 4. Attribution and Notice Requirements
+- Attribution to the original author is not required.
+- All distributed copies or substantial portions of the Work must retain the original copyright notices, this Additional License Agreement, and the primary license text.
+- Deliberate removal, alteration, or obscuring of these legal notices renders the distribution invalid and terminates the corresponding rights.
 
-The work is provided strictly on an as is basis without any warranties of any kind, either express or implied, including without limitation the warranties of merchantability, fitness for a particular purpose, and noninfringement. The entire risk as to the quality and performance of the work is with the user.
+### 5. Disclaimer of Warranty
+The Work is provided “AS IS”, without any warranties of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. The entire risk as to the quality and performance of the Work is with the user.
 
-In no event and under no legal theory, whether in tort, contract, or otherwise, unless required by applicable law or agreed to in writing, shall the Copyright Holder be liable to any user for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this agreement or the use or inability to use the work.
+### 6. Limitation of Liability
+In no event and under no legal theory shall the Copyright Holder be liable for any damages, including direct, indirect, special, incidental, or consequential damages arising out of this agreement or the use or inability to use the Work.
 
-Violation of the core protections immediately terminates all rights under this agreement. Violation of the Furry oriented cultural rules suspends only those specific cultural rights, while general code usage rights under compatible licenses remain intact. Termination does not affect the legality of previously distributed copies. If any provision of this agreement is held to be unenforceable, such provision shall be reformed only to the extent necessary to make it enforceable, and the remaining provisions shall remain in full force and effect.
+### 7. Dispute Resolution
+Any dispute, claim, or controversy arising from or related to this agreement shall be finally settled by arbitration under the UNCITRAL Arbitration Rules. The seat of arbitration shall be Singapore. The proceedings shall be conducted in English. The arbitral award shall be final and binding.
 
-All disputes, claims, or controversies arising from or related to this agreement shall be finally settled by arbitration under the United Nations Commission on International Trade Law arbitration rules. The seat of arbitration shall be Singapore or another mutually agreed neutral venue. The arbitration proceedings shall be conducted in English. The arbitral award shall be final and binding, enforceable in any signatory state under the Convention on the Recognition and Enforcement of Foreign Arbitral Awards. The governing law shall be determined by the principle of closest connection or the law of the arbitration seat.
+### 8. Miscellaneous
+- This agreement aims to balance free code usage with protection of community cultural identity.
+- If any provision of this agreement is held to be unenforceable, the remaining provisions shall remain in full force and effect.
+- The Copyright Holder may update this agreement for future versions of the Work.
 
-This open source agreement is intended solely for personal or commercial use, permitting priority data invocation and seamless interoperability with all MIT style permissive licenses.
+---
+
+**End of License**
