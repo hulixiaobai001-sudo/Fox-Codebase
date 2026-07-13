@@ -24,7 +24,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .sgrid input:focus{border-color:#ff6b35}
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px auto;max-width:460px;text-align:left}
 .settings-grid label{font-size:.78em;color:#c0a090;display:flex;align-items:center;gap:6px}
-.settings-grid input[type=number]{background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:4px 8px;color:#f0e6d3;font-size:.85em;width:55px;outline:none;text-align:center}
+.settings-grid input[type=number]{background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:4px 8px;color:#f0e6d3;font-size:.85em;width:55px;text-align:center;outline:none}
 .settings-grid input[type=number]:focus{border-color:#ff6b35}
 .settings-grid input[type=checkbox]{width:18px;height:18px;accent-color:#ff6b35}
 .btn-start{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:12px;padding:12px 44px;font-size:1.1em;font-weight:bold;color:#fff;cursor:pointer;margin-top:16px;box-shadow:0 6px 20px rgba(255,107,53,.3)}
@@ -121,7 +121,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .bch{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:bold;cursor:pointer;background:rgba(60,30,20,.6);border:2px solid #6a4a2a;color:#f0e6d3}
 .bch:hover{background:rgba(255,107,53,.25);border-color:#ff6b35;transform:scale(1.12)}
 .bch.picked{background:rgba(255,50,50,.2);border-color:#f33;color:#f44}
-.bch.picked::after{content:'✓'}
+.bch.picked::after{content:'\u2713'}
 .blind-o .bcf{color:#4c6;margin-top:16px}
 .cert-o{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:180;align-items:center;justify-content:center}
 .cert-o.on{display:flex}
@@ -244,7 +244,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
       <b style="color:#dd8844">道具池10选N</b><br>怀表、书、旗帜、查看、洗枪、急救包、防弹衣、连射、冰冻、交换。长按看说明。<br><br>
       <b style="color:#dd8844">决斗</b><br>书触发后可发起，伤害+2持续1回合。暴击10%概率x1.5。<br><br>
       <b style="color:#dd8844">当前规则</b><br>HP:<span id="rHp"></span> 弹巢:<span id="rCh"></span> 子弹:<span id="rBu"></span> 跳过:<span id="rSk"></span> 道具:<span id="rIt"></span><br><br>
-      <b style="color:#dd8844">联机</b><br>P2P扫码直连零服务器。同WiFi稳连，异地建议开腾讯会议。<br><br>
+      <b style="color:#dd8844">联机</b><br>P2P扫码直连，二维码下方有文本代码可复制粘贴。支持从相册选择截图识别二维码。<br><br>
       <b style="color:#dd8844">制作</b><br>白沁 · deepseek-V4fish · 英雄主义公会全体成员
     </div>
     <button class="bre" onclick="hideRules()" style="display:block;margin:0 auto">知道了</button>
@@ -520,7 +520,6 @@ function showAnswer() {
   $('p2pStatus').textContent = '等待主机扫描...';
   $('p2pActions').innerHTML = '';
 }
-
 function showQR(data) {
   var area = $('p2pQrArea');
   area.innerHTML = '';
@@ -531,7 +530,8 @@ function showQR(data) {
   canvas.height = 230;
   wrap.appendChild(canvas);
   area.appendChild(wrap);
-  $('p2pCode').textContent = '';
+  // [修改] 同时显示文本代码，方便复制粘贴
+  $('p2pCode').textContent = data;
   drawQR(canvas, data, 230);
 }
 
@@ -654,25 +654,79 @@ function startScanner() {
   fallbackToTextInput();
 }
 
+// [新增] 相册选择截图相关
+var p2pFileInput = null;
+
+function addGalleryInput() {
+  if (!p2pFileInput) {
+    p2pFileInput = document.createElement('input');
+    p2pFileInput.type = 'file';
+    p2pFileInput.accept = 'image/*';
+    p2pFileInput.style.display = 'none';
+    p2pFileInput.id = 'p2pGalleryInput';
+    p2pFileInput.onchange = function(e) {
+      if (e.target.files.length > 0) scanFromImage(e.target.files[0]);
+    };
+    document.body.appendChild(p2pFileInput);
+  }
+}
+
+function scanFromImage(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      var ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      if ('BarcodeDetector' in window) {
+        try {
+          var detector = new BarcodeDetector({ formats: ['qr_code'] });
+          detector.detect(c).then(function(codes) {
+            if (codes.length > 0) {
+              processScan(codes[0].rawValue);
+              T('二维码识别成功!');
+            } else {
+              T('未在图片中找到二维码');
+            }
+          }).catch(function() {
+            T('识别失败，请尝试文本输入');
+          });
+          return;
+        } catch (e) {}
+      }
+      T('当前浏览器不支持图片识别，请使用文本输入');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// [修改] 新增了「从相册选择截图」按钮
 function fallbackToTextInput() {
   stopCam();
   $('p2pVideo').style.display = 'none';
   $('p2pStatus').textContent = '';
-  $('p2pSteps').textContent = '摄像头不可用，请手动输入对方显示的代码';
+  $('p2pSteps').textContent = '选择连接方式';
   $('p2pQrArea').innerHTML = '';
-  var input = document.createElement('textarea');
-  input.style.cssText = 'width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';
-  input.placeholder = '粘贴对方显示的代码...';
-  input.id = 'p2pTextInput';
-  var btn = document.createElement('button');
-  btn.className = 'p2p-scan-btn';
-  btn.textContent = '确认';
-  btn.onclick = function() {
-    var v = document.getElementById('p2pTextInput');
-    if (v && v.value.trim()) processScan(v.value.trim());
-  };
-  $('p2pQrArea').appendChild(input);
-  $('p2pQrArea').appendChild(btn);
+  var inp = document.createElement('textarea');
+  inp.style.cssText = 'width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';
+  inp.placeholder = '粘贴对方显示的代码...';
+  inp.id = 'p2pTextInput';
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0';
+  var btn1 = document.createElement('button');
+  btn1.className = 'p2p-scan-btn'; btn1.textContent = '确认';
+  btn1.onclick = function() { var v=document.getElementById('p2pTextInput'); if(v&&v.value.trim()) processScan(v.value.trim()); };
+  var btn2 = document.createElement('button');
+  btn2.className = 'p2p-scan-btn'; btn2.textContent = '从相册选择截图';
+  btn2.onclick = function() { if(!p2pFileInput) addGalleryInput(); var fi=document.getElementById('p2pGalleryInput'); if(fi) fi.click(); };
+  row.appendChild(btn1); row.appendChild(btn2);
+  $('p2pQrArea').appendChild(inp); $('p2pQrArea').appendChild(row);
+  addGalleryInput();
 }
 
 function stopCam() {
