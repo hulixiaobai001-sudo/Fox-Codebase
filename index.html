@@ -145,6 +145,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crdc{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:210;background:rgba(255,107,53,.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:.85em}
 .itip{display:none;position:fixed;z-index:50;background:rgba(10,5,3,.95);border:1px solid #8b4513;border-radius:10px;padding:10px 14px;max-width:220px;font-size:.75em;color:#c0a090;pointer-events:none;backdrop-filter:blur(4px)}
 .itip.on{display:block}.itip .itn{font-weight:bold;color:#ff6b35}
+.cd-panel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:99990;align-items:center;justify-content:center}.cd-panel.on{display:flex}.cd-box{background:linear-gradient(135deg,#1e0e0a,#2a1510);border:2px solid #8b4513;border-radius:18px;padding:20px 24px;max-width:360px;width:90%}.cd-box h3{font-size:1.1em;color:#ff6b35;text-align:center;margin-bottom:10px}.cd-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.cd-row label{font-size:.75em;color:#c0a090;min-width:65px}.cd-row input[type=range]{flex:1;accent-color:#ff6b35;height:4px}.cd-row .cdv{font-size:.7em;color:#ff6b35;min-width:24px;text-align:right}.cd-close{display:block;margin:10px auto 0;background:rgba(255,107,53,.1);border:1px solid #6b3a2a;border-radius:8px;padding:6px 20px;color:#a08070;cursor:pointer;font-family:inherit;font-size:.8em}.cd-close:hover{background:rgba(255,107,53,.15)}
 .tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.88);color:#ff6b35;padding:14px 28px;border-radius:12px;font-size:1em;z-index:9999;border:1px solid #8b4513;pointer-events:none;animation:tf 1.5s forwards}
 @keyframes tf{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @media(max-width:640px){.gc{padding:14px}.prow{grid-template-columns:1fr}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
@@ -161,6 +162,12 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
       <div class="mtab on" data-m="local" onclick="setMode('local')">本地</div>
       <div class="mtab" data-m="ai" onclick="setMode('ai')">人机</div>
       <div class="mtab" data-m="p2p" onclick="setMode('p2p')">联机</div>
+    </div>
+    <div class="diff-btns" id="diffBtns" style="display:none">
+      <span class="diff-btn on" data-d="easy" onclick="setDiff('easy')">🌱简单</span>
+      <span class="diff-btn" data-d="medium" onclick="setDiff('medium')">🔥中等</span>
+      <span class="diff-btn" data-d="hard" onclick="setDiff('hard')">💀困难</span>
+      <span class="diff-btn" data-d="custom" onclick="setDiff('custom')">⚙️自定义</span>
     </div>
     <div class="sgrid">
       <div><label id="p1l">玩家1</label><input type="text" id="p1n" placeholder="输入名字" maxlength="10"></div>
@@ -299,7 +306,7 @@ var G = {
   s: {hp:5, ch:6, bu:1, sk:1, it:4, noSk:false},
   cp:0, ld:-1, mult:1, rd:0, bp:-1, cc:0, br:false, rs:false, bf:false,
   de:false, da:false, st:0, ps:0, tr:0, crC:0.1, certShown:false, log:[],
-  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[]
+  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[], aiDiff:'medium', aiCustom:{caut:50, item:50, acc:50, bluf:30}
 };
 
 function $(id) { return document.getElementById(id); }
@@ -324,10 +331,28 @@ function setMode(m) {
     $('p2n').placeholder = '人机001号';
     $('p2n').disabled = true;
     $('p2l').textContent = 'AI';
+    $('diffBtns').style.display = 'flex';
+    setDiff('medium');
   } else {
     $('p2n').disabled = false;
     $('p2n').placeholder = '输入名字';
     $('p2l').textContent = '玩家2';
+    $('diffBtns').style.display = 'none';
+  }
+}
+function setDiff(d) {
+  G.aiDiff = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.d === d);
+  });
+  if (d === 'custom') {
+    $('cdPanel').classList.add('on');
+    G.aiCustom = {
+      caut: parseInt($('cdCaut').value) || 50,
+      item: parseInt($('cdItem').value) || 50,
+      acc: parseInt($('cdAcc').value) || 50,
+      bluf: parseInt($('cdBluf').value) || 30
+    };
   }
 }
 
@@ -1271,77 +1296,44 @@ function doSkip() {
   if (G.mode === 'p2p') sendAction({ type: 'skip', cp: G.cp });
 }
 
-// ====== AI ======
+// ====== NEW AI (Difficulty-scoring)
 function aiGo() {
   if (G.phase !== 'play' || G.bf) return;
-  var idx = 1;
-  var p = G.p[idx];
-  if (!p.al || G.cp !== idx) return;
-
-  var knows = (G.ld === idx);
-  var safe = -1;
-  if (knows) {
-    safe = (G.bp >= G.cc) ? (G.bp - G.cc) : (G.s.ch - G.cc + G.bp);
-  }
-
-  if (knows && safe <= 0 && p.hp > 1) { doSkip(); return; }
-  if (!knows && !G.br && p.it.check > 0 && Math.random() < 0.6) {
-    p.it.check = 0;
-    G.br = true;
-    addL('AI查看了子弹', 'in');
-    rdAll();
-    setTimeout(function() { aiGo(); }, 400);
-    return;
-  }
-  if (p.it.watch > 0 && !p.wa && ((knows && safe <= 1) || (!knows && G.cc >= G.s.ch - 3 && Math.random() < 0.5))) {
-    p.wa = true;
-    p.it.watch = 0;
-    p.wp = 1;
-    addL('AI用了反转怀表!', 'in');
-    rdAll();
-    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 300);
-    return;
-  }
-  if (p.hp <= 2 && p.it.book > 0 && !p.ba) {
-    p.it.book = 0;
-    p.ba = true;
-    addL('AI激活了我没死之书', 'su');
-    rdAll();
-  }
-  if (p.it.wash > 0 && knows && safe <= 1) {
-    p.it.wash = 0;
-    var np;
-    do { np = Math.floor(Math.random() * G.s.ch); } while (np === G.bp);
-    G.bp = np;
-    G.br = false;
-    addL('AI用了洗枪! 系统已转枪', 'sk');
-    rdAll();
-    setTimeout(function() { aiGo(); }, 400);
-    return;
-  }
-  if (p.it.medkit > 0 && p.hp <= 2) {
-    p.it.medkit = 0;
-    p.hp = Math.min(p.mx, p.hp + 2);
-    addL('AI使用急救包', 'su');
-    rdAll();
-    setTimeout(function() { aiGo(); }, 400);
-    return;
-  }
-  if (p.it.flag > 0 && !p.fa && p.hp <= 2) {
-    p.fa = true;
-    p.fc = 1;
-    p.it.flag = 0;
-    addL('AI激活了公会旗帜', 'fl');
-    rdAll();
-    setTimeout(function() { aiGo(); }, 400);
-    return;
-  }
-
-  if ((knows && safe >= 2) || (!knows && Math.random() < 0.5)) {
-    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 500);
+  var aiIdx = 1, p = G.p[aiIdx];
+  if (!p.al || G.cp !== aiIdx) return;
+  var opponent = G.p[0];
+  var isLoader = (G.ld === aiIdx);
+  var safeCount = -1;
+  if (isLoader) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
+  else if (G.br) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
+  var diff = G.aiDiff || 'medium';
+  var dc = G.aiCustom || {caut:50, item:50, acc:50, bluf:30};
+  var mul = {easy:{caut:0.3,item:0.3,acc:0.3,bluf:0.7,skipHp:3},medium:{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2},hard:{caut:0.9,item:0.9,acc:0.9,bluf:0.1,skipHp:1},custom:{caut:dc.caut/100,item:dc.item/100,acc:dc.acc/100,bluf:dc.bluf/100,skipHp:dc.caut<33?3:(dc.caut<66?2:1)}}[diff]||{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2};
+  var skipHp = mul.skipHp;
+  if (p.it.medkit>0 && p.hp<=Math.floor(p.mx*(0.7-mul.caut*0.3)) && Math.random()<mul.item) {
+    p.it.medkit=0; p.hp=Math.min(p.mx,p.hp+2); addL('AI使用急救包','su'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.hp<=Math.floor(p.mx*0.5) && !p.fa) {
+    if (p.it.armor>0 && Math.random()<mul.item) { p.it.armor=0; p.fa=true; p.fc=1; addL('AI穿上防弹衣','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+    if (p.it.flag>0 && p.fc>0 && Math.random()<mul.item) { p.fa=true; p.fc=1; p.it.flag=0; addL('AI激活旗帜','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; } }
+  if (p.it.book>0 && !p.ba && p.hp<=2 && Math.random()<mul.item) { p.it.book=0; p.ba=true; addL('AI激活了我没死之书','su'); rdAll(); }
+  if (p.it.wash>0 && isLoader && safeCount<=1 && Math.random()<mul.item) {
+    p.it.wash=0; var np; do{np=Math.floor(Math.random()*G.s.ch)}while(np===G.bp); G.bp=np; G.br=false; addL('AI用了洗枪!','sk'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.swap>0 && p.hp>opponent.hp+1 && Math.random()<mul.item) { p.it.swap=0; var oh=p.hp; p.hp=opponent.hp; opponent.hp=oh; addL('AI交换了HP!','du'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.watch>0 && !p.wa && safeCount===0 && p.hp>skipHp && Math.random()<mul.item) { p.wa=true; p.it.watch=0; p.wp=1; addL('AI用了反转怀表','in'); rdAll(); setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()},300); return; }
+  if (p.it.check>0 && !G.br && !isLoader && Math.random()<mul.item*0.8) { p.it.check=0; G.br=true; addL('AI查看了子弹','in'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.freeze>0 && safeCount>0 && Math.random()<mul.item*0.5) { p.it.freeze=0; G.freezeTarget=0; addL('AI使用了冰冻','in'); rdAll(); }
+  var shouldShoot = false;
+  if (safeCount >= 0) {
+    if (safeCount >= Math.floor(G.s.ch*0.4)) shouldShoot = true;
+    else if (safeCount >= 1 && Math.random() < mul.acc) shouldShoot = true;
+    else if (Math.random() < mul.bluf) shouldShoot = true;
   } else {
-    setTimeout(function() { if (G.phase === 'play' && !G.bf) pull(); }, 600);
+    if (G.cc >= G.s.ch-2 && Math.random() < 0.7) shouldShoot = false;
+    else shouldShoot = Math.random() < 0.4 + mul.acc * 0.3;
   }
+  if (!G.s.noSk && p.hp > G.s.sk && !shouldShoot && safeCount <= 1 && p.hp > skipHp) { doSkip(); return; }
+  if (p.it.rapid > 0 && G.st > 0) { p.it.rapid = 0; addL('AI连射!','in'); rdAll(); }
+  setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()}, shouldShoot?500:700);
 }
 
 // ====== DUEL ======
@@ -1672,5 +1664,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="achieve.js"></script> 
 <script src="save.js"></script> 
 <script src="sfx.js"></script> 
+<!-- Custom Difficulty Panel -->
+<div class="cd-panel" id="cdPanel">
+  <div class="cd-box">
+    <h3>⚙️ 自定义AI难度</h3>
+    <div class="cd-row"><label>谨慎程度</label><input type="range" id="cdCaut" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdCautV">50</span></div>
+    <div class="cd-row"><label>道具使用率</label><input type="range" id="cdItem" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdItemV">50</span></div>
+    <div class="cd-row"><label>精准度</label><input type="range" id="cdAcc" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdAccV">50</span></div>
+    <div class="cd-row"><label>虚张声势</label><input type="range" id="cdBluf" min="0" max="100" value="30" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdBlufV">30</span></div>
+    <button class="cd-close" onclick="document.getElementById('cdPanel').classList.remove('on')">确认</button>
+  </div>
+</div>
 </body>  
 </html>
