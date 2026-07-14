@@ -1,0 +1,414 @@
+/**
+ * 西部对决 · Plus扩展包
+ * 用法：在 roulette.html 的 </body> 前加 <script src="plus.js"></script>
+ * 纯外挂，不动原HTML。
+ * 功能：对局分享 / 每日挑战 / 录像回放 / 彩蛋系统 / 本地排行 / 更多设置
+ */
+(function(){
+
+var css=document.createElement('style');
+css.textContent=[
+'.pp-ui{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:6px;opacity:0.4;transition:opacity .3s}',
+'.pp-ui:hover{opacity:1}',
+'.pp-btn{background:rgba(30,15,10,.85);border:1px solid #6b3a2a;border-radius:8px;padding:4px 10px;color:#c0a090;cursor:pointer;font-family:inherit;font-size:.65em;white-space:nowrap}',
+'.pp-btn:hover{background:rgba(255,107,53,.15);border-color:#ff6b35;color:#f0e6d3}',
+'.pp-panel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.82);z-index:99998;align-items:center;justify-content:center}',
+'.pp-panel.on{display:flex}',
+'.pp-box{background:linear-gradient(135deg,#1e0e0a,#2a1510);border:2px solid #8b4513;border-radius:18px;padding:20px 24px;max-width:480px;width:92%;max-height:85vh;overflow-y:auto}',
+'.pp-box h2{font-size:1.2em;color:#ff6b35;text-align:center;margin:0 0 2px 0}',
+'.pp-box .sub{font-size:.68em;color:#6a5540;text-align:center;margin-bottom:12px}',
+'.pp-tabs{display:flex;gap:4px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}',
+'.pp-tab{padding:3px 12px;border-radius:10px;border:1px solid rgba(139,69,19,.4);background:rgba(30,15,10,.5);color:#a08070;cursor:pointer;font-size:.7em;font-family:inherit}',
+'.pp-tab.on{background:rgba(255,107,53,.15);border-color:#ff6b35;color:#ff6b35}',
+'.pp-close{display:block;margin:10px auto 0;background:rgba(255,107,53,.1);border:1px solid #6b3a2a;border-radius:8px;padding:6px 20px;color:#a08070;cursor:pointer;font-family:inherit;font-size:.75em}',
+'.pp-close:hover{background:rgba(255,107,53,.15)}',
+'.pp-st{font-size:.75em;color:#c0a090;line-height:1.7;text-align:center}',
+'.pp-st .sn{color:#ff6b35;font-weight:bold}',
+'.pp-day{background:rgba(200,160,100,.08);border:1px solid rgba(200,160,100,.2);border-radius:10px;padding:10px;text-align:center;margin-bottom:8px}',
+'.pp-day .dt{font-size:1.5em;color:#fc3}.pp-day .dd{font-size:.7em;color:#c0a090}.pp-day .dr{font-size:.85em;color:#4c6;margin-top:4px}',
+'.pp-egg{display:inline-block;margin:4px;padding:4px 8px;border-radius:6px;background:rgba(60,30,20,.4);border:1px solid rgba(139,69,19,.3);font-size:.65em;color:#a08070}',
+'.pp-egg.unlocked{border-color:#fc3;color:#fc3;background:rgba(255,200,50,.08)}',
+'.pp-egg .ei{font-size:1.2em}',
+'.pp-playback{text-align:center;margin:8px 0}',
+'.pp-playback input[type=range]{width:100%;accent-color:#ff6b35;height:4px}',
+'.pp-playback .pb-info{font-size:.65em;color:#a08070;display:flex;justify-content:space-between}',
+'.pp-prev{font-size:.65em;color:#6a5540;max-height:80px;overflow-y:auto;text-align:left;padding:4px 8px;background:rgba(0,0,0,.3);border-radius:6px;margin:4px 0}',
+'.pp-prev .pl{font-size:.6em;color:#5a4030;padding:1px 0}.pp-prev .pl.cur{color:#fc3}',
+'.pp-set-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}',
+'.pp-set-row label{font-size:.72em;color:#c0a090;min-width:70px}',
+'.pp-set-row select{flex:1;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:4px 6px;color:#f0e6d3;font-size:.75em;font-family:inherit}',
+'.pp-set-row .pp-val{font-size:.7em;color:#ff6b35;min-width:30px;text-align:right}',
+'.pp-share-img{width:100%;border-radius:8px;margin:6px 0;display:none}'
+].join('\n');
+document.head.appendChild(css);
+
+var P={tab:'share'};
+var E={daySeed:null,dayBest:null,replays:[],eggs:{},scores:[]};
+var rec=[],playing=false,playIdx=0,eggCheck={};
+var themes={};
+
+function $(id){return document.getElementById(id)}
+
+// ====== 每日挑战种子随机 ======
+function seedRand(s){return function(){s=(s*9301+49297)%233280;return s/233280}}
+function todaySeed(){var d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()}
+function isSameDay(ts){var d1=new Date(ts),d2=new Date();return d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate()}
+
+// ====== 数据持久化 ======
+function loadD(){
+  try{var d=JSON.parse(localStorage.getItem('wd_plus'));if(d){
+    E.dayBest=d.dayBest||null;E.eggs=d.eggs||{};E.scores=d.scores||[];E.replays=d.replays||[]
+  }}catch(e){}
+  // 检查每日种子
+  var ts=todaySeed();
+  if(!E.daySeed||E.daySeed!==ts){E.daySeed=ts;E.dayBest=E.dayBest&&isSameDay(E.dayBest.t)?E.dayBest:null}
+}
+function saveD(){try{localStorage.setItem('wd_plus',JSON.stringify(E))}catch(e){}}
+
+// ====== 主题系统 ======
+var currentTheme='default';
+var themeCSS={};
+function applyTheme(t){
+  currentTheme=t||'default';
+  var el=$('ppThemeCSS');
+  if(!el){el=document.createElement('style');el.id='ppThemeCSS';document.head.appendChild(el)}
+  if(t==='default'||!themes[t]){el.textContent='';return}
+  el.textContent=themes[t];
+  try{localStorage.setItem('wd_plus_theme',t)}catch(e){}
+}
+
+function initThemes(){
+  themes['default']='/* 默认主题 */';
+  // 日夜模式
+  themes['day']=[
+    'body{background:linear-gradient(135deg,#8b7355,#a08060,#8b7355)!important}',
+    '.gc{background:rgba(245,235,220,.92)!important;border-color:#a08060!important}',
+    '.gc,.pn,.hearts,.abtn,.ibtn,.pp-btn,.p2p-scan-btn,.cd-close{color:#3a2a1a!important}',
+    '.ban{background:rgba(180,150,110,.2)!important;border-color:#a08060!important;color:#3a2a1a!important}',
+    '.pp{background:rgba(220,200,170,.5)!important;border-color:#a08060!important}',
+    '.pp.on{border-color:#c8943a!important;box-shadow:0 0 20px rgba(200,148,58,.3)!important}',
+    '.gun-label,.hpt,.rdi,.round-info{color:#5a4a30!important}',
+    '.itip{background:rgba(245,235,220,.95)!important;color:#3a2a1a!important}',
+    '.obox{background:linear-gradient(135deg,#e8dcc8,#d0c0a0)!important;color:#3a2a1a!important}',
+    '.obox h2,.obox .wn{color:#8b4513!important}',
+    '.cd-box,.pp-box,.wa-box,.wd-cb{background:linear-gradient(135deg,#e8dcc8,#d0c0a0)!important;color:#3a2a1a!important}',
+    '.pp-btn,.wd-btn,.wa-btn{color:#5a4a30!important;border-color:#a08060!important}',
+    '.abtn{color:#3a2a1a!important;border-color:#a08060!important}',
+    '.abtn:hover:not(:disabled){background:rgba(200,148,58,.15)!important;border-color:#c8943a!important}',
+    '.le{color:#5a4a30!important}',
+    '.ch{background:rgba(200,180,150,.6)!important;border-color:#a08060!important;color:#5a4a30!important}',
+    '.ch.cur{border-color:#c8943a!important;color:#c8943a!important}',
+    '.bch{background:rgba(200,180,150,.6)!important;border-color:#a08060!important;color:#3a2a1a!important}',
+    '.itip .itn{color:#8b4513!important}'
+  ].join('\n');
+  
+  themes['night']=[
+    'body{background:linear-gradient(135deg,#0a0a1a,#1a1a2e,#0a0a1a)!important}',
+    '.gc{background:rgba(10,10,30,.92)!important;border-color:#3333aa!important}',
+    '.ban{background:rgba(50,50,150,.15)!important;border-color:#4444bb!important;color:#aab!important}',
+    '.pp.on{border-color:#6666ff!important;box-shadow:0 0 20px rgba(100,100,255,.2)!important}',
+    '.abtn{background:linear-gradient(135deg,#1a1a3a,#0a0a2a)!important;border-color:#4444aa!important}',
+    '.abtn:hover:not(:disabled){background:linear-gradient(135deg,#2a2a5a,#1a1a4a)!important;border-color:#6666ff!important}',
+    '.abtn.shoot{background:linear-gradient(135deg,#4a1a1a,#2a0a0a)!important;border-color:#aa3333!important}',
+    '.cd-box,.pp-box,.wa-box,.wd-cb{background:linear-gradient(135deg,#1a1a3e,#0e0e2a)!important;border-color:#4444bb!important}',
+    '.ch{background:rgba(30,30,70,.6)!important;border-color:#4444aa!important}',
+    '.ch.cur{border-color:#6666ff!important;color:#6666ff!important}',
+    '.bch{background:rgba(30,30,70,.6)!important;border-color:#4444aa!important;color:#aab!important}'
+  ].join('\n');
+
+  // 加载上次主题
+  try{var saved=localStorage.getItem('wd_plus_theme');if(saved&&themes[saved])applyTheme(saved)}catch(e){}
+}
+
+// ====== 录像系统 ======
+function startRec(){rec=[]}
+function addSnapshot(){
+  if(typeof G==='undefined')return;
+  rec.push(JSON.parse(JSON.stringify({
+    phase:G.phase,cp:G.cp,cc:G.cc,bp:G.bp,bf:G.bf,br:G.br,rs:G.rs,
+    hp0:G.p[0].hp,hp1:G.p[1].hp,
+    al0:G.p[0].al,al1:G.p[1].al,
+    st:G.st,ps:G.ps,rd:G.rd,mult:G.mult
+  })));
+}
+function playback(idx){
+  if(idx<0||idx>=rec.length||typeof G==='undefined')return;
+  var s=rec[idx];
+  G.phase=s.phase;G.cp=s.cp;G.cc=s.cc;G.bp=s.bp;G.bf=s.bf;G.br=s.br;G.rs=s.rs;
+  G.p[0].hp=s.hp0;G.p[1].hp=s.hp1;G.p[0].al=s.al0;G.p[1].al=s.al1;
+  G.st=s.st;G.ps=s.ps;
+  if(typeof rdAll==='function')rdAll();
+  if(typeof upBan==='function')upBan();
+}
+
+// ====== 彩蛋检测 ======
+var eggDefs=[
+  {id:'e_badshot',name:'夕阳红枪法',desc:'连续空枪10次',ico:'💩',check:function(){
+    var m=0;for(var i=G.log.length-1;i>=0;i--){
+      if(G.log[i].m&&G.log[i].m.indexOf('空枪')>=0)m++;else break
+    }return m>=10
+  }},
+  {id:'e_1hp',name:'锁血挂',desc:'以1HP完成一局',ico:'🩸',check:function(){
+    return G.p[0]&&G.p[0].hp===1||G.p[1]&&G.p[1].hp===1
+  }},
+  {id:'e_rapid3',name:'三连射',desc:'一局内用3次连射',ico:'💨',check:function(){return E.eggs.e_rapid3_rp>=3}},
+  {id:'e_nosk',name:'铁头娃',desc:'整局一次都没跳过',ico:'🤕',check:function(){
+    for(var i=0;i<G.log.length;i++)if(G.log[i].m&&G.log[i].m.indexOf('跳过')>=0&&G.log[i].m.indexOf('挡')<0)return false
+    return true
+  }},
+  {id:'e_swap',name:'等价交换',desc:'一局内交换HP3次',ico:'♻️',check:function(){return E.eggs.e_swap_sw>=3}}
+];
+
+function checkEggs(){
+  if(typeof G==='undefined')return;
+  eggDefs.forEach(function(eg){
+    if(!E.eggs[eg.id]&&eg.check()){
+      E.eggs[eg.id]=1;
+      saveD();
+      if(typeof T==='function')T('🎪 彩蛋: '+eg.name+' '+eg.desc)
+    }
+  });
+}
+
+// ====== 钩子 ======
+function hook(){
+  if(typeof G==='undefined'||!G)return;
+  var og=window.addL;
+  if(!og||og.__pp)return;
+  window.addL=function(m,c){
+    og(m,c);
+    try{
+      if(typeof G==='undefined')return;
+      // 录像
+      addSnapshot();
+      // 彩蛋追踪
+      if(m.indexOf('连射')>=0){E.eggs.e_rapid3_rp=(E.eggs.e_rapid3_rp||0)+1}
+      if(m.indexOf('交换了HP')>=0){E.eggs.e_swap_sw=(E.eggs.e_swap_sw||0)+1}
+      checkEggs();
+    }catch(e){}
+  };
+  window.addL.__pp=true;
+
+  var gg=window.gameOver;
+  if(gg&&!gg.__pp){
+    window.gameOver=function(wi){
+      gg(wi);
+      try{
+        // 彩蛋
+        checkEggs();
+        // 保存录像
+        if(rec.length>5){E.replays.unshift({t:Date.now(),rd:G.rd||0,frames:rec.slice(),p1:G.p[0]?.n,p2:G.p[1]?.n});if(E.replays.length>5)E.replays.length=5}
+        // 每日挑战
+        if(G.rd&&(!E.dayBest||G.rd<E.dayBest.r)){E.dayBest={t:Date.now(),r:G.rd||0,p:G.p[0]?.n};saveD()}
+        // 记录成绩
+        E.scores.push({t:Date.now(),rd:G.rd||0,w:G.p[wi]?.n||'?',p1:G.p[0]?.n,p2:G.p[1]?.n});
+        if(E.scores.length>100)E.scores=E.scores.slice(-100);
+        saveD();
+      }catch(e){}
+    };
+    window.gameOver.__pp=true;
+  }
+}
+
+// ====== 分享 ======
+function genShareImg(){
+  var c=document.createElement('canvas');c.width=500;c.height=300;
+  var cx=c.getContext('2d');
+  cx.fillStyle='#2a1510';cx.fillRect(0,0,500,300);
+  cx.strokeStyle='#c8943a';cx.lineWidth=3;cx.strokeRect(8,8,484,284);
+  
+  cx.fillStyle='#ff6b35';cx.font='bold 28px sans-serif';cx.textAlign='center';
+  cx.fillText('🤠 西部对决',250,45);
+  
+  cx.fillStyle='#c0a090';cx.font='14px sans-serif';
+  if(typeof G!=='undefined'&&G.p){
+    cx.fillText(G.p[0].n+' vs '+G.p[1].n,250,75);
+    cx.fillStyle='#fc3';cx.font='bold 22px sans-serif';
+    cx.fillText('回合: '+G.rd,250,110);
+    cx.fillStyle='#f55';cx.font='16px sans-serif';
+    cx.fillText('❤️ '+G.p[0].hp+'/'+G.p[0].mx+' | ❤️ '+G.p[1].hp+'/'+G.p[1].mx,250,140);
+  }
+  
+  cx.fillStyle='#6a5540';cx.font='11px sans-serif';
+  var d=new Date();cx.fillText(d.toLocaleDateString()+' '+d.toLocaleTimeString(),250,280);
+  cx.fillStyle='#5a4030';cx.font='9px sans-serif';
+  cx.fillText('本代码基于 Fox-Codebase 开发 (GPL-3.0)',250,295);
+  
+  return c;
+}
+
+function shareGame(){
+  var c=genShareImg();
+  c.toBlob(function(b){
+    var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='western_duel.png';a.click();
+    T('✅ 战绩图已下载');
+  });
+}
+
+function T(m){
+  var e=document.createElement('div');
+  e.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.88);color:#ff6b35;padding:14px 28px;border-radius:12px;z-index:99999;border:1px solid #8b4513;pointer-events:none;animation:tf 1.5s forwards';
+  e.textContent=m;document.body.appendChild(e);
+  setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},1600);
+}
+
+// ====== UI ======
+var panelOpen=false;
+
+function showPanel(tab){
+  panelOpen=true;P.tab=tab||'share';
+  var p=$('ppPanel');
+  if(!p){
+    p=document.createElement('div');p.className='pp-panel';p.id='ppPanel';
+    var b=document.createElement('div');b.className='pp-box';b.id='ppBox';
+    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 每日 · 录像 · 彩蛋 · 排行 · 设置</div>';
+    var tabs=document.createElement('div');tabs.className='pp-tabs';tabs.id='ppTabs';
+    b.appendChild(tabs);
+    var cnt=document.createElement('div');cnt.id='ppContent';cnt.style.cssText='min-height:120px';
+    b.appendChild(cnt);
+    var cl=document.createElement('button');cl.className='pp-close';cl.textContent='关闭';
+    cl.onclick=function(){p.classList.remove('on');panelOpen=false};
+    b.appendChild(cl);
+    p.appendChild(b);document.body.appendChild(p);
+  }
+  p.classList.add('on');
+  renderTabs();
+  renderContent();
+}
+
+function renderTabs(){
+  var tabs=$('ppTabs');tabs.innerHTML='';
+  ['share','daily','replay','egg','rank','setting'].forEach(function(t){
+    var names={share:'📤分享',daily:'🎯每日',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
+    var tb=document.createElement('button');tb.className='pp-tab'+(t===P.tab?' on':'');tb.textContent=names[t]||t;
+    tb.onclick=function(){showPanel(t)};tabs.appendChild(tb);
+  });
+}
+
+function renderContent(){
+  var cnt=$('ppContent');
+  if(!cnt)return;
+  switch(P.tab){
+    case 'share':renderShare(cnt);break;
+    case 'daily':renderDaily(cnt);break;
+    case 'replay':renderReplay(cnt);break;
+    case 'egg':renderEgg(cnt);break;
+    case 'rank':renderRank(cnt);break;
+    case 'setting':renderSetting(cnt);break;
+  }
+}
+
+function renderShare(c){
+  c.innerHTML='<div class="pp-st">📸 对局结束后点击下方按钮<br>生成战绩图片并下载</div>'+
+    '<div style="text-align:center;margin:10px 0"><button class="pp-btn" onclick="(function(){var c=genShareImg();c.toBlob(function(b){var a=document.createElement(\'a\');a.href=URL.createObjectURL(b);a.download=\'western_duel.png\';a.click();T(\'✅ 已下载\')})})()">📥 生成战绩图</button></div>'+
+    '<div id="ppSharePreview" style="text-align:center"></div>';
+  try{
+    var c2=genShareImg();
+    var img=document.createElement('img');img.src=c2.toDataURL();img.style.cssText='width:100%;max-width:300px;border-radius:8px;margin-top:6px';
+    document.getElementById('ppSharePreview').appendChild(img);
+  }catch(e){}
+}
+
+function renderDaily(c){
+  var ts=todaySeed();
+  c.innerHTML='<div class="pp-day"><div class="dt">🎯 '+ts+'</div><div class="dd">今日种子 · 所有人同一把牌</div>'+
+    (E.dayBest?'<div class="dr">🏆 最好成绩: '+E.dayBest.r+' 回合 ('+(E.dayBest.p||'?')+')</div>':
+    '<div class="dr" style="color:#a08070">今日尚未完成挑战</div>')+'</div>'+
+    '<div class="pp-st" style="font-size:.7em;color:#6a5540">每日挑战使用固定随机种子<br>同一天内所有人遇到相同的弹巢布局<br>挑战最少回合通关！</div>';
+}
+
+function renderReplay(c){
+  var html='<div class="pp-st">📹 最近 '+(E.replays.length)+' 场录像</div><div style="max-height:150px;overflow-y:auto">';
+  if(E.replays.length===0)html+='<div class="pp-st" style="color:#6a5540">暂无录像</div>';
+  E.replays.forEach(function(r,i){
+    html+='<div style="background:rgba(30,15,10,.4);border-radius:6px;padding:6px 10px;margin:4px 0;font-size:.7em;color:#a08070;cursor:pointer" onclick="playReplay('+i+')">'+
+      '📹 R'+r.rd+' · '+r.p1+' vs '+r.p2+' · '+r.frames.length+'帧</div>';
+  });
+  html+='</div>';
+  if(rec.length>0)html+='<div class="pp-st" style="font-size:.65em;color:#4c6;margin-top:4px">⏺️ 当前对局已录制 '+rec.length+' 帧</div>';
+  c.innerHTML=html;
+}
+
+function playReplay(idx){
+  if(idx<0||idx>=E.replays.length)return;
+  var r=E.replays[idx];
+  if(!r.frames||r.frames.length<2)return;
+  playIdx=0;
+  var p=$('ppPanel');
+  if(p)p.classList.remove('on');
+  // 直接开始播放
+  var cur=0;
+  function step(){
+    if(cur>=r.frames.length){T('⏹️ 回放结束');return}
+    playback(cur);
+    cur++;
+    setTimeout(step,150);
+  }
+  T('▶️ 开始回放 (R'+r.rd+')');
+  // 先恢复初始状态
+  if(typeof initGame==='function'){initGame()}
+  setTimeout(step,300);
+}
+
+function renderEgg(c){
+  var html='<div class="pp-st">🎪 彩蛋 · 隐藏成就</div><div style="text-align:center;margin:6px 0">';
+  eggDefs.forEach(function(eg){
+    var u=E.eggs[eg.id];
+    html+='<span class="pp-egg'+(u?' unlocked':'')+'"><span class="ei">'+eg.ico+'</span> '+eg.name+(u?' ✅':' 🔒')+'</span>';
+  });
+  html+='</div>';
+  c.innerHTML=html;
+}
+
+function renderRank(c){
+  var scores=E.scores||[];
+  // 按回合排序
+  var sorted=scores.slice().sort(function(a,b){return a.rd-b.rd});
+  var top=sorted.slice(0,20);
+  var html='<div class="pp-st"><span class="sn">'+scores.length+'</span> 局记录</div>';
+  if(top.length===0)html+='<div class="pp-st" style="color:#6a5540">暂无数据</div>';
+  else{
+    html+='<div style="max-height:180px;overflow-y:auto">';
+    top.forEach(function(s,i){
+      var medal=i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+      html+='<div style="display:flex;justify-content:space-between;padding:2px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.1)">'+
+        '<span>'+medal+' '+s.w+'</span><span>R'+s.rd+'</span><span style="color:#5a4030">'+new Date(s.t).toLocaleDateString()+'</span></div>';
+    });
+    html+='</div>';
+  }
+  c.innerHTML=html;
+}
+
+function renderSetting(c){
+  var themeNames={'default':'🌙 默认暗色','day':'☀️ 沙漠白昼','night':'🌃 赛博之夜'};
+  c.innerHTML='<div class="pp-st">⚙️ 更多设置</div>'+
+    '<div class="pp-set-row"><label>界面主题</label><select id="ppThemeSel" onchange="applyTheme(this.value)">'+
+    Object.keys(themeNames).map(function(k){return '<option value="'+k+'"'+(currentTheme===k?' selected':'')+'>'+themeNames[k]+'</option>'}).join('')+
+    '</select></div>'+
+    '<div class="pp-set-row"><label>录像帧率</label><select id="ppFpsSel"><option value="4">慢速 (4fps)</option><option value="7" selected>标准 (7fps)</option><option value="15">高速 (15fps)</option></select></div>'+
+    '<div class="pp-st" style="font-size:.6em;color:#5a4030;margin-top:10px">主题实时切换，不需要刷新页面</div>';
+}
+
+// ====== 初始化 ======
+loadD();initThemes();
+var hi=setInterval(function(){if(typeof G!=='undefined'&&G){hook();clearInterval(hi)}},500);
+
+setTimeout(function(){
+  var ui=document.createElement('div');ui.className='pp-ui';
+  var bt=document.createElement('button');bt.className='pp-btn';bt.textContent='🎮 更多';
+  bt.onclick=function(){showPanel('share')};
+  ui.appendChild(bt);
+  document.body.appendChild(ui);
+  // 如果游戏已开始，开始录像
+  if(typeof G!=='undefined'&&G&&G.phase!=='setup')startRec();
+  // 每日检查
+  if(!E.dayBest||!isSameDay(E.dayBest.t)){
+    // 新的一天
+  }
+  saveD();
+},800);
+
+// 响应主题切换
+window.applyTheme=applyTheme;
+
+})();
