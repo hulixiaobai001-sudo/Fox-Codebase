@@ -144,19 +144,17 @@ function playback(idx){
 // ====== 彩蛋检测 ======
 var eggDefs=[
   {id:'e_badshot',name:'夕阳红枪法',desc:'连续空枪10次',ico:'💩',check:function(){
-    var m=0;for(var i=G.log.length-1;i>=0;i--){
-      if(G.log[i].m&&G.log[i].m.indexOf('空枪')>=0)m++;else break
-    }return m>=10
+    return (E._ec&&E._ec.ms>=10)||false;
   }},
   {id:'e_1hp',name:'锁血挂',desc:'以1HP完成一局',ico:'🩸',check:function(){
     return G.p[0]&&G.p[0].hp===1||G.p[1]&&G.p[1].hp===1
   }},
-  {id:'e_rapid3',name:'三连射',desc:'一局内用3次连射',ico:'💨',check:function(){return E.eggs.e_rapid3_rp>=3}},
+  {id:'e_rapid3',name:'三连射',desc:'一局内用3次连射',ico:'💨',check:function(){return E._ec&&E._ec.rp>=3}},
   {id:'e_nosk',name:'铁头娃',desc:'整局一次都没跳过',ico:'🤕',check:function(){
     for(var i=0;i<G.log.length;i++)if(G.log[i].m&&G.log[i].m.indexOf('跳过')>=0&&G.log[i].m.indexOf('挡')<0)return false
     return true
   }},
-  {id:'e_swap',name:'等价交换',desc:'一局内交换HP3次',ico:'♻️',check:function(){return E.eggs.e_swap_sw>=3}}
+  {id:'e_swap',name:'等价交换',desc:'一局内交换HP3次',ico:'♻️',check:function(){return E._ec&&E._ec.sw>=3}}
 ];
 
 function checkEggs(){
@@ -181,9 +179,10 @@ function hook(){
       if(typeof G==='undefined')return;
       // 录像
       addSnapshot();
-      // 彩蛋追踪
-      if(m.indexOf('连射')>=0){E.eggs.e_rapid3_rp=(E.eggs.e_rapid3_rp||0)+1}
-      if(m.indexOf('交换了HP')>=0){E.eggs.e_swap_sw=(E.eggs.e_swap_sw||0)+1}
+      // 彩蛋追踪 (使用局内计数器)
+      if(m.indexOf('连射')>=0&&m.indexOf('装填')<0){E._ec=E._ec||{rp:0,sw:0,ms:0};E._ec.rp=(E._ec.rp||0)+1}
+      if(m.indexOf('交换了HP')>=0){E._ec=E._ec||{rp:0,sw:0,ms:0};E._ec.sw=(E._ec.sw||0)+1}
+      if(m.indexOf('空枪')>=0||m.indexOf('松了一口气')>=0){E._ec=E._ec||{rp:0,sw:0,ms:0};E._ec.ms=(E._ec.ms||0)+1}
       checkEggs();
     }catch(e){}
   };
@@ -212,27 +211,48 @@ function hook(){
 
 // ====== 分享 ======
 function genShareImg(){
-  var c=document.createElement('canvas');c.width=500;c.height=300;
+  var c=document.createElement('canvas');c.width=520;c.height=360;
   var cx=c.getContext('2d');
-  cx.fillStyle='#2a1510';cx.fillRect(0,0,500,300);
-  cx.strokeStyle='#c8943a';cx.lineWidth=3;cx.strokeRect(8,8,484,284);
+  // 背景 + 边框
+  cx.fillStyle='#2a1510';cx.fillRect(0,0,520,360);
+  cx.strokeStyle='#c8943a';cx.lineWidth=4;cx.strokeRect(12,12,496,336);
   
-  cx.fillStyle='#ff6b35';cx.font='bold 28px sans-serif';cx.textAlign='center';
-  cx.fillText('🤠 西部对决',250,45);
+  // 标题
+  cx.fillStyle='#ffcc33';cx.font='bold 32px serif';cx.textAlign='center';
+  cx.fillText('🏆 西部对决',260,55);
+  cx.fillStyle='#8a7a50';cx.font='12px sans-serif';
+  cx.fillText('CERTIFICATE OF DUEL',260,75);
   
-  cx.fillStyle='#c0a090';cx.font='14px sans-serif';
+  // 分隔线
+  cx.strokeStyle='#c8943a';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(80,85);cx.lineTo(440,85);cx.stroke();
+  
   if(typeof G!=='undefined'&&G.p){
-    cx.fillText(G.p[0].n+' vs '+G.p[1].n,250,75);
-    cx.fillStyle='#fc3';cx.font='bold 22px sans-serif';
-    cx.fillText('回合: '+G.rd,250,110);
+    // 玩家名
+    cx.fillStyle='#d0c0a0';cx.font='18px sans-serif';
+    cx.fillText(G.p[0].n+' vs '+G.p[1].n,260,120);
+    
+    // 回合数
+    cx.fillStyle='#ff6b35';cx.font='bold 36px serif';
+    var rText=G.rd+' 回合';
+    cx.fillText(rText,260,170);
+    
+    // 血量
     cx.fillStyle='#f55';cx.font='16px sans-serif';
-    cx.fillText('❤️ '+G.p[0].hp+'/'+G.p[0].mx+' | ❤️ '+G.p[1].hp+'/'+G.p[1].mx,250,140);
+    cx.fillText('❤️ '+G.p[0].hp+'/'+G.p[0].mx+'  —  ❤️ '+G.p[1].hp+'/'+G.p[1].mx,260,205);
+    
+    // 结果
+    var winner=G.p[0].hp<=0?G.p[1].n:(G.p[1].hp<=0?G.p[0].n:'?');
+    cx.fillStyle='#fc3';cx.font='bold 22px sans-serif';
+    cx.fillText('🏆 胜者: '+winner,260,245);
   }
   
+  // 底部信息
   cx.fillStyle='#6a5540';cx.font='11px sans-serif';
-  var d=new Date();cx.fillText(d.toLocaleDateString()+' '+d.toLocaleTimeString(),250,280);
+  var d=new Date();cx.fillText(d.toLocaleDateString()+' '+d.toLocaleTimeString(),260,285);
   cx.fillStyle='#5a4030';cx.font='9px sans-serif';
-  cx.fillText('本代码基于 Fox-Codebase 开发 (GPL-3.0)',250,295);
+  cx.fillText('第六届绒兽汇图一乐小游戏',260,305);
+  cx.fillText('基于 Fox-Codebase 开发 (GPL-3.0)',260,320);
   
   return c;
 }
@@ -240,8 +260,8 @@ function genShareImg(){
 function shareGame(){
   var c=genShareImg();
   c.toBlob(function(b){
-    var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='western_duel.png';a.click();
-    T('✅ 战绩图已下载');
+    var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='western_duel_cert.png';a.click();
+    T('✅ 证书已下载');
   });
 }
 
@@ -299,12 +319,12 @@ function renderContent(){
 }
 
 function renderShare(c){
-  c.innerHTML='<div class="pp-st">📸 对局结束后点击下方按钮<br>生成战绩图片并下载</div>'+
-    '<div style="text-align:center;margin:10px 0"><button class="pp-btn" onclick="(function(){var c=genShareImg();c.toBlob(function(b){var a=document.createElement(\'a\');a.href=URL.createObjectURL(b);a.download=\'western_duel.png\';a.click();T(\'✅ 已下载\')})})()">📥 生成战绩图</button></div>'+
+  c.innerHTML='<div class="pp-st">📸 打完一局后生成对局证书<br>下载保存或分享给朋友</div>'+
+    '<div style="text-align:center;margin:10px 0"><button class="pp-btn" onclick="shareGame()">📥 下载证书图片</button></div>'+
     '<div id="ppSharePreview" style="text-align:center"></div>';
   try{
     var c2=genShareImg();
-    var img=document.createElement('img');img.src=c2.toDataURL();img.style.cssText='width:100%;max-width:300px;border-radius:8px;margin-top:6px';
+    var img=document.createElement('img');img.src=c2.toDataURL();img.style.cssText='width:100%;max-width:280px;border-radius:8px;margin-top:6px';
     document.getElementById('ppSharePreview').appendChild(img);
   }catch(e){}
 }
@@ -324,7 +344,6 @@ function renderDaily(c){
 window.toggleDaily=function(){
   var ts=todaySeed();
   if(E.dayActive===ts){E.dayActive=null;E._oldRandom=null;saveD();renderDaily($('ppContent'));T('⏹️ 每日模式已关闭');return}
-  // 保存原始Math.random并替换为种子版本
   E._oldRandom=Math.random;
   var rng=seedRand(ts);
   Math.random=function(){return rng()};
@@ -334,38 +353,63 @@ window.toggleDaily=function(){
   T('🎯 每日模式已启用 (种子:'+ts+')');
 };
 
-function renderReplay(c){
-  var html='<div class="pp-st">📹 最近 '+(E.replays.length)+' 场录像</div><div style="max-height:150px;overflow-y:auto">';
-  if(E.replays.length===0)html+='<div class="pp-st" style="color:#6a5540">暂无录像</div>';
-  E.replays.forEach(function(r,i){
-    html+='<div style="background:rgba(30,15,10,.4);border-radius:6px;padding:6px 10px;margin:4px 0;font-size:.7em;color:#a08070;cursor:pointer" onclick="playReplay('+i+')">'+
-      '📹 R'+r.rd+' · '+r.p1+' vs '+r.p2+' · '+r.frames.length+'帧</div>';
-  });
-  html+='</div>';
-  if(rec.length>0)html+='<div class="pp-st" style="font-size:.65em;color:#4c6;margin-top:4px">⏺️ 当前对局已录制 '+rec.length+' 帧</div>';
-  c.innerHTML=html;
+// 重置每局彩蛋计数器
+function resetEggCounters(){
+  E._ec=E._ec||{};
+  E._ec.rp=0;E._ec.sw=0;E._ec.ms=0;
 }
 
-function playReplay(idx){
+function renderReplay(c){
+  var html='<div class="pp-st">📹 最近 '+(E.replays.length)+' 场录像</div><div style="max-height:120px;overflow-y:auto">';
+  if(E.replays.length===0)html+='<div class="pp-st" style="color:#6a5540">暂无录像</div>';
+  E.replays.forEach(function(r,i){
+    html+='<div style="background:rgba(30,15,10,.4);border-radius:6px;padding:4px 8px;margin:3px 0;font-size:.65em;color:#a08070;cursor:pointer;display:flex;justify-content:space-between" onclick="playReplay('+i+')">'+
+      '<span>📹 R'+r.rd+' · '+r.p1+' vs '+r.p2+'</span><span>'+r.frames.length+'帧 ▶️</span></div>';
+  });
+  html+='</div>';
+  // 当前录制状态
+  if(rec.length>10)html+='<div class="pp-st" style="font-size:.6em;color:#4c6;margin-top:4px">⏺️ 本局已录 '+rec.length+' 帧</div>';
+  // 回放控制器
+  if(_rpFrames&&_rpFrames.length>0){
+    var pi=Math.round((_rpPos||0)/(_rpFrames.length-1)*100);
+    html+='<div class="pp-playback"><input type="range" min="0" max="'+(Math.max(1,_rpFrames.length-1))+'" value="'+(_rpPos||0)+'" oninput="seekReplay(this.value)" style="width:100%">'+
+      '<div class="pb-info"><span>'+(_rpPlaying?'⏸️':'▶️')+'</span><span>'+(Math.min(_rpPos+1,_rpFrames.length))+'/'+_rpFrames.length+'</span></div>'+
+      '<button class="pp-btn" onclick="togglePlay()">'+(_rpPlaying?'⏸️ 暂停':'▶️ 播放')+'</button></div>';
+  }
+  c.innerHTML=html;
+}
+window._rpFrames=null;window._rpPos=0;window._rpPlaying=false;window._rpTimer=null;
+
+window.playReplay=function(idx){
   if(idx<0||idx>=E.replays.length)return;
   var r=E.replays[idx];
   if(!r.frames||r.frames.length<2)return;
-  playIdx=0;
-  var p=$('ppPanel');
-  if(p)p.classList.remove('on');
-  // 直接开始播放
-  var cur=0;
-  function step(){
-    if(cur>=r.frames.length){T('⏹️ 回放结束');return}
-    playback(cur);
-    cur++;
-    setTimeout(step,150);
-  }
-  T('▶️ 开始回放 (R'+r.rd+')');
-  // 先恢复初始状态
+  if(_rpTimer){clearInterval(_rpTimer);_rpTimer=null}
+  _rpFrames=r.frames;_rpPos=0;_rpPlaying=false;
+  // 恢复到开始
   if(typeof initGame==='function'){initGame()}
-  setTimeout(step,300);
-}
+  setTimeout(function(){_rpPos=0;playback(0);renderReplay($('ppContent'))},200);
+};
+
+window.seekReplay=function(v){
+  _rpPos=parseInt(v)||0;if(_rpPos>=_rpFrames.length)_rpPos=_rpFrames.length-1;
+  playback(_rpPos);renderReplay($('ppContent'));
+};
+
+window.togglePlay=function(){
+  if(!_rpFrames||_rpFrames.length<2)return;
+  _rpPlaying=!_rpPlaying;
+  if(_rpPlaying){
+    if(_rpPos>=_rpFrames.length-1){_rpPos=0;playback(0)}
+    _rpTimer=setInterval(function(){
+      _rpPos++;if(_rpPos>=_rpFrames.length){_rpPos=_rpFrames.length-1;_rpPlaying=false;clearInterval(_rpTimer);_rpTimer=null;T('⏹️ 回放结束')}
+      playback(_rpPos);renderReplay($('ppContent'))
+    },200);
+  } else {
+    if(_rpTimer){clearInterval(_rpTimer);_rpTimer=null}
+  }
+  renderReplay($('ppContent'));
+};
 
 function renderEgg(c){
   var html='<div class="pp-st">🎪 彩蛋 · 隐藏成就</div><div style="text-align:center;margin:6px 0">';
