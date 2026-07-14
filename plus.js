@@ -8,7 +8,7 @@
 
 var css=document.createElement('style');
 css.textContent=[
-'.pp-ui{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:6px;opacity:0.4;transition:opacity .3s}',
+'.pp-ui{position:fixed;top:48px;right:12px;z-index:9999;display:flex;gap:6px;opacity:0.4;transition:opacity .3s}',
 '.pp-ui:hover{opacity:1}',
 '.pp-btn{background:rgba(30,15,10,.85);border:1px solid #6b3a2a;border-radius:8px;padding:4px 10px;color:#c0a090;cursor:pointer;font-family:inherit;font-size:.65em;white-space:nowrap}',
 '.pp-btn:hover{background:rgba(255,107,53,.15);border-color:#ff6b35;color:#f0e6d3}',
@@ -43,7 +43,7 @@ css.textContent=[
 document.head.appendChild(css);
 
 var P={tab:'share'};
-var E={daySeed:null,dayBest:null,replays:[],eggs:{},scores:[]};
+var E={daySeed:null,dayBest:null,dayActive:null,replays:[],eggs:{},scores:[]};
 var rec=[],playing=false,playIdx=0,eggCheck={};
 var themes={};
 
@@ -57,7 +57,7 @@ function isSameDay(ts){var d1=new Date(ts),d2=new Date();return d1.getFullYear()
 // ====== 数据持久化 ======
 function loadD(){
   try{var d=JSON.parse(localStorage.getItem('wd_plus'));if(d){
-    E.dayBest=d.dayBest||null;E.eggs=d.eggs||{};E.scores=d.scores||[];E.replays=d.replays||[]
+    E.dayBest=d.dayBest||null;E.eggs=d.eggs||{};E.scores=d.scores||[];E.replays=d.replays||[];E.dayActive=d.dayActive||null
   }}catch(e){}
   // 检查每日种子
   var ts=todaySeed();
@@ -311,11 +311,28 @@ function renderShare(c){
 
 function renderDaily(c){
   var ts=todaySeed();
-  c.innerHTML='<div class="pp-day"><div class="dt">🎯 '+ts+'</div><div class="dd">今日种子 · 所有人同一把牌</div>'+
-    (E.dayBest?'<div class="dr">🏆 最好成绩: '+E.dayBest.r+' 回合 ('+(E.dayBest.p||'?')+')</div>':
-    '<div class="dr" style="color:#a08070">今日尚未完成挑战</div>')+'</div>'+
-    '<div class="pp-st" style="font-size:.7em;color:#6a5540">每日挑战使用固定随机种子<br>同一天内所有人遇到相同的弹巢布局<br>挑战最少回合通关！</div>';
+  var active=(E.dayActive===ts);
+  c.innerHTML='<div class="pp-day"><div class="dt">🎯 '+ts+'</div><div class="dd">今日种子 · '+(active?'✅ 已启用':'点击启用')+'</div>'+
+    (E.dayBest&&E.dayBest.t&&isSameDay(E.dayBest.t)?
+      '<div class="dr">🏆 最少 <span class="sn">'+E.dayBest.r+'</span> 回合</div>':
+      '<div class="dr" style="color:#a08070">今日尚未完成</div>')+'</div>'+
+    '<div style="text-align:center;margin:6px 0">'+
+    '<button class="pp-btn" onclick="toggleDaily()">'+(active?'⏹️ 关闭每日模式':'🎯 启用每日模式')+'</button></div>'+
+    '<div class="pp-st" style="font-size:.7em;color:#6a5540;line-height:1.5">启用后游戏内的随机数将由日期种子决定<br>同一天所有人遇到完全相同的弹巢布局<br>💡 先启用每日模式 → 再开始新游戏 → 挑战最少回合！</div>';
 }
+
+window.toggleDaily=function(){
+  var ts=todaySeed();
+  if(E.dayActive===ts){E.dayActive=null;E._oldRandom=null;saveD();renderDaily($('ppContent'));T('⏹️ 每日模式已关闭');return}
+  // 保存原始Math.random并替换为种子版本
+  E._oldRandom=Math.random;
+  var rng=seedRand(ts);
+  Math.random=function(){return rng()};
+  E.dayActive=ts;
+  saveD();
+  renderDaily($('ppContent'));
+  T('🎯 每日模式已启用 (种子:'+ts+')');
+};
 
 function renderReplay(c){
   var html='<div class="pp-st">📹 最近 '+(E.replays.length)+' 场录像</div><div style="max-height:150px;overflow-y:auto">';
