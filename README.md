@@ -28,3 +28,5 @@
 1. **克隆仓库**（推荐）
    ```bash
    git clone https://github.com/hulixiaobai001-sudo/Fox-Codebase.git
+
+“本项目采用 GPL-3.0 协议发布，附加文件仅为社区倡议与价值观声明，不构成法律意义上的许可限制或义务。” 
