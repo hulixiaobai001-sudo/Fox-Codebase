@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>西部对决 - 联机版</title>
+<title>西部对决</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#1a0a0a,#2d1010,#1a0a0a);min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;color:#f0e6d3;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden}
@@ -53,943 +53,1631 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .p2p-scan-btn{background:rgba(255,107,53,.15);border:1px solid #ff6b35;border-radius:10px;padding:10px 28px;color:#ff6b35;cursor:pointer;font-size:.9em;margin:8px 4px}
 .p2p-status{font-size:.85em;color:#44aadd;margin-top:8px}
 .p2p-video{max-width:300px;width:100%;border-radius:12px;margin:8px auto;display:block}
-.p2p-error{color:#ff4444;font-size:.8em;margin-top:8px;padding:8px;background:rgba(255,68,68,.1);border-radius:6px}
-.p2p-loading{color:#ffaa00;font-size:.8em;margin-top:8px}
-.p2p-retry{background:rgba(255,170,0,.15);border:1px solid #ffaa00;border-radius:8px;padding:8px 20px;color:#ffaa00;cursor:pointer;font-size:.8em;margin:8px auto;display:inline-block}
-.p2p-info{background:rgba(68,204,102,.15);border:1px solid #44cc66;border-radius:8px;padding:8px 16px;color:#44cc66;cursor:pointer;font-size:.8em;margin:8px auto;display:inline-block}
-.game-screen{display:none;text-align:center;padding:20px}
-.game-screen.on{display:block}
-.game-arena{background:rgba(20,10,8,.8);border-radius:16px;padding:20px;margin:16px 0;min-height:300px}
-.player-info{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-.player-card{background:rgba(30,15,10,.6);border:2px solid rgba(139,69,19,.3);border-radius:12px;padding:15px}
-.player-card.host{border-color:#ff6b35;background:rgba(255,107,53,.08)}
-.player-card.current{border-color:#44cc66;background:rgba(68,204,102,.08)}
-.player-name{font-size:1.1em;font-weight:bold;color:#f0e6d3;margin-bottom:8px}
-.player-hp{font-size:.9em;color:#ff6b35}
-.player-status{font-size:.75em;color:#8a7a60;margin-top:4px}
-.game-log{background:rgba(0,0,0,.4);border-radius:8px;padding:15px;max-height:200px;overflow-y:auto;text-align:left}
-.game-log-entry{font-size:.85em;color:#c0a090;margin-bottom:6px;line-height:1.4}
-.game-log-entry.da{color:#ff6b35}
-.game-log-entry.cr{color:#ff4444}
-.game-log-item{color:#44cc66}
-.game-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.game-btn{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:10px;padding:12px 20px;font-size:1em;font-weight:bold;color:#fff;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,53,.3)}
-.game-btn:hover{transform:translateY(-2px)}
-.game-btn:disabled{opacity:.5;cursor:not-allowed}
-.game-btn.secondary{background:linear-gradient(135deg,#666,#444);color:#ccc}
-.connection-status{position:fixed;top:12px;right:12px;background:rgba(0,0,0,.8);color:#fff;padding:8px 16px;border-radius:20px;font-size:.8em;z-index:1000}
-.connection-status.connected{background:rgba(68,204,102,.8);color:#fff}
-.connection-status.connecting{background:rgba(255,170,0,.8);color:#fff}
-.connection-status.error{background:rgba(255,68,68,.8);color:#fff}
-@media (max-width:768px){
-  .gc{padding:16px}
-  .setup h1{font-size:1.8em}
-  .player-info{grid-template-columns:1fr;gap:10px}
-  .game-controls{grid-template-columns:1fr}
-}
+.game{display:none;padding:0}
+.game.on{display:block}
+.ghdr{display:flex;justify-content:space-between;align-items:center;padding:0 8px 10px;border-bottom:1px solid rgba(139,69,19,.4);margin-bottom:10px;flex-wrap:wrap}
+.ghdr .gt{font-size:1em;color:#ff6b35;font-weight:bold}
+.ghdr .gsub{font-size:.55em;color:#5a4030}
+.ghdr .rdi{font-size:.85em;color:#a08070}
+.ghdr .mli{color:#ff6b35;font-weight:bold;font-size:.85em}
+.ban{text-align:center;padding:7px;font-size:.95em;font-weight:bold;border-radius:10px;margin-bottom:10px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2)}
+.ban.dm{background:rgba(200,80,255,.1);border-color:rgba(200,80,255,.3);color:#dd88ff}
+.prow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.pp{background:rgba(30,15,10,.6);border-radius:14px;padding:12px 14px;border:2px solid rgba(139,69,19,.3)}
+.pp.on{border-color:#ff6b35;box-shadow:0 0 20px rgba(255,107,53,.15)}
+.pp.dead{opacity:.35;border-color:#500}
+.pp.aipp{position:relative}
+.pp.aipp::after{content:'AI';position:absolute;top:6px;right:8px;font-size:.55em;padding:1px 8px;border-radius:6px;background:rgba(100,50,200,.2);border:1px solid rgba(100,50,200,.3);color:#bb88ff}
+.pn{font-size:1em;font-weight:bold}
+.hearts{font-size:1.2em;letter-spacing:1px}
+.hearts .lost{opacity:.12}
+.hpt{font-size:.75em;color:#a08070;margin-bottom:5px}
+.irow{display:flex;gap:4px;flex-wrap:wrap}
+.ibtn{background:rgba(60,30,20,.5);border:1px solid rgba(139,69,19,.4);border-radius:8px;padding:3px 8px;font-size:.68em;color:#c0a090;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+.ibtn:active{transform:scale(.95)}
+.ibtn:hover:not(:disabled){background:rgba(255,107,53,.15);border-color:#ff6b35;color:#f0e6d3}
+.ibtn:disabled{opacity:.3;cursor:not-allowed}
+.ibtn.done{opacity:.2}
+.gun-area{text-align:center;padding:10px 0;margin-bottom:10px;background:rgba(20,10,8,.5);border-radius:14px;border:1px solid rgba(139,69,19,.2)}
+.gun-label{font-size:.8em;color:#a08070;margin-bottom:8px}
+.gun-label .hl{color:#ff6b35;font-weight:bold}
+.chb{display:flex;justify-content:center;gap:5px;margin-bottom:8px;flex-wrap:wrap}
+.ch{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7em;font-weight:bold;background:rgba(60,30,20,.6);border:2px solid #5a3a2a;color:#5a3a2a;user-select:none}
+.ch.cur{border-color:#ff6b35;box-shadow:0 0 12px rgba(255,107,53,.3);color:#ff6b35}
+.ch.fired{background:rgba(255,0,0,.18);border-color:#f22;color:#f44}
+.ch.unk{color:#3a3a3a;border-color:#3a3a3a}
+.acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0}
+.abtn{background:linear-gradient(135deg,#3a2018,#2a1510);border:1px solid #6b3a2a;border-radius:10px;padding:8px 18px;font-size:.82em;color:#f0e6d3;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+.abtn:active{transform:scale(.95)}
+.abtn:hover:not(:disabled){background:linear-gradient(135deg,#4a3020,#3a2015);border-color:#ff6b35}
+.abtn:disabled{opacity:.25;cursor:not-allowed}
+.abtn.shoot{background:linear-gradient(135deg,#8b2020,#5a1010);border-color:#8b2020;font-weight:bold}
+.abtn.shoot:hover:not(:disabled){background:linear-gradient(135deg,#a82828,#6a1515);border-color:#f33}
+.abtn.skip-act{background:linear-gradient(135deg,#5a4a20,#3a2a10);border-color:#8a7a3a}
+.abtn.skip-act:hover:not(:disabled){background:linear-gradient(135deg,#7a6a30,#4a3a1a);border-color:#ba5}
+.abtn.duel{background:linear-gradient(135deg,#6a2a6a,#4a1a4a);border-color:#8a3a8a;font-weight:bold}
+.abtn.duel:hover:not(:disabled){background:linear-gradient(135deg,#8a3a8a,#5a2a5a);border-color:#b5b}
+.loga{margin-top:10px;background:rgba(10,5,3,.6);border-radius:10px;padding:8px 12px;border:1px solid rgba(139,69,19,.15);max-height:100px;overflow-y:auto;font-size:.78em}
+.loga::-webkit-scrollbar{width:3px}
+.loga::-webkit-scrollbar-thumb{background:#5a3a2a;border-radius:4px}
+.le{padding:2px 0;color:#b0a090;border-bottom:1px solid rgba(139,69,19,.05)}
+.le.hi{color:#ff6b35;font-weight:bold}.le.da{color:#f44;font-weight:bold}.le.su{color:#4c6}.le.in{color:#4ad}.le.du{color:#d8f}.le.cr{color:#fa0}.le.sk{color:#ca4}.le.fl{color:#fc3}
+.ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center}
+.ov.on{display:flex}
+.obox{background:linear-gradient(135deg,#2a1510,#1a0a08);border:2px solid #8b4513;border-radius:20px;padding:30px;text-align:center;max-width:400px;width:90%}
+.obox h2{font-size:1.6em}.obox .wn{color:#ff6b35;font-size:1.5em;font-weight:bold;margin:8px 0}
+.obox .trophy{font-size:2.5em}.obox .stats{font-size:.85em;color:#a08070;margin-bottom:16px;line-height:1.6}
+.bre{background:linear-gradient(135deg,#ff6b35,#d4451a);border:none;border-radius:10px;padding:10px 30px;font-size:.95em;font-weight:bold;color:#fff;cursor:pointer}
+.hit-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;pointer-events:none}
+.hit-overlay.on{display:block;animation:hitFade .8s forwards}
+@keyframes hitFade{0%{background:rgba(200,0,0,.6)}60%{background:rgba(200,0,0,.3)}100%{background:transparent}}
+.hit-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3em;color:#fff;font-weight:bold;text-shadow:0 0 30px red;animation:hitText .6s forwards}
+@keyframes hitText{0%{transform:translate(-50%,-50%) scale(3);opacity:0}30%{opacity:1}100%{opacity:0}}
+.blind-o{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:150;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.blind-o.on{display:flex}
+.blind-o .bt{font-size:1.5em;color:#ff6b35}
+.blind-o .bh{font-size:.9em;color:#c0a090;margin-bottom:20px;line-height:1.6}
+.bchb{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.bch{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1em;font-weight:bold;cursor:pointer;background:rgba(60,30,20,.6);border:2px solid #6a4a2a;color:#f0e6d3}
+.bch:hover{background:rgba(255,107,53,.25);border-color:#ff6b35;transform:scale(1.12)}
+.bch.picked{background:rgba(255,50,50,.2);border-color:#f33;color:#f44}
+.bch.picked::after{content:'✅'}
+.blind-o .bcf{color:#4c6;margin-top:16px}
+.cert-o{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:180;align-items:center;justify-content:center}
+.cert-o.on{display:flex}
+.cert-box{background:linear-gradient(135deg,#3a2515,#2a1510);border:3px solid #c8943a;border-radius:20px;padding:30px;max-width:420px;text-align:center;box-shadow:0 0 80px rgba(200,148,58,.2)}
+.cert-box .ct{font-size:1.6em;color:#fc3;letter-spacing:4px}
+.cert-box .csb{font-size:.65em;color:#8a7a50;letter-spacing:6px;margin-bottom:14px}
+.cert-box .cbd{font-size:.9em;color:#d0c0a0}
+.cert-box .cgm{font-size:1.8em;color:#ff6b35;font-weight:bold;margin:6px 0}
+.cert-box .cln{font-size:.8em;color:#c8943a;letter-spacing:6px}
+.cert-box .cft{font-size:.75em;color:#8a7a50;font-style:italic;margin-top:10px}
+.cert-box .cdt{font-size:.65em;color:#6a5a40;margin-top:6px}
+.cert-box .cbtns{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.cert-box .cbtns button{background:rgba(200,148,58,.15);border:1px solid #c8943a;border-radius:8px;padding:8px 20px;color:#c8943a;cursor:pointer;font-size:.8em}
+.crdo{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:200;overflow:hidden}
+.crdo.on{display:block}
+.crds{position:absolute;left:50%;transform:translateX(-50%);text-align:center;animation:crdR 25s forwards;width:90%;max-width:500px}
+.crds .cct{font-size:2em;color:#ff6b35}.crds .ccn{font-size:1.2em;color:#f0e6d3;margin:6px 0}
+.crds .ccr{font-size:.8em;color:#a08070}.crds .ccd{width:50px;height:2px;background:#ff6b35;margin:14px auto}
+.crds .ccf{font-size:.95em;color:#d8f;margin-top:24px}.crds .ccs{font-size:.75em;color:#6a5540;margin-top:8px}
+@keyframes crdR{0%{top:100%}100%{top:-180%}}
+.crdc{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:210;background:rgba(255,107,53,.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:.85em}
+.itip{display:none;position:fixed;z-index:50;background:rgba(10,5,3,.95);border:1px solid #8b4513;border-radius:10px;padding:10px 14px;max-width:220px;font-size:.75em;color:#c0a090;pointer-events:none;backdrop-filter:blur(4px)}
+.itip.on{display:block}.itip .itn{font-weight:bold;color:#ff6b35}
+.cd-panel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:99990;align-items:center;justify-content:center}.cd-panel.on{display:flex}.cd-box{background:linear-gradient(135deg,#1e0e0a,#2a1510);border:2px solid #8b4513;border-radius:18px;padding:20px 24px;max-width:360px;width:90%}.cd-box h3{font-size:1.1em;color:#ff6b35;text-align:center;margin-bottom:10px}.cd-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.cd-row label{font-size:.75em;color:#c0a090;min-width:65px}.cd-row input[type=range]{flex:1;accent-color:#ff6b35;height:4px}.cd-row .cdv{font-size:.7em;color:#ff6b35;min-width:24px;text-align:right}.cd-close{display:block;margin:10px auto 0;background:rgba(255,107,53,.1);border:1px solid #6b3a2a;border-radius:8px;padding:6px 20px;color:#a08070;cursor:pointer;font-family:inherit;font-size:.8em}.cd-close:hover{background:rgba(255,107,53,.15)}
+.tst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.88);color:#ff6b35;padding:14px 28px;border-radius:12px;font-size:1em;z-index:9999;border:1px solid #8b4513;pointer-events:none;animation:tf 1.5s forwards}
+@keyframes tf{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
+@media(max-width:640px){.gc{padding:14px}.prow{grid-template-columns:1fr}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
 </style>
 </head>
 <body>
-
-<div class="connection-status" id="connectionStatus">离线</div>
-
-<div class="gc">
-    <!-- 设置界面 -->
-    <div class="scr setup on" id="setupScreen">
-        <h1>🤠 西部对决</h1>
-        <div class="sub">WESTERN SHOWDOWN</div>
-        <div class="desc">经典西部决斗游戏，测试你的运气与策略</div>
-        
-        <div class="mtabs">
-            <div class="mtab on" data-m="local" onclick="setMode('local')">本地</div>
-            <div class="mtab" data-m="p2p" onclick="setMode('p2p')">联机</div>
-            <div class="mtab" data-m="ai" onclick="setMode('ai')">AI</div>
-        </div>
-        
-        <div class="sgrid">
-            <label>玩家1名称</label>
-            <div></div>
-            <label>玩家2名称</label>
-        </div>
-        <div class="sgrid">
-            <input type="text" id="p1Name" value="玩家1" maxlength="8">
-            <div></div>
-            <input type="text" id="p2Name" value="玩家2" maxlength="8">
-        </div>
-        
-        <div class="settings-grid">
-            <label><input type="checkbox" id="soundOn" checked> 音效</label>
-            <label><input type="checkbox" id="autoStart" checked> 自动开始</label>
-            <label><input type="checkbox" id="showHints"> 显示提示</label>
-            <label><input type="checkbox" id="enableItems" checked> 启用道具</label>
-        </div>
-        
-        <div class="settings-grid">
-            <label>回合限制</label>
-            <input type="number" id="roundLimit" value="20" min="5" max="50">
-            <label>起始HP</label>
-            <input type="number" id="startHP" value="6" min="3" max="10">
-        </div>
-        
-        <button class="btn-start" onclick="startGame()">开始游戏</button>
-        
-        <div class="footer">
-            <a onclick="showHelp()">游戏帮助</a> | 
-            <a onclick="showSettings()">高级设置</a>
-        </div>
+<div class="gc" id="app">
+<div class="scr on" id="scrSetup">
+  <div class="setup">
+    <h1>西部对决</h1>
+    <div class="sub">—— 轮盘赌 ——</div>
+    <div class="desc">装弹 · 博弈 · 活下来</div>
+    <div class="mtabs">
+      <div class="mtab on" data-m="local" onclick="setMode('local')">本地</div>
+      <div class="mtab" data-m="ai" onclick="setMode('ai')">人机</div>
+      <div class="mtab" data-m="p2p" onclick="setMode('p2p')">联机</div>
     </div>
-
-    <!-- 物品选择界面 -->
-    <div class="scr item-select" id="itemScreen">
-        <h2>选择道具</h2>
-        <div class="hint">每位玩家选择3个道具带入游戏</div>
-        <div class="item-grid" id="itemGrid"></div>
-        <button class="item-confirm" id="itemConfirm" onclick="confirmItems()" disabled>确认选择</button>
+    <div class="diff-btns" id="diffBtns" style="display:none">
+      <span class="diff-btn on" data-d="easy" onclick="setDiff('easy')">🌱简单</span>
+      <span class="diff-btn" data-d="medium" onclick="setDiff('medium')">🔥中等</span>
+      <span class="diff-btn" data-d="hard" onclick="setDiff('hard')">💀困难</span>
+      <span class="diff-btn" data-d="custom" onclick="setDiff('custom')">⚙️自定义</span>
     </div>
-
-    <!-- P2P联机界面 -->
-    <div class="scr p2p-screen" id="p2pScreen">
-        <h2 id="p2pTitle">联机对战</h2>
-        <div class="p2p-steps" id="p2pSteps">选择创建或加入房间</div>
-        <div id="p2pQrArea"></div>
-        <div class="p2p-code" id="p2pCode"></div>
-        <div id="p2pError" class="p2p-error" style="display:none"></div>
-        <div id="p2pLoading" class="p2p-loading" style="display:none">正在连接...</div>
-        <div><button class="p2p-scan-btn" id="p2pScanBtn" style="display:none">扫描</button></div>
-        <div class="p2p-status" id="p2pStatus"></div>
-        <video class="p2p-video" id="p2pVideo" autoplay playsinline style="display:none"></video>
-        <div id="p2pActions"></div>
-        <div id="p2pRetry" class="p2p-retry" style="display:none" onclick="retryConnection()">重试连接</div>
-        <div id="p2pInfo" class="p2p-info" style="display:none" onclick="showConnectionInfo()">连接信息</div>
+    <div class="sgrid">
+      <div><label id="p1l">玩家1</label><input type="text" id="p1n" placeholder="输入名字" maxlength="10"></div>
+      <div style="font-size:1.4em;color:#ff6b35">VS</div>
+      <div><label id="p2l">玩家2</label><input type="text" id="p2n" placeholder="输入名字" maxlength="10"></div>
     </div>
-
-    <!-- 游戏界面 -->
-    <div class="scr game-screen" id="gameScreen">
-        <div class="game-arena">
-            <div class="player-info">
-                <div class="player-card host" id="player1Card">
-                    <div class="player-name" id="player1Name">玩家1</div>
-                    <div class="player-hp" id="player1HP">❤️❤️❤️❤️❤️❤️ (6/6)</div>
-                    <div class="player-status" id="player1Status">等待中...</div>
-                </div>
-                <div class="player-card current" id="player2Card">
-                    <div class="player-name" id="player2Name">玩家2</div>
-                    <div class="player-hp" id="player2HP">❤️❤️❤️❤️❤️❤️ (6/6)</div>
-                    <div class="player-status" id="player2Status">等待中...</div>
-                </div>
-            </div>
-            <div class="game-log" id="gameLog"></div>
-            <div class="game-controls">
-                <button class="game-btn" id="shootBtn" onclick="action('shoot')" disabled>开枪</button>
-                <button class="game-btn secondary" id="skipBtn" onclick="action('skip')" disabled>跳过</button>
-                <button class="game-btn secondary" id="itemBtn" onclick="showItemMenu()" disabled>使用道具</button>
-                <button class="game-btn secondary" id="quitBtn" onclick="quitGame()">退出游戏</button>
-            </div>
-        </div>
+    <div style="color:#dd8844;font-size:.85em;font-weight:bold;margin:10px 0 6px">自定义规则</div>
+    <div class="settings-grid">
+      <label>初始血量 <input type="number" id="sHP" value="5" min="1" max="99"></label>
+      <label>弹巢大小 <input type="number" id="sCh" value="6" min="2" max="99"></label>
+      <label>子弹数量 <input type="number" id="sBu" value="1" min="1" max="99"></label>
+      <label>跳过扣血 <input type="number" id="sSk" value="1" min="0" max="99"></label>
+      <label>道具数量 <input type="number" id="sIt" value="4" min="1" max="10"></label>
+      <label><input type="checkbox" id="sNoSk"> 禁止跳过</label>
     </div>
+    <button class="btn-start" onclick="startGame()">开始对决</button>
+    <div class="footer">第六届绒兽汇图一乐小游戏<br><a onclick="showCred()">制作人员</a></div>
+  </div>
 </div>
-
+<div class="scr" id="scrItems">
+  <div class="item-select">
+    <h2>选择道具</h2>
+    <div class="hint" id="itemHint">请选择 4 个道具</div>
+    <div class="item-grid" id="itemGrid"></div>
+    <button class="item-confirm" id="btnItemConfirm" onclick="confirmItems()" disabled>确认</button>
+  </div>
+</div>
+<div class="scr" id="scrP2P">
+  <div class="p2p-screen">
+    <h2 id="p2pTitle">联机对战</h2>
+    <div class="p2p-steps" id="p2pSteps">选择创建或加入房间</div>
+    <div id="p2pQrArea"></div>
+    <div class="p2p-code" id="p2pCode"></div>
+    <div><button class="p2p-scan-btn" id="p2pScanBtn" style="display:none">扫描</button></div>
+    <div class="p2p-status" id="p2pStatus"></div>
+    <video class="p2p-video" id="p2pVideo" autoplay playsinline style="display:none"></video>
+    <div id="p2pActions"></div>
+    <div><button class="abtn" onclick="cancelP2P()">返回</button></div>
+  </div>
+</div>
+<div class="game" id="gameBoard">
+  <div class="ghdr">
+    <div class="gtit"><div class="gt">西部对决</div><div class="gsub">第六届绒兽汇</div></div>
+    <span class="rdi" id="rdInfo">第0回合</span>
+    <span class="mli" id="mli">x1</span>
+  </div>
+  <div class="ban" id="ban">准备开始...</div>
+  <div class="prow" id="prow"></div>
+  <div class="gun-area">
+    <div class="gun-label" id="gunL">等待装弹...</div>
+    <div class="chb" id="chb"></div>
+    <div id="bulI" style="font-size:.7em;color:#6a5540;min-height:16px"></div>
+  </div>
+  <div class="acts" id="actsBox"></div>
+  <div class="loga" id="logA"></div>
+</div>
+<div class="blind-o" id="blindO">
+  <div class="bt">装弹阶段</div>
+  <div class="bh">请对手闭上眼睛<br>装弹者点击弹仓放入子弹</div>
+  <div class="bchb" id="bchb"></div>
+  <div class="bcf" id="bcf"></div>
+</div>
+<div class="hit-overlay" id="hitO"><div class="hit-text" id="hitT"></div></div>
+<div class="ov" id="goO">
+  <div class="obox">
+    <div class="trophy">🏆</div>
+    <h2 id="goT">游戏结束</h2>
+    <div class="wn" id="goW">——</div>
+    <div class="stats" id="goS"></div>
+    <button class="bre" onclick="rst()">再来一局</button>
+  </div>
+</div>
+<div class="ov" id="rulesO">
+  <div class="obox" style="text-align:left;max-width:460px">
+    <h2 style="text-align:center;font-size:1.3em">📖 教程</h2>
+    <div style="font-size:.82em;color:#c0a090;line-height:1.8;max-height:50vh;overflow-y:auto;margin:12px 0">
+      <b style="color:#dd8844">基本玩法</b><br>6发弹巢·1发子弹·每人5条命。轮流开枪，空枪过，中弹扣血。<br><br>
+      <b style="color:#dd8844">装弹</b><br>系统随机指定装弹。对手请闭眼，装弹者选弹仓。完成后弹仓显示?，位置只有装弹者知道。<br><br>
+      <b style="color:#dd8844">跳过</b><br>觉得这发是真子弹可选择跳过，不击发弹仓不推进。代价扣1HP，随机获得一个已用道具。<br><br>
+      <b style="color:#dd8844">洗枪</b><br>使用后系统随机重置子弹位置，显示"系统已转枪"，无人知道新位置。<br><br>
+      <b style="color:#dd8844">道具池10选N</b><br>怀表、书、旗帜、查看、洗枪、急救包、防弹衣、连射、冰冻、交换。长按看说明。<br><br>
+      <b style="color:#dd8844">决斗</b><br>书触发后可发起，伤害+2持续1回合。暴击10%概率x1.5。<br><br>
+      <b style="color:#dd8844">当前规则</b><br>HP:<span id="rHp"></span> 弹巢:<span id="rCh"></span> 子弹:<span id="rBu"></span> 跳过:<span id="rSk"></span> 道具:<span id="rIt"></span><br><br>
+      <b style="color:#dd8844">联机</b><br>P2P扫码直连，二维码下方有文本代码可复制粘贴。支持从相册选择截图识别二维码。<br><br>
+      <b style="color:#dd8844">制作</b><br>白沁 · deepseek-V4fish · 英雄主义公会全体成员
+    </div>
+    <button class="bre" onclick="hideRules()" style="display:block;margin:0 auto">知道了</button>
+  </div>
+</div>
+<div class="cert-o" id="certO">
+  <div class="cert-box">
+    <div class="ct">内测证书</div>
+    <div class="csb">CERTIFICATE</div>
+    <div class="cbd">感谢 <span id="cName" style="color:#fc3;font-weight:bold">——</span> 参与</div>
+    <div class="cgm">西部对决</div>
+    <div class="cln">封 闭 内 测</div>
+    <div class="cbdg"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;background:rgba(255,200,50,.12);color:#fc3;border:1px solid rgba(255,200,50,.3);margin:2px">公会成员</span><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-size:.7em;background:rgba(100,200,255,.12);color:#6cf;border:1px solid rgba(100,200,255,.3);margin:2px">内测玩家</span></div>
+    <div class="cft">本证书用来图一乐玩</div>
+    <div class="cdt" id="cDate"></div>
+    <div class="cbtns"><button onclick="hideCert()">关闭</button><button onclick="dlCert()">下载图片</button></div>
+  </div>
+</div>
+<div class="crdo" id="credO">
+  <div class="crds" id="credS">
+    <div class="cct">西部对决</div><div class="ccd"></div>
+    <div class="ccr">制作设计策划调试</div><div class="ccn">白沁</div><div class="ccd"></div>
+    <div class="ccr">AI模型</div><div class="ccn">deepseek-V4fish</div><div class="ccd"></div>
+    <div class="ccr">游戏测试</div><div class="ccn">英雄主义公会全体成员</div><div class="ccd"></div>
+    <div class="ccf">感谢游玩！</div><div class="ccs">"爱与被爱，是这个世界上最温柔的事"</div>
+  </div>
+  <div class="crdc" onclick="hideCred()">关闭</div>
+</div>
+<div class="itip" id="tip"><div class="itn" id="tipN"></div><div id="tipD"></div></div>
+</div>
 <script>
-// ====== 全局状态 ======
-var G={
-    mode:null, // local, p2p, ai
-    p:[null,null],
-    hp:[6,6],
-    cp:0, // current player
-    ps:[[],[]], // selected items
-    ld:0, // loaded items count
-    phase:'setup', // setup, ready, playing, ended
-    rd:0, // round
-    isHost:false,
-    conn:null,
-    connStep:0,
-    freezeTarget:undefined,
-    extraBullets:[],
-    aiDiff:'medium',
-    aiCustom:{caut:50, item:50, acc:50, bluf:30}
+var ITEMS = [
+  {id:'watch', name:'反转怀表', desc:'枪口指向对手，代价下回合开2枪', ico:'w'},
+  {id:'book',  name:'我没死之书', desc:'致命伤害豁免至1HP，可发起生死决斗', ico:'B'},
+  {id:'flag',  name:'公会旗帜', desc:'挡一次任何伤害，每3回合自动充能', ico:'F'},
+  {id:'check', name:'查看子弹', desc:'显示子弹当前所在位置', ico:'E'},
+  {id:'wash',  name:'洗枪', desc:'随机重置子弹位置，无人知晓新位置', ico:'W'},
+  {id:'medkit',name:'急救包', desc:'立即回复2HP', ico:'M'},
+  {id:'armor', name:'防弹衣', desc:'挡一次伤害，一次性消耗', ico:'A'},
+  {id:'rapid', name:'连射', desc:'空枪后本回合可再开一枪', ico:'R'},
+  {id:'freeze',name:'冰冻', desc:'击中后对手下回合强制跳过', ico:'Z'},
+  {id:'swap',  name:'交换', desc:'与对手交换当前HP', ico:'S'}
+];
+var itemIco = {w:'⏱',B:'📖',F:'🏴',E:'🔍',W:'🔄',M:'💉',A:'🛡',R:'🔫',Z:'❄',S:'🌪'};
+
+var G = {
+  mode:'local', phase:'setup', isHost:true,
+  p: [
+    {n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0},
+    {n:'',hp:5,mx:5,al:true,ai:false,sel:[],it:{},wa:false,wp:0,ba:false,bu:false,fa:false,fc:0,ft:0,fr:0}
+  ],
+  s: {hp:5, ch:6, bu:1, sk:1, it:4, noSk:false},
+  cp:0, ld:-1, mult:1, rd:0, bp:-1, cc:0, br:false, rs:false, bf:false,
+  de:false, da:false, st:0, ps:0, tr:0, crC:0.1, certShown:false, log:[],
+  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[], aiDiff:'medium', aiCustom:{caut:50, item:50, acc:50, bluf:30}
 };
 
-// ====== P2P联机核心功能 ======
-var pc = null, dc = null, p2pStep = 0, scanInt = null;
-var connectionRetries = 0;
-const MAX_RETRIES = 3;
-const CONNECTION_TIMEOUT = 30000;
+function $(id) { return document.getElementById(id); }
 
-// 初始化P2P连接
-function initP2P() {
-    try {
-        // 检查WebRTC支持
-        if (!window.RTCPeerConnection || !window.RTCDataChannel) {
-            showError('浏览器不支持WebRTC，请使用Chrome、Firefox或Safari');
-            return false;
-        }
-        
-        // 创建PeerConnection
-        pc = new RTCPeerConnection({
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        });
-        
-        // 创建数据通道
-        dc = pc.createDataChannel('game-data', {
-            ordered: true,
-            maxRetransmits: 3
-        });
-        
-        setupDataChannelHandlers();
-        setupICEHandlers();
-        
-        return true;
-    } catch (error) {
-        showError('P2P初始化失败: ' + error.message);
-        return false;
-    }
+function T(msg) {
+  var e = document.createElement('div');
+  e.className = 'tst';
+  e.textContent = msg;
+  document.body.appendChild(e);
+  setTimeout(function() {
+    if (e.parentNode) e.parentNode.removeChild(e);
+  }, 1600);
 }
 
-// 设置数据通道处理器
-function setupDataChannelHandlers() {
-    dc.onopen = function() {
-        console.log('数据通道已打开');
-        updateConnectionStatus('connected', '已连接');
-        connectionRetries = 0;
+function setMode(m) {
+  document.querySelectorAll('.mtab').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.m === m);
+  });
+  G.mode = m;
+  if (m === 'ai') {
+    $('p2n').value = '';
+    $('p2n').placeholder = '人机001号';
+    $('p2n').disabled = true;
+    $('p2l').textContent = 'AI';
+    $('diffBtns').style.display = 'flex';
+    setDiff('medium');
+  } else {
+    $('p2n').disabled = false;
+    $('p2n').placeholder = '输入名字';
+    $('p2l').textContent = '玩家2';
+    $('diffBtns').style.display = 'none';
+  }
+}
+function setDiff(d) {
+  G.aiDiff = d;
+  document.querySelectorAll('.diff-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.d === d);
+  });
+  if (d === 'custom') {
+    $('cdPanel').classList.add('on');
+    G.aiCustom = {
+      caut: parseInt($('cdCaut').value) || 50,
+      item: parseInt($('cdItem').value) || 50,
+      acc: parseInt($('cdAcc').value) || 50,
+      bluf: parseInt($('cdBluf').value) || 30
     };
-    
-    dc.onmessage = function(event) {
-        try {
-            var data = JSON.parse(event.data);
-            handleP2PMessage(data);
-        } catch (error) {
-            console.error('解析消息失败:', error);
-        }
-    };
-    
-    dc.onclose = function() {
-        console.log('数据通道已关闭');
-        updateConnectionStatus('disconnected', '连接断开');
-        handleConnectionLoss();
-    };
-    
-    dc.onerror = function(error) {
-        console.error('数据通道错误:', error);
-        showError('数据通道错误: ' + error.message);
-    };
+  }
 }
 
-// 设置ICE处理器
-function setupICEHandlers() {
-    pc.oniceconnectionstatechange = function() {
-        console.log('ICE连接状态:', pc.iceConnectionState);
-        
-        switch (pc.iceConnectionState) {
-            case 'checking':
-                updateConnectionStatus('connecting', '正在连接...');
-                break;
-            case 'connected':
-            case 'completed':
-                updateConnectionStatus('connected', '已连接');
-                break;
-            case 'disconnected':
-            case 'failed':
-                updateConnectionStatus('error', '连接失败');
-                handleConnectionLoss();
-                break;
-            case 'closed':
-                updateConnectionStatus('disconnected', '连接已关闭');
-                break;
-        }
-    };
-    
-    pc.onicecandidate = function(event) {
-        if (event.candidate) {
-            console.log('ICE候选:', event.candidate);
-        } else {
-            console.log('ICE收集完成');
-        }
-    };
-}
-
-// 处理P2P消息
-function handleP2PMessage(data) {
-    console.log('收到P2P消息:', data);
-    
-    switch (data.type) {
-        case 'offer':
-            handleOffer(data.offer);
-            break;
-        case 'answer':
-            handleAnswer(data.answer);
-            break;
-        case 'candidate':
-            handleICECandidate(data.candidate);
-            break;
-        case 'game-state':
-            handleGameState(data);
-            break;
-        case 'action':
-            handleOpponentAction(data.action);
-            break;
-        case 'error':
-            showError('对手错误: ' + data.message);
-            break;
-        case 'ping':
-            sendAction({ type: 'pong' });
-            break;
-    }
-}
-
-// 创建房间（主机）
-function hostP2P() {
-    if (!initP2P()) return;
-    
-    p2pStep = 1;
-    $('p2pSteps').textContent = '正在创建房间...';
-    $('p2pStatus').textContent = '生成连接代码...';
-    
-    // 生成房间ID
-    G.roomId = generateRoomId();
-    
-    // 创建offer
-    pc.createOffer()
-        .then(function(offer) {
-            return pc.setLocalDescription(offer);
-        })
-        .then(function() {
-            // 生成二维码和显示连接信息
-            showConnectionInfo();
-            $('p2pSteps').textContent = '等待对手加入...';
-            $('p2pStatus').textContent = '房间ID: ' + G.roomId;
-            startConnectionTimeout();
-        })
-        .catch(function(error) {
-            showError('创建offer失败: ' + error.message);
-        });
-}
-
-// 加入房间（客户端）
-function joinP2P() {
-    showConnectionMethods();
-}
-
-// 显示连接方式
-function showConnectionMethods() {
-    $('p2pSteps').textContent = '选择连接方式';
-    $('p2pQrArea').innerHTML = '';
-    $('p2pCode').textContent = '';
-    
-    var inp = document.createElement('input');
-    inp.type = 'text';
-    inp.placeholder = '输入房间ID或扫描二维码';
-    inp.style.cssText = 'width:100%;padding:10px;border-radius:8px;border:1px solid #6b3a2a;background:rgba(60,30,20,.6);color:#f0e6d3;margin-bottom:10px';
-    
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;justify-content:center';
-    
-    var btn1 = document.createElement('button');
-    btn1.className = 'p2p-scan-btn';
-    btn1.textContent = '确认';
-    btn1.onclick = function() {
-        var v = document.getElementById('p2pTextInput');
-        if (v && v.value.trim()) {
-            G.roomId = v.value.trim().toUpperCase();
-            connectToRoom();
-        }
-    };
-    
-    var btn2 = document.createElement('button');
-    btn2.className = 'p2p-scan-btn';
-    btn2.textContent = '从相册选择截图';
-    btn2.onclick = function() {
-        if (!p2pFileInput) addGalleryInput();
-        var fi = document.getElementById('p2pGalleryInput');
-        if (fi) fi.click();
-    };
-    
-    row.appendChild(btn1);
-    row.appendChild(btn2);
-    
-    $('p2pQrArea').appendChild(inp);
-    $('p2pQrArea').appendChild(row);
-    
-    // 设置输入框ID
-    inp.id = 'p2pTextInput';
-    inp.focus();
-}
-
-// 连接到房间
-function connectToRoom() {
-    if (!initP2P()) return;
-    
-    p2pStep = 2;
-    $('p2pSteps').textContent = '正在连接到房间...';
-    $('p2pStatus').textContent = '房间ID: ' + G.roomId;
-    showConnectionInfo();
-    startConnectionTimeout();
-    
-    // 创建answer
-    pc.createOffer()
-        .then(function(offer) {
-            return pc.setLocalDescription(offer);
-        })
-        .then(function() {
-            // 发送offer给主机
-            sendToServer({
-                type: 'join',
-                roomId: G.roomId,
-                offer: pc.localDescription
-            });
-        })
-        .catch(function(error) {
-            showError('创建offer失败: ' + error.message);
-        });
-}
-
-// 处理offer
-function handleOffer(offer) {
-    if (!pc) return;
-    
-    pc.setRemoteDescription(new RTCSessionDescription(offer))
-        .then(function() {
-            return pc.createAnswer();
-        })
-        .then(function(answer) {
-            return pc.setLocalDescription(answer);
-        })
-        .then(function() {
-            sendToServer({
-                type: 'answer',
-                roomId: G.roomId,
-                answer: pc.localDescription
-            });
-        })
-        .catch(function(error) {
-            showError('处理offer失败: ' + error.message);
-        });
-}
-
-// 处理answer
-function handleAnswer(answer) {
-    if (!pc) return;
-    
-    pc.setRemoteDescription(new RTCSessionDescription(answer))
-        .then(function() {
-            console.log('Answer处理完成');
-            onConnectionEstablished();
-        })
-        .catch(function(error) {
-            showError('处理answer失败: ' + error.message);
-        });
-}
-
-// 处理ICE候选
-function handleICECandidate(candidate) {
-    if (!pc) return;
-    
-    pc.addIceCandidate(new RTCIceCandidate(candidate))
-        .catch(function(error) {
-            console.error('添加ICE候选失败:', error);
-        });
-}
-
-// 连接建立成功
-function onConnectionEstablished() {
-    console.log('P2P连接建立成功');
-    G.isHost = p2pStep === 1;
-    G.mode = 'p2p';
-    
-    $('p2pSteps').textContent = '连接成功！';
-    $('p2pStatus').textContent = G.isHost ? '你是主机' : '你是客户端';
-    $('p2pQrArea').innerHTML = '';
-    $('p2pCode').textContent = '';
-    $('p2pScanBtn').style.display = 'none';
-    $('p2pRetry').style.display = 'none';
-    
-    // 开始游戏
-    setTimeout(function() {
-        startGame();
-    }, 1000);
-}
-
-// 发送动作到对手
-function sendAction(action) {
-    if (!dc || dc.readyState !== 'open') {
-        console.warn('数据通道未打开，无法发送动作');
-        return false;
-    }
-    
-    try {
-        dc.send(JSON.stringify({
-            type: 'action',
-            action: action,
-            timestamp: Date.now()
-        }));
-        return true;
-    } catch (error) {
-        console.error('发送动作失败:', error);
-        return false;
-    }
-}
-
-// 发送游戏状态
-function sendState() {
-    if (!dc || dc.readyState !== 'open') return;
-    
-    try {
-        dc.send(JSON.stringify({
-            type: 'game-state',
-            state: {
-                hp: G.hp,
-                cp: G.cp,
-                rd: G.rd,
-                ps: G.ps,
-                ld: G.ld
-            },
-            timestamp: Date.now()
-        }));
-    } catch (error) {
-        console.error('发送游戏状态失败:', error);
-    }
-}
-
-// 处理对手动作
-function handleOpponentAction(action) {
-    console.log('对手动作:', action);
-    
-    switch (action.type) {
-        case 'shoot':
-            if (action.hit) {
-                // 对手击中
-                var dmg = action.dmg || 1;
-                G.hp[G.cp] -= dmg;
-                addL('对手开枪: 击中! 造成' + dmg + '点伤害', 'da');
-                if (G.hp[G.cp] <= 0) {
-                    gameOver(G.cp === 0 ? 1 : 0);
-                }
-            } else {
-                // 对手空枪
-                addL('对手开枪: 空枪', '');
-                G.cc = action.cc;
-                G.cp = action.cp;
-            }
-            break;
-            
-        case 'skip':
-            G.cp = action.cp;
-            addL('对手跳过回合', '');
-            break;
-            
-        case 'item':
-            var names = {};
-            ITEMS.forEach(function(it) { names[it.id] = it.name; });
-            addL('对手使用了 ' + names[action.id], 'in');
-            break;
-            
-        case 'load':
-            G.ps[action.cp] = action.ps;
-            G.ld = action.ld;
-            break;
-    }
-    
-    updateGameDisplay();
-    enableActions();
-}
-
-// 处理游戏状态
-function handleGameState(state) {
-    console.log('收到游戏状态:', state);
-    G.hp = state.hp;
-    G.cp = state.cp;
-    G.rd = state.rd;
-    G.ps = state.ps;
-    G.ld = state.ld;
-    
-    updateGameDisplay();
-}
-
-// 连接超时处理
-function startConnectionTimeout() {
-    clearTimeout(scanInt);
-    scanInt = setTimeout(function() {
-        if (p2pStep > 0 && p2pStep < 3) {
-            connectionRetries++;
-            if (connectionRetries >= MAX_RETRIES) {
-                showError('连接超时，请检查网络后重试');
-                $('p2pRetry').style.display = 'inline-block';
-            } else {
-                showError('连接超时，正在重试... (' + connectionRetries + '/' + MAX_RETRIES + ')');
-                setTimeout(function() {
-                    if (p2pStep === 1) {
-                        hostP2P();
-                    } else if (p2pStep === 2) {
-                        connectToRoom();
-                    }
-                }, 2000);
-            }
-        }
-    }, CONNECTION_TIMEOUT);
-}
-
-// 连接丢失处理
-function handleConnectionLoss() {
-    if (G.phase === 'playing') {
-        showError('与对手的连接丢失');
-        // 可以选择暂停游戏或等待重连
-    }
-}
-
-// 重试连接
-function retryConnection() {
-    connectionRetries = 0;
-    $('p2pRetry').style.display = 'none';
-    $('p2pError').style.display = 'none';
-    
-    if (p2pStep === 1) {
-        hostP2P();
-    } else if (p2pStep === 2) {
-        showConnectionMethods();
-    }
-}
-
-// 显示连接信息
-function showConnectionInfo() {
-    if (!G.roomId) {
-        G.roomId = generateRoomId();
-    }
-    
-    // 生成二维码
-    var qrData = 'ws://localhost:3000/join/' + G.roomId;
-    var qrCanvas = generateQRCode(qrData, 200);
-    
-    var wrap = document.createElement('div');
-    wrap.className = 'p2p-qr';
-    wrap.appendChild(qrCanvas);
-    
-    $('p2pQrArea').innerHTML = '';
-    $('p2pQrArea').appendChild(wrap);
-    
-    $('p2pCode').textContent = G.roomId;
-    $('p2pInfo').style.display = 'inline-block';
-}
-
-// 生成房间ID
-function generateRoomId() {
-    return Math.random().toString(36).substr(2, 6).toUpperCase();
-}
-
-// 生成二维码
-function generateQRCode(text, size) {
-    var canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    
-    // 这里简化处理，实际应该使用QRCode库
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px monospace';
-    ctx.fillText(text, 5, size - 5);
-    
-    return canvas;
-}
-
-// 更新连接状态
-function updateConnectionStatus(status, text) {
-    var statusEl = $('connectionStatus');
-    statusEl.textContent = text;
-    statusEl.className = 'connection-status ' + status;
-}
-
-// 显示错误信息
-function showError(message) {
-    var errorEl = $('p2pError');
-    errorEl.textContent = message;
-    errorEl.style.display = 'block';
-    $('p2pLoading').style.display = 'none';
-}
-
-// ====== 游戏核心逻辑 ======
+// ====== START ======
 function startGame() {
-    // 初始化游戏状态
-    G.hp = [parseInt($('startHP').value), parseInt($('startHP').value)];
-    G.cp = 0;
-    G.rd = 0;
-    G.phase = 'playing';
-    
-    // 设置玩家名称
-    G.p[0] = { n: $('p1Name').value || '玩家1' };
-    G.p[1] = { n: $('p2Name').value || '玩家2' };
-    
-    // 切换到游戏界面
-    showScreen('gameScreen');
-    
-    // 更新显示
-    updateGameDisplay();
-    enableActions();
-    
-    // 添加游戏开始日志
-    addL('游戏开始! ' + G.p[0].n + ' vs ' + G.p[1].n, 'start');
-    
-    // 如果是P2P模式且是客户端，等待主机开始
-    if (G.mode === 'p2p' && !G.isHost) {
-        $('player1Status').textContent = '等待主机开始...';
-        $('player2Status').textContent = '准备就绪';
-        disableActions();
-    }
+  var n1 = $('p1n').value.trim() || '玩家1';
+  var n2 = G.mode === 'ai' ? '人机001号' : ($('p2n').value.trim() || '玩家2');
+  G.p[0].n = n1;
+  G.p[1].n = n2;
+  G.p[1].ai = (G.mode === 'ai');
+
+  G.s.hp = parseInt($('sHP').value) || 5;
+  G.s.ch = parseInt($('sCh').value) || 6;
+  G.s.bu = parseInt($('sBu').value) || 1;
+  G.s.sk = parseInt($('sSk').value) || 1;
+  G.s.noSk = $('sNoSk').checked;
+  var ic = parseInt($('sIt').value) || 4;
+  G.s.it = Math.min(10, Math.max(1, ic));
+
+  if (G.mode === 'p2p') { startP2P(); return; }
+  if (G.mode === 'ai') { G.p[1].sel = autoPick(G.s.it); }
+  showItemSelect(0);
 }
 
-// 更新游戏显示
-function updateGameDisplay() {
-    // 更新玩家信息
-    $('player1Name').textContent = G.p[0].n;
-    $('player2Name').textContent = G.p[1].n;
-    
-    // 更新HP显示
-    updateHPDisplay(0);
-    updateHPDisplay(1);
-    
-    // 更新状态
-    if (G.phase === 'playing') {
-        var currentPlayerName = G.p[G.cp].n;
-        $('player1Status').textContent = G.cp === 0 ? '你的回合' : '等待中...';
-        $('player2Status').textContent = G.cp === 1 ? '你的回合' : '等待中...';
-        
-        // 高亮当前玩家
-        document.getElementById('player1Card').classList.toggle('current', G.cp === 0);
-        document.getElementById('player2Card').classList.toggle('current', G.cp === 1);
-    }
+function autoPick(n) {
+  var pool = ITEMS.slice();
+  var pick = [];
+  while (pick.length < n && pool.length > 0) {
+    var i = Math.floor(Math.random() * pool.length);
+    pick.push(pool[i].id);
+    pool.splice(i, 1);
+  }
+  return pick;
 }
 
-// 更新HP显示
-function updateHPDisplay(player) {
-    var hpEl = $('player' + (player + 1) + 'HP');
-    var hp = G.hp[player];
-    var maxHP = parseInt($('startHP').value);
-    var hearts = '❤️'.repeat(Math.max(0, hp));
-    var grayHearts = '🤍'.repeat(Math.max(0, maxHP - hp));
-    hpEl.textContent = hearts + grayHearts + ' (' + hp + '/' + maxHP + ')';
+// ====== ITEM SELECT ======
+var selPly = 0, selItems = [], selCount = 0;
+
+function showItemSelect(pi) {
+  selPly = pi;
+  selItems = [];
+  selCount = 0;
+  $('scrSetup').classList.remove('on');
+  $('scrItems').classList.add('on');
+  $('itemHint').textContent = G.p[pi].n + ' 请选择 ' + G.s.it + ' 个道具';
+
+  var grid = $('itemGrid');
+  grid.innerHTML = '';
+  ITEMS.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = '<div class="iemoji">' + itemIco[item.ico] + '</div>' +
+      '<div class="iname">' + item.name + '</div>' +
+      '<div class="idesc">' + item.desc + '</div>' +
+      '<div class="icheck">✓</div>';
+    card.onclick = function() {
+      var idx = selItems.indexOf(item.id);
+      if (idx >= 0) {
+        selItems.splice(idx, 1);
+        selCount--;
+        card.classList.remove('sel');
+      } else if (selCount < G.s.it) {
+        selItems.push(item.id);
+        selCount++;
+        card.classList.add('sel');
+      }
+      $('btnItemConfirm').disabled = (selCount !== G.s.it);
+    };
+    grid.appendChild(card);
+  });
+
+  $('btnItemConfirm').disabled = true;
+  if (G.mode === 'ai' && pi === 1) {
+    G.p[1].sel = autoPick(G.s.it);
+    nextPly();
+  }
 }
 
-// 启用/禁用动作按钮
-function enableActions() {
-    if (G.mode === 'p2p' && !G.isHost && G.cp === 0) {
-        disableActions();
-        return;
-    }
-    
-    if (G.phase === 'playing' && G.cp === getCurrentPlayer()) {
-        $('shootBtn').disabled = false;
-        $('skipBtn').disabled = false;
-        $('itemBtn').disabled = false;
-    } else {
-        disableActions();
-    }
-}
-
-function disableActions() {
-    $('shootBtn').disabled = true;
-    $('skipBtn').disabled = true;
-    $('itemBtn').disabled = true;
-}
-
-// 获取当前玩家
-function getCurrentPlayer() {
-    if (G.mode === 'p2p') {
-        return G.isHost ? 0 : 1;
-    }
-    return G.cp;
-}
-
-// 玩家动作
-function action(type) {
-    if (G.phase !== 'playing') return;
-    
-    var currentPlayer = getCurrentPlayer();
-    if (currentPlayer !== G.cp) return;
-    
-    switch (type) {
-        case 'shoot':
-            shoot();
-            break;
-        case 'skip':
-            skip();
-            break;
-    }
-}
-
-// 开枪
-function shoot() {
-    var hit = Math.random() < 0.7; // 70%命中率
-    var dmg = hit ? 1 : 0;
-    
-    if (G.mode === 'p2p') {
-        sendAction({ type: 'shoot', hit: hit, dmg: dmg, dt: Date.now() });
-        if (hit) {
-            G.hp[G.cp === 0 ? 1 : 0] -= dmg;
-            addL('你开枪: 击中! 造成' + dmg + '点伤害', 'da');
-        } else {
-            addL('你开枪: 空枪', '');
-        }
-    } else {
-        // 本地游戏逻辑
-        if (hit) {
-            G.hp[G.cp === 0 ? 1 : 0] -= dmg;
-            addL('玩家' + (G.cp + 1) + '开枪: 击中! 造成' + dmg + '点伤害', 'da');
-        } else {
-            addL('玩家' + (G.cp + 1) + '开枪: 空枪', '');
-        }
-    }
-    
-    G.rd++;
-    updateGameDisplay();
-    
-    if (G.hp[0] <= 0 || G.hp[1] <= 0) {
-        gameOver(G.hp[0] <= 0 ? 1 : 0);
-    } else {
-        nextTurn();
-    }
-}
-
-// 跳过回合
-function skip() {
-    if (G.mode === 'p2p') {
-        sendAction({ type: 'skip', cp: G.cp });
-        addL('你跳过了回合', '');
-    } else {
-        addL('玩家' + (G.cp + 1) + '跳过了回合', '');
-    }
-    
-    nextTurn();
-}
-
-// 下一回合
-function nextTurn() {
-    G.cp = 1 - G.cp;
-    updateGameDisplay();
-    enableActions();
-}
-
-// 游戏结束
-function gameOver(winner) {
-    G.phase = 'ended';
-    var winnerName = G.p[winner].n;
-    addL('游戏结束! ' + winnerName + ' 获胜!', 'end');
-    
-    disableActions();
-    
-    // 显示重新开始按钮
-    setTimeout(function() {
-        if (confirm(winnerName + ' 获胜! 是否重新开始?')) {
-            location.reload();
-        }
-    }, 1000);
-}
-
-// 退出游戏
-function quitGame() {
-    if (confirm('确定要退出游戏吗?')) {
-        if (G.mode === 'p2p' && dc && dc.readyState === 'open') {
-            dc.close();
-            pc.close();
-        }
-        location.reload();
-    }
-}
-
-// 添加游戏日志
-function addL(text, className) {
-    var log = $('gameLog');
-    var entry = document.createElement('div');
-    entry.className = 'game-log-entry ' + className;
-    entry.textContent = text;
-    log.appendChild(entry);
-    log.scrollTop = log.scrollHeight;
-}
-
-// ====== UI工具函数 ======
-function $(id) {
-    return document.getElementById(id);
-}
-
-function showScreen(screenId) {
-    document.querySelectorAll('.scr').forEach(function(el) {
-        el.classList.remove('on');
-    });
-    $(screenId).classList.add('on');
-}
-
-function setMode(mode) {
-    G.mode = mode;
-    document.querySelectorAll('.mtab').forEach(function(tab) {
-        tab.classList.remove('on');
-    });
-    document.querySelector('.mtab[data-m="' + mode + '"]').classList.add('on');
-    
-    if (mode === 'p2p') {
-        showScreen('p2pScreen');
-    } else {
-        showScreen('setupScreen');
-    }
-}
-
-function showHelp() {
-    alert('游戏规则:\n1. 玩家轮流开枪\n2. 击中对手会造成伤害\n3. HP归零则失败\n4. 可以使用道具增强策略');
-}
-
-function showSettings() {
-    alert('高级设置:\n- 可以自定义AI难度\n- 可以调整游戏规则\n- 可以开启/关闭音效');
-}
-
-function showItemMenu() {
-    alert('道具菜单: \n- 急救包: 恢复HP\n- 防弹衣: 减少伤害\n- 连射: 增加命中率');
-}
-
-// ====== 初始化 ======
-document.addEventListener('DOMContentLoaded', function() {
-    setMode('local');
-    
-    // 检查WebRTC支持
-    if (!window.RTCPeerConnection) {
-        alert('您的浏览器不支持WebRTC，无法使用联机功能。请使用Chrome、Firefox或Safari。');
-    }
-});
-
-// ====== 物品数据 ======
-var ITEMS = [
-    {id:'medkit',name:'急救包',desc:'恢复2点HP',emoji:'💉'},
-    {id:'armor',name:'防弹衣',desc:'减少50%伤害',emoji:'🛡️'},
-    {id:'rapid',name:'连射',desc:'下次攻击必定命中',emoji:'🔫'},
-    {id:'freeze',name:'冰冻',desc:'冻结对手一回合',emoji:'❄️'},
-    {id:'swap',name:'交换HP',desc:'与对手交换HP',emoji:'🌪'},
-    {id:'flag',name:'公会旗帜',desc:'复制对手道具',emoji:'🏴'},
-    {id:'watch',name:'反转怀表',desc:'回溯一回合',emoji:'⏱'},
-    {id:'book',name:'我没死之书',desc:'免死一次',emoji:'📖'},
-    {id:'check',name:'查看子弹',desc:'预知对手行动',emoji:'👁️'},
-    {id:'wash',name:'洗枪',desc:'重新装填',emoji:'🎲'}
-];
-
-// 物品选择相关函数
 function confirmItems() {
-    // 这里实现物品选择逻辑
-    startGame();
+  G.p[selPly].sel = selItems.slice();
+  nextPly();
 }
 
-// ====== 错误处理 ======
-window.addEventListener('error', function(e) {
-    console.error('全局错误:', e.error);
-    alert('游戏出现错误: ' + e.message);
-});
+function nextPly() {
+  if (selPly === 0 && G.mode !== 'p2p') {
+    showItemSelect(1);
+  } else {
+    $('scrItems').classList.remove('on');
+    if (G.mode === 'p2p') {
+      startP2PGame();
+    } else {
+      initGame();
+    }
+  }
+}
 
-window.addEventListener('unhandledrejection', function(e) {
-    console.error('未处理的Promise拒绝:', e.reason);
-    alert('网络错误，请检查连接');
-});
+// ====== P2P ======
+var pc = null, dc = null, p2pStep = 0, scanInt = null;
 
+function startP2P() {
+  $('scrSetup').classList.remove('on');
+  $('scrP2P').classList.add('on');
+  $('p2pTitle').textContent = '联机对战';
+  $('p2pSteps').textContent = '选择创建或加入房间';
+  $('p2pQrArea').innerHTML = '';
+  $('p2pCode').textContent = '';
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pStatus').textContent = '';
+  $('p2pVideo').style.display = 'none';
+  p2pStep = 0;
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="hostP2P()">创建房间</button>' +
+    '<button class="p2p-scan-btn" onclick="joinP2P()">加入房间</button>';
+}
+
+function cancelP2P() {
+  if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+  if (scanInt) { clearInterval(scanInt); scanInt = null; }
+  stopCam();
+  $('scrP2P').classList.remove('on');
+  $('scrSetup').classList.add('on');
+}
+
+function hostP2P() {
+  G.isHost = true;
+  $('p2pSteps').textContent = '正在创建连接...';
+  $('p2pStatus').textContent = '';
+  createPC(true);
+}
+
+function joinP2P() {
+  G.isHost = false;
+  $('p2pSteps').textContent = '请扫描主机的二维码';
+  $('p2pScanBtn').style.display = 'inline-block';
+  $('p2pScanBtn').textContent = '扫描主机二维码';
+  $('p2pScanBtn').onclick = function() { startScanner(); };
+  startScanner();
+}
+
+function createPC(isOffer) {
+  var cfg = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+  };
+  try {
+    pc = new RTCPeerConnection(cfg);
+  } catch (e) {
+    T('浏览器不支持WebRTC');
+    return;
+  }
+
+  pc.onicecandidate = function(e) {
+    if (e.candidate) return;
+    if (isOffer && p2pStep === 0) { p2pStep = 1; showOffer(); }
+    else if (!isOffer && p2pStep === 0) { p2pStep = 1; showAnswer(); }
+  };
+
+  pc.ondatachannel = function(e) {
+    dc = e.channel;
+    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
+    dc.onopen = function() { onP2PConnect(); };
+  };
+
+  if (isOffer) {
+    dc = pc.createDataChannel('game', { ordered: true });
+    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
+    dc.onopen = function() { onP2PConnect(); };
+    pc.createOffer().then(function(d) { pc.setLocalDescription(d); }).catch(function(e) {});
+  }
+}
+
+function showOffer() {
+  var data = JSON.stringify(pc.localDescription);
+  $('p2pSteps').textContent = '让对方扫描此二维码，然后点"扫描应答"';
+  showQR(data);
+  $('p2pScanBtn').style.display = 'inline-block';
+  $('p2pScanBtn').textContent = '扫描应答二维码';
+  $('p2pScanBtn').onclick = function() { startScanner(); };
+  $('p2pStatus').textContent = '等待对方扫描...';
+  $('p2pActions').innerHTML = '';
+}
+
+function showAnswer() {
+  var data = JSON.stringify(pc.localDescription);
+  $('p2pSteps').textContent = '让主机扫描此二维码完成连接';
+  showQR(data);
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pStatus').textContent = '等待主机扫描...';
+  $('p2pActions').innerHTML = '';
+}
+function showQR(data) {
+  var area = $('p2pQrArea');
+  area.innerHTML = '';
+  var wrap = document.createElement('div');
+  wrap.className = 'p2p-qr';
+  var canvas = document.createElement('canvas');
+  canvas.width = 230;
+  canvas.height = 230;
+  wrap.appendChild(canvas);
+  area.appendChild(wrap);
+  // [修改] 同时显示文本代码，方便复制粘贴
+  $('p2pCode').textContent = data;
+  drawQR(canvas, data, 230);
+}
+
+function drawQR(canvas, data, size) {
+  try {
+    var qr = generateQRMatrix(data);
+    var ctx = canvas.getContext('2d');
+    var margin = 4;
+    var cellSize = (size - margin * 2) / qr.length;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    for (var y = 0; y < qr.length; y++) {
+      for (var x = 0; x < qr.length; x++) {
+        ctx.fillStyle = qr[y][x] ? '#000' : '#fff';
+        ctx.fillRect(margin + x * cellSize, margin + y * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
+      }
+    }
+  } catch (e) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#333';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('二维码生成失败', size / 2, size / 2 - 20);
+    ctx.fillText('请使用下方文本代码', size / 2, size / 2 + 10);
+    $('p2pCode').textContent = data;
+  }
+}
+
+function generateQRMatrix(text) {
+  var data = text.split('').map(function(c) { return c.charCodeAt(0); });
+  data.unshift(4);
+  var len = data.length;
+  data.unshift(len >> 4 & 15, len & 15);
+  while (data.length < 106) data.push(236, 17);
+
+  var size = 25;
+  var grid = [];
+  for (var y = 0; y < size; y++) {
+    grid[y] = [];
+    for (var x = 0; x < size; x++) grid[y][x] = 0;
+  }
+
+  function drawFinder(ox, oy) {
+    for (var y = -1; y <= 7; y++) {
+      for (var x = -1; x <= 7; x++) {
+        var v = (Math.abs(x) < 2 && Math.abs(y) < 2) ||
+          (Math.abs(x) > 4 && Math.abs(y) > 4) ||
+          (x === 0 || x === 6 || y === 0 || y === 6);
+        if (ox + x >= 0 && ox + x < size && oy + y >= 0 && oy + y < size) {
+          grid[oy + y][ox + x] = v ? 1 : 0;
+        }
+      }
+    }
+  }
+
+  drawFinder(1, 1);
+  drawFinder(17, 1);
+  drawFinder(1, 17);
+
+  for (var i = 8; i < 17; i++) {
+    grid[6][i] = 1 - (i % 2);
+    grid[i][6] = 1 - (i % 2);
+  }
+  grid[17][8] = 1;
+
+  var bits = [];
+  for (var i = 0; i < data.length; i++) {
+    for (var b = 7; b >= 0; b--) bits.push((data[i] >> b) & 1);
+  }
+
+  var bi = 0;
+  for (var y = 0; y < size && bi < bits.length; y++) {
+    for (var x = 0; x < size && bi < bits.length; x++) {
+      if (grid[y][x] !== 0) continue;
+      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
+      if ((x < 8 && y < 8) || (x > 16 && y < 8) || (x < 8 && y > 16)) continue;
+      grid[y][x] = bits[bi++] ? 1 : 0;
+    }
+  }
+
+  for (var y = 0; y < size; y++) {
+    for (var x = 0; x < size; x++) {
+      if (grid[y][x] < 0) continue;
+      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
+      if ((x + y) % 2 === 0) grid[y][x] = grid[y][x] ? 0 : 1;
+    }
+  }
+  return grid;
+}
+
+function startScanner() {
+  if ('BarcodeDetector' in window) {
+    try {
+      var detector = new BarcodeDetector({ formats: ['qr_code'] });
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: 640, height: 480 }
+      }).then(function(stream) {
+        var video = $('p2pVideo');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        video.play();
+        $('p2pStatus').textContent = '正在扫描二维码...';
+        scanInt = setInterval(function() {
+          if (video.readyState < 2) return;
+          detector.detect(video).then(function(codes) {
+            if (codes.length > 0) {
+              stopCam();
+              processScan(codes[0].rawValue);
+            }
+          }).catch(function() {});
+        }, 300);
+      }).catch(function(e) {
+        T('无法打开摄像头: ' + e.message);
+      });
+      return;
+    } catch (e) {}
+  }
+  fallbackToTextInput();
+}
+
+// [新增] 相册选择截图相关
+var p2pFileInput = null;
+
+function addGalleryInput() {
+  if (!p2pFileInput) {
+    p2pFileInput = document.createElement('input');
+    p2pFileInput.type = 'file';
+    p2pFileInput.accept = 'image/*';
+    p2pFileInput.style.display = 'none';
+    p2pFileInput.id = 'p2pGalleryInput';
+    p2pFileInput.onchange = function(e) {
+      if (e.target.files.length > 0) scanFromImage(e.target.files[0]);
+    };
+    document.body.appendChild(p2pFileInput);
+  }
+}
+
+function scanFromImage(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      var ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      if ('BarcodeDetector' in window) {
+        try {
+          var detector = new BarcodeDetector({ formats: ['qr_code'] });
+          detector.detect(c).then(function(codes) {
+            if (codes.length > 0) {
+              processScan(codes[0].rawValue);
+              T('二维码识别成功!');
+            } else {
+              T('未在图片中找到二维码');
+            }
+          }).catch(function() {
+            T('识别失败，请尝试文本输入');
+          });
+          return;
+        } catch (e) {}
+      }
+      T('当前浏览器不支持图片识别，请使用文本输入');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// [修改] 新增了「从相册选择截图」按钮
+function fallbackToTextInput() {
+  stopCam();
+  $('p2pVideo').style.display = 'none';
+  $('p2pStatus').textContent = '';
+  $('p2pSteps').textContent = '选择连接方式';
+  $('p2pQrArea').innerHTML = '';
+  var inp = document.createElement('textarea');
+  inp.style.cssText = 'width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';
+  inp.placeholder = '粘贴对方显示的代码...';
+  inp.id = 'p2pTextInput';
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0';
+  var btn1 = document.createElement('button');
+  btn1.className = 'p2p-scan-btn'; btn1.textContent = '确认';
+  btn1.onclick = function() { var v=document.getElementById('p2pTextInput'); if(v&&v.value.trim()) processScan(v.value.trim()); };
+  var btn2 = document.createElement('button');
+  btn2.className = 'p2p-scan-btn'; btn2.textContent = '从相册选择截图';
+  btn2.onclick = function() { if(!p2pFileInput) addGalleryInput(); var fi=document.getElementById('p2pGalleryInput'); if(fi) fi.click(); };
+  row.appendChild(btn1); row.appendChild(btn2);
+  $('p2pQrArea').appendChild(inp); $('p2pQrArea').appendChild(row);
+  addGalleryInput();
+}
+
+function stopCam() {
+  if (scanInt) { clearInterval(scanInt); scanInt = null; }
+  var video = $('p2pVideo');
+  if (video && video.srcObject) {
+    video.srcObject.getTracks().forEach(function(t) { t.stop(); });
+    video.srcObject = null;
+    video.style.display = 'none';
+  }
+}
+
+function processScan(data) {
+  try {
+    var desc = JSON.parse(data);
+    if (desc.type === 'offer') {
+      pc = null;
+      p2pStep = 0;
+      createPC(false);
+      setTimeout(function() {
+        pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {
+          pc.createAnswer().then(function(d) { pc.setLocalDescription(d); });
+        });
+      }, 300);
+    } else if (desc.type === 'answer' && pc) {
+      pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {});
+    }
+  } catch (e) {
+    T('二维码无效或代码格式错误');
+  }
+}
+
+function onP2PConnect() {
+  $('p2pStatus').textContent = '连接成功！';
+  $('p2pSteps').textContent = '已与对手建立连接';
+  $('p2pQrArea').innerHTML = '';
+  $('p2pCode').textContent = '';
+  $('p2pScanBtn').style.display = 'none';
+  stopCam();
+  if (G.isHost) {
+    $('scrP2P').classList.remove('on');
+    showItemSelect(0);
+  } else {
+    $('p2pStatus').textContent = '等待主机开始游戏...';
+  }
+}
+
+function startP2PGame() {
+  $('scrP2P').classList.remove('on');
+  G.p[0].sel = selItems.slice();
+  sendP2P({
+    type: 'init',
+    p0sel: G.p[0].sel,
+    p1sel: G.p[1].sel,
+    s: G.s,
+    p0n: G.p[0].n,
+    p1n: G.p[1].n
+  });
+  initGame();
+}
+
+function recvMsg(msg) {
+  if (msg.type === 'init' && !G.isHost) {
+    G.p[0].sel = msg.p0sel;
+    G.p[1].sel = msg.p1sel;
+    G.s = msg.s;
+    G.p[0].n = msg.p0n;
+    G.p[1].n = msg.p1n;
+    G.mode = 'p2p';
+    initGame();
+  } else if (msg.type === 'action') {
+    recvAction(msg.action);
+  } else if (msg.type === 'state') {
+    G.p[1].hp = msg.hp;
+    G.p[1].al = msg.al;
+    rdAll();
+  }
+}
+
+function sendP2P(msg) {
+  if (dc && dc.readyState === 'open') dc.send(JSON.stringify(msg));
+}
+
+function sendAction(a) { sendP2P({ type: 'action', action: a }); }
+function sendState() { sendP2P({ type: 'state', hp: G.p[1].hp, al: G.p[1].al }); }
+
+// ====== INIT GAME ======
+function initGame() {
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    p.hp = G.s.hp;
+    p.mx = G.s.hp;
+    p.al = true;
+    p.wa = false;
+    p.wp = 0;
+    p.ba = false;
+    p.bu = false;
+    p.fa = false;
+    p.fc = 0;
+    p.ft = 0;
+    p.fr = 0;
+    p.it = {};
+    p.sel.forEach(function(sid) { p.it[sid] = 1; });
+  }
+  G.mult = 1;
+  G.rd = 0;
+  G.tr = 0;
+  G.de = false;
+  G.da = false;
+  G.log = [];
+  G.certShown = false;
+  G.crC = 0.1;
+  G.freezeTarget = undefined;
+  G.extraBullets = [];
+
+  $('gameBoard').classList.add('on');
+  $('goO').classList.remove('on');
+  rdAll();
+  addL('游戏开始！每人 ' + G.s.hp + ' HP', 'hi');
+  G.phase = 'ready';
+  nxtRd();
+}
+
+// ====== ROUND ======
+function nxtRd() {
+  tickFlag();
+  G.rd++;
+  G.tr++;
+  G.rs = false;
+  G.bf = false;
+  G.br = false;
+  G.bp = -1;
+  G.cc = 0;
+  G.st = 0;
+  G.p[0].wa = false;
+  G.p[1].wa = false;
+  G.ld = Math.random() < 0.5 ? 0 : 1;
+
+  addL('第 ' + G.rd + ' 回合 — ' + G.p[G.ld].n + ' 装弹', 'hi');
+  $('rdInfo').textContent = '第 ' + G.rd + ' 回合';
+  $('mli').textContent = 'x' + G.mult + (G.da ? ' 决斗' : '');
+  G.phase = 'loading';
+  rdAll();
+  $('gunL').innerHTML = '<span class="hl">' + G.p[G.ld].n + '</span> 装弹中...';
+  showBL();
+}
+
+function showBL() {
+  var isHuman = (G.mode !== 'p2p' && G.mode !== 'ai') ||
+    (G.mode === 'ai' && !G.p[G.ld].ai) ||
+    (G.mode === 'p2p' && ((G.isHost && G.ld === 0) || (!G.isHost && G.ld === 1)));
+
+  if (isHuman) {
+    $('blindO').classList.add('on');
+    var box = $('bchb');
+    box.innerHTML = '';
+    for (var i = 0; i < G.s.ch; i++) {
+      var btn = document.createElement('div');
+      btn.className = 'bch';
+      btn.textContent = i + 1;
+      btn.onclick = (function(idx) {
+        return function() { pickB(idx); };
+      })(i);
+      box.appendChild(btn);
+    }
+    $('bcf').textContent = '';
+  } else {
+    var pos = Math.floor(G.s.ch * 0.6);
+    if (pos >= G.s.ch) pos = G.s.ch - 1;
+    placeB(pos);
+  }
+}
+
+var bPick = -1;
+
+function pickB(idx) {
+  bPick = idx;
+  document.querySelectorAll('.bch').forEach(function(d, i) {
+    d.classList.toggle('picked', i === idx);
+  });
+  $('bcf').textContent = '子弹已放入第 ' + (idx + 1) + ' 发位置';
+  setTimeout(function() {
+    $('blindO').classList.remove('on');
+    placeB(bPick);
+  }, 500);
+}
+
+function placeB(idx) {
+  G.bp = idx;
+  G.cc = 0;
+  G.rs = true;
+  G.bf = false;
+
+  G.extraBullets = [];
+  if (G.s.bu > 1) {
+    for (var i = 0; i < G.s.bu - 1; i++) {
+      var bp;
+      do {
+        bp = Math.floor(Math.random() * G.s.ch);
+      } while (bp === G.bp || G.extraBullets.indexOf(bp) >= 0);
+      G.extraBullets.push(bp);
+    }
+  }
+
+  G.cp = (G.ld === 0) ? 1 : 0;
+  var cp = G.cp;
+  G.ps = G.p[cp].wp;
+  G.p[cp].wp = 0;
+
+  if (G.ps > 0) addL(G.p[cp].n + ' 因怀表惩罚需开 ' + (G.ps + 1) + ' 枪', 'da');
+  addL('装弹完成，' + G.p[cp].n + ' 先手', 'in');
+  G.phase = 'play';
+  rdAll();
+  enActs();
+  upBan();
+
+  if (G.mode === 'ai' && G.p[cp].ai) setTimeout(function() { aiGo(); }, 700);
+  if (G.mode === 'p2p') sendAction({ type: 'load', pos: idx, cp: cp, ps: G.ps, ld: G.ld });
+}
+
+function isHit(ch) {
+  if (ch === G.bp) return true;
+  if (G.extraBullets && G.extraBullets.indexOf(ch) >= 0) return true;
+  return false;
+}
+
+// ====== SHOOT ======
+function pull() {
+  if (G.phase !== 'play' || G.bf) return;
+  var cp = G.cp;
+  var sh = G.p[cp];
+  var ch = G.cc;
+  var hit = isHit(ch);
+  G.st++;
+  var dt = cp;
+
+  if (sh.wa) {
+    dt = (cp === 0) ? 1 : 0;
+    addL(sh.n + ' 调转枪口 → ' + G.p[dt].n, 'in');
+  }
+
+  var cd = ch + 1;
+
+  if (hit) {
+    G.bf = true;
+    var dmg = G.mult;
+    if (G.da) { dmg += 2; addL('决斗伤害+2!', 'du'); }
+    if (Math.random() < G.crC) { dmg = Math.ceil(dmg * 1.5); addL('暴击! x1.5!', 'cr'); }
+
+    var target = G.p[dt];
+    var oh = target.hp;
+    if (target.fa && tryFlag(dt)) dmg = 0;
+    target.hp = Math.max(0, target.hp - dmg);
+
+    if (dmg > 0) addL('砰! 第' + cd + '发 — 击中' + target.n + '，' + oh + '→' + target.hp + 'HP', 'da');
+    else addL('砰! 第' + cd + '发 — 旗帜挡下了!', 'fl');
+
+    showHit();
+
+    if (G.freezeTarget !== undefined && dt === G.freezeTarget) {
+      G.freezeTarget = undefined;
+      addL(target.n + ' 被冰冻! 下回合强制跳过', 'sk');
+    }
+
+    if (target.hp <= 0 && target.ba) {
+      target.ba = false;
+      target.bu = true;
+      target.hp = 1;
+      G.de = true;
+      addL('我没死之书发动! 回复至1HP', 'su');
+      addL('下回合可发起生死决斗!', 'du');
+      rdAll();
+    }
+
+    if (target.hp <= 0) {
+      target.al = false;
+      addL(target.n + ' 倒下了!', 'da');
+      var w = (dt === 0) ? 1 : 0;
+      gameOver(w);
+      return;
+    }
+
+    addL('回合结束', 'in');
+    if (G.da) { G.da = false; addL('决斗结束', 'du'); $('mli').textContent = 'x' + G.mult; }
+
+    if (G.de) {
+      G.phase = 'duel_prompt';
+      rdAll();
+      upDuel();
+    } else {
+      G.phase = 'ready';
+      rdAll();
+      setTimeout(function() {
+        if (G.phase !== 'go') { tickFlag(); nxtRd(); }
+      }, 600);
+    }
+
+    if (G.mode === 'p2p') { sendAction({ type: 'shoot', hit: true, dmg: dmg, dt: dt, oh: oh }); sendState(); }
+    return;
+  }
+
+  // MISS
+  addL('第' + cd + '发 — 空枪! ' + sh.n + ' 松了一口气', '');
+  G.cc++;
+
+  if (G.cc >= G.s.ch) {
+    addL('异常: 所有弹巢已空', 'da');
+    G.phase = 'ready';
+    setTimeout(function() { nxtRd(); }, 500);
+    rdAll();
+    return;
+  }
+
+  // Rapid fire
+  if (sh.it.rapid > 0 && G.st <= 1) {
+    sh.it.rapid--;
+    addL(sh.n + ' 连射! 可再开一枪', 'in');
+    rdAll();
+    enActs();
+    upBan();
+    if (G.mode === 'ai' && cp === 1) setTimeout(function() { aiGo(); }, 600);
+    return;
+  }
+
+  // Penalty shots
+  if (G.st <= G.ps && !G.bf) {
+    addL(sh.n + ' 需再开 ' + (G.ps - G.st + 1) + ' 枪(惩罚)', 'in');
+    rdAll();
+    enActs();
+    upBan();
+    if (G.mode === 'ai' && cp === 1) setTimeout(function() { aiGo(); }, 600);
+    return;
+  }
+
+  G.ps = 0;
+  G.cp = (cp === 0) ? 1 : 0;
+  G.st = 0;
+  var np = G.cp;
+
+  if (G.freezeTarget !== undefined && np === G.freezeTarget) {
+    G.freezeTarget = undefined;
+    addL(G.p[np].n + ' 被冰冻! 跳过本回合', 'sk');
+    G.cp = (np === 0) ? 1 : 0;
+    G.st = 0;
+  }
+
+  if (G.p[np].wp > 0) {
+    G.ps = G.p[np].wp;
+    G.p[np].wp = 0;
+    addL(G.p[np].n + ' 因怀表惩罚需开 ' + (G.ps + 1) + ' 枪', 'da');
+  }
+
+  rdAll();
+  enActs();
+  upBan();
+
+  if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 600);
+  if (G.mode === 'p2p') sendAction({ type: 'shoot', hit: false, cc: G.cc, cp: G.cp });
+}
+
+function showHit() {
+  var o = $('hitO');
+  var t = $('hitT');
+  o.classList.remove('on');
+  void o.offsetWidth;
+  t.textContent = '砰!!';
+  o.classList.add('on');
+  try { navigator.vibrate(200); } catch (e) {}
+  setTimeout(function() { o.classList.remove('on'); }, 800);
+}
+
+// ====== ITEMS ======
+function useI(pidx, typ) {
+  if (G.phase !== 'play' || G.bf) return;
+  if (pidx !== G.cp) return;
+  var p = G.p[pidx];
+  if (!p.al || !p.it[typ] || p.it[typ] <= 0) return;
+
+  if (typ === 'watch') {
+    if (p.wa) return;
+    p.wa = true;
+    p.it.watch = 0;
+    p.wp = 1;
+    addL(p.n + ' 用了反转怀表!', 'in');
+    addL('代价: 下回合需开2枪', 'pe');
+    rdAll();
+  } else if (typ === 'book') {
+    if (p.bu || p.ba) return;
+    p.it.book = 0;
+    p.ba = true;
+    addL(p.n + ' 激活了我没死之书!', 'su');
+    rdAll();
+  } else if (typ === 'check') {
+    if (G.br) return;
+    p.it.check = 0;
+    G.br = true;
+    var pos = G.bp + 1;
+    var saf = (G.bp >= G.cc) ? (G.bp - G.cc) : (G.s.ch - G.cc + G.bp);
+    addL(p.n + ' 查看子弹: 第' + pos + '发，还有' + saf + '枪安全', 'in');
+    rdAll();
+  } else if (typ === 'wash') {
+    p.it.wash = 0;
+    var np;
+    do { np = Math.floor(Math.random() * G.s.ch); } while (np === G.bp);
+    G.bp = np;
+    G.br = false;
+    addL('系统已转枪! 子弹位置已改变', 'sk');
+    rdAll();
+  } else if (typ === 'medkit') {
+    p.it.medkit = 0;
+    p.hp = Math.min(p.mx, p.hp + 2);
+    addL(p.n + ' 使用急救包，回复2HP', 'su');
+    rdAll();
+  } else if (typ === 'armor') {
+    p.it.armor = 0;
+    p.fa = true;
+    p.fc = 1;
+    addL(p.n + ' 穿上防弹衣', 'fl');
+    rdAll();
+  } else if (typ === 'rapid') {
+    p.it.rapid = 1;
+    addL(p.n + ' 装填连射，空枪后可再开一枪', 'in');
+    rdAll();
+  } else if (typ === 'freeze') {
+    p.it.freeze = 0;
+    G.freezeTarget = (pidx === 0) ? 1 : 0;
+    addL(p.n + ' 使用了冰冻! 击中后对手强制跳过', 'in');
+    rdAll();
+  } else if (typ === 'swap') {
+    p.it.swap = 0;
+    var op = G.p[(pidx === 0) ? 1 : 0];
+    var oh = p.hp;
+    p.hp = op.hp;
+    op.hp = oh;
+    addL(p.n + ' 与对手交换了HP!', 'du');
+    rdAll();
+  } else if (typ === 'flag') {
+    if (p.fa) { addL('旗帜护盾已激活，无需重复使用', 'in'); return; }
+    if (p.fc > 0 || p.it.flag > 0) {
+      p.fa = true;
+      p.fc = 1;
+      p.it.flag = 0;
+      addL(p.n + ' 激活了公会旗帜!', 'fl');
+      if (!G.certShown) {
+        G.certShown = true;
+        setTimeout(function() { showCert(p.n); }, 500);
+      }
+      rdAll();
+    } else {
+      addL('旗帜正在充能中(' + (3 - p.ft) + '回合后可用)', 'in');
+    }
+  }
+
+  if (G.mode === 'p2p') sendAction({ type: 'item', pi: pidx, id: typ });
+}
+
+function tryFlag(pidx) {
+  var p = G.p[pidx];
+  if (p.fa && p.fc > 0) {
+    p.fc = 0;
+    p.fa = false;
+    p.ft = 0;
+    addL('公会旗帜发动! 为 ' + p.n + ' 挡下伤害', 'fl');
+    rdAll();
+    return true;
+  }
+  return false;
+}
+
+function tickFlag() {
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    if (p.it.flag > 0 || p.fa || p.fc > 0) {
+      p.ft++;
+      if (p.ft >= 3 && p.fc < 1 && !p.fa) {
+        p.fc = 1;
+        p.fa = true;
+        p.ft = 0;
+        addL(p.n + ' 的公会旗帜已充能!', 'fl');
+        rdAll();
+      }
+    }
+  }
+}
+
+// ====== SKIP ======
+function doSkip() {
+  if (G.phase !== 'play' || G.bf) return;
+  var cp = G.cp;
+  var p = G.p[cp];
+  if (!p.al) return;
+  var dmg = G.s.sk;
+  if (G.s.noSk) { T('本局禁止跳过'); return; }
+
+  if (p.fa && tryFlag(cp)) dmg = 0;
+  p.hp = Math.max(0, p.hp - dmg);
+
+  if (p.hp <= 0 && p.ba) {
+    p.ba = false;
+    p.bu = true;
+    p.hp = 1;
+    G.de = true;
+    addL('我没死之书自动触发!', 'su');
+    rdAll();
+  }
+
+  if (p.hp <= 0) {
+    p.al = false;
+    addL(p.n + ' 跳过但倒下了!', 'da');
+    gameOver((cp === 0) ? 1 : 0);
+    return;
+  }
+
+  if (dmg > 0) addL(p.n + ' 跳过了! 失去' + dmg + 'HP', 'sk');
+  else addL(p.n + ' 跳过了! 旗帜挡下伤害', 'sk');
+
+  var avail = ITEMS.filter(function(it) {
+    return p.it[it.id] <= 0 && it.id !== 'flag';
+  }).map(function(it) { return it.id; });
+
+  if (avail.length > 0) {
+    var got = avail[Math.floor(Math.random() * avail.length)];
+    p.it[got] = 1;
+    var names = {};
+    ITEMS.forEach(function(it) { names[it.id] = it.name; });
+    addL('获得道具: ' + names[got], 'su');
+  }
+
+  G.st = 0;
+  G.ps = 0;
+  G.cp = (cp === 0) ? 1 : 0;
+  var np = G.cp;
+  if (G.p[np].wp > 0) {
+    G.ps = G.p[np].wp;
+    G.p[np].wp = 0;
+    addL(G.p[np].n + ' 因怀表惩罚需开' + (G.ps + 1) + '枪', 'da');
+  }
+  rdAll();
+  enActs();
+  upBan();
+  if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 700);
+  if (G.mode === 'p2p') sendAction({ type: 'skip', cp: G.cp });
+}
+
+// ====== NEW AI (Difficulty-scoring)
+function aiGo() {
+  if (G.phase !== 'play' || G.bf) return;
+  var aiIdx = 1, p = G.p[aiIdx];
+  if (!p.al || G.cp !== aiIdx) return;
+  var opponent = G.p[0];
+  var isLoader = (G.ld === aiIdx);
+  var safeCount = -1;
+  if (isLoader) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
+  else if (G.br) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
+  var diff = G.aiDiff || 'medium';
+  var dc = G.aiCustom || {caut:50, item:50, acc:50, bluf:30};
+  var mul = {easy:{caut:0.3,item:0.3,acc:0.3,bluf:0.7,skipHp:3},medium:{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2},hard:{caut:0.9,item:0.9,acc:0.9,bluf:0.1,skipHp:1},custom:{caut:dc.caut/100,item:dc.item/100,acc:dc.acc/100,bluf:dc.bluf/100,skipHp:dc.caut<33?3:(dc.caut<66?2:1)}}[diff]||{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2};
+  var skipHp = mul.skipHp;
+  if (p.it.medkit>0 && p.hp<=Math.floor(p.mx*(0.7-mul.caut*0.3)) && Math.random()<mul.item) {
+    p.it.medkit=0; p.hp=Math.min(p.mx,p.hp+2); addL('AI使用急救包','su'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.hp<=Math.floor(p.mx*0.5) && !p.fa) {
+    if (p.it.armor>0 && Math.random()<mul.item) { p.it.armor=0; p.fa=true; p.fc=1; addL('AI穿上防弹衣','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+    if (p.it.flag>0 && p.fc>0 && Math.random()<mul.item) { p.fa=true; p.fc=1; p.it.flag=0; addL('AI激活旗帜','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; } }
+  if (p.it.book>0 && !p.ba && p.hp<=2 && Math.random()<mul.item) { p.it.book=0; p.ba=true; addL('AI激活了我没死之书','su'); rdAll(); }
+  if (p.it.wash>0 && isLoader && safeCount<=1 && Math.random()<mul.item) {
+    p.it.wash=0; var np; do{np=Math.floor(Math.random()*G.s.ch)}while(np===G.bp); G.bp=np; G.br=false; addL('AI用了洗枪!','sk'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.swap>0 && p.hp>opponent.hp+1 && Math.random()<mul.item) { p.it.swap=0; var oh=p.hp; p.hp=opponent.hp; opponent.hp=oh; addL('AI交换了HP!','du'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.watch>0 && !p.wa && safeCount===0 && p.hp>skipHp && Math.random()<mul.item) { p.wa=true; p.it.watch=0; p.wp=1; addL('AI用了反转怀表','in'); rdAll(); setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()},300); return; }
+  if (p.it.check>0 && !G.br && !isLoader && Math.random()<mul.item*0.8) { p.it.check=0; G.br=true; addL('AI查看了子弹','in'); rdAll(); setTimeout(function(){aiGo()},400); return; }
+  if (p.it.freeze>0 && safeCount>0 && Math.random()<mul.item*0.5) { p.it.freeze=0; G.freezeTarget=0; addL('AI使用了冰冻','in'); rdAll(); }
+  var shouldShoot = false;
+  if (safeCount >= 0) {
+    if (safeCount >= Math.floor(G.s.ch*0.4)) shouldShoot = true;
+    else if (safeCount >= 1 && Math.random() < mul.acc) shouldShoot = true;
+    else if (Math.random() < mul.bluf) shouldShoot = true;
+  } else {
+    if (G.cc >= G.s.ch-2 && Math.random() < 0.7) shouldShoot = false;
+    else shouldShoot = Math.random() < 0.4 + mul.acc * 0.3;
+  }
+  if (!G.s.noSk && p.hp > G.s.sk && !shouldShoot && safeCount <= 1 && p.hp > skipHp) { doSkip(); return; }
+  if (p.it.rapid > 0 && G.st > 0) { p.it.rapid = 0; addL('AI连射!','in'); rdAll(); }
+  setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()}, shouldShoot?500:700);
+}
+
+// ====== DUEL ======
+function doDuel() {
+  if (G.phase !== 'duel_prompt' || !G.de) return;
+  G.da = true;
+  G.de = false;
+  addL('⚔️⚔️ 生死决斗开始!', 'du');
+  nxtRd();
+}
+
+function skipDuel() {
+  if (G.phase !== 'duel_prompt') return;
+  addL('跳过决斗', 'in');
+  G.de = false;
+  nxtRd();
+}
+
+function upDuel() {
+  var init = '';
+  for (var i = 0; i < 2; i++) {
+    if (G.p[i].bu && G.p[i].al) init = G.p[i].n;
+  }
+  $('ban').innerHTML = init + ' 触发了书! 发起决斗? (+2伤害, 1回合)';
+  $('ban').className = 'ban dm';
+  var a = $('actsBox');
+  a.innerHTML = '<button class="abtn duel" onclick="doDuel()">发起决斗</button>' +
+    '<button class="abtn" onclick="skipDuel()">跳过</button>';
+}
+
+// ====== GAME OVER ======
+function gameOver(wi) {
+  G.phase = 'go';
+  var w = G.p[wi];
+  var l = G.p[(wi === 0) ? 1 : 0];
+  $('goT').textContent = '游戏结束';
+  $('goW').textContent = w.n;
+  $('goS').innerHTML = '总回合: ' + G.tr + '<br>' +
+    w.n + ' 剩余 ' + w.hp + '/' + w.mx + ' HP ❤️<br>' +
+    l.n + ' 在第' + G.rd + '回合倒下 ☠️';
+  $('goO').classList.add('on');
+  rdAll();
+}
+
+function rst() {
+  $('goO').classList.remove('on');
+  $('gameBoard').classList.remove('on');
+  $('scrSetup').classList.add('on');
+  G.phase = 'setup';
+  if (G.mode === 'p2p') {
+    try { pc.close(); } catch (e) {}
+    pc = null;
+    dc = null;
+  }
+}
+
+// ====== CERTIFICATE ======
+function showCert(name) {
+  $('cName').textContent = name;
+  var d = new Date();
+  $('cDate').textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+  $('certO').classList.add('on');
+}
+
+function hideCert() { $('certO').classList.remove('on'); }
+
+function dlCert() {
+  var c = document.createElement('canvas');
+  c.width = 600;
+  c.height = 400;
+  var cx = c.getContext('2d');
+
+  cx.fillStyle = '#2a1510';
+  cx.fillRect(0, 0, 600, 400);
+  cx.strokeStyle = '#c8943a';
+  cx.lineWidth = 4;
+  cx.strokeRect(10, 10, 580, 380);
+
+  cx.fillStyle = '#ffcc33';
+  cx.font = 'bold 36px serif';
+  cx.textAlign = 'center';
+  cx.fillText('内测证书', 300, 70);
+
+  cx.fillStyle = '#8a7a50';
+  cx.font = '14px sans-serif';
+  cx.fillText('CERTIFICATE', 300, 95);
+
+  cx.fillStyle = '#d0c0a0';
+  cx.font = '20px sans-serif';
+  cx.fillText('感谢 ' + $('cName').textContent + ' 参与', 300, 150);
+
+  cx.fillStyle = '#ff6b35';
+  cx.font = 'bold 42px serif';
+  cx.fillText('西部对决', 300, 210);
+
+  cx.fillStyle = '#c8943a';
+  cx.font = '16px sans-serif';
+  cx.fillText('封 闭 内 测', 300, 240);
+
+  cx.fillStyle = '#8a7a50';
+  cx.font = '14px sans-serif';
+  cx.fillText('本证书用来图一乐玩', 300, 280);
+
+  cx.fillStyle = '#6a5a40';
+  cx.font = '12px sans-serif';
+  cx.fillText($('cDate').textContent, 300, 310);
+
+  c.toBlob(function(blob) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cert.png';
+    a.click();
+  });
+}
+
+// ====== RENDER ======
+function rdAll() { renderPlayers(); renderGun(); }
+
+function renderPlayers() {
+  var row = $('prow');
+  row.innerHTML = '';
+  for (var i = 0; i < 2; i++) {
+    var p = G.p[i];
+    var div = document.createElement('div');
+    div.className = 'pp';
+    if (G.phase === 'play' && G.cp === i && p.al) div.classList.add('on');
+    if (!p.al) div.classList.add('dead');
+    if (p.ai) div.classList.add('aipp');
+
+    var nm = '<span>' + p.n + (p.al ? '' : ' ☠️') + '</span>';
+    if (p.wa) nm += '<span style="color:#fc3;font-size:.6em;margin-left:4px">⏱</span>';
+    if (p.wp > 0) nm += '<span style="color:#f55;font-size:.6em;margin-left:4px">×2</span>';
+    if (G.da) nm += '<span style="color:#d8f;font-size:.6em;margin-left:4px">⚔</span>';
+    if (p.ba || p.bu) nm += '<span style="color:#4d6;font-size:.6em;margin-left:4px">📖</span>';
+    if (p.fa) nm += '<span style="color:#fc3;font-size:.6em;margin-left:4px">🏴</span>';
+
+    var hearts = '';
+    for (var j = 0; j < p.mx; j++) {
+      hearts += (j < p.hp) ? '❤️' : '<span class="lost">🖤</span>';
+    }
+
+    div.innerHTML = '<div class="pn">' + nm + '</div>' +
+      '<div class="hearts">' + hearts + '</div>' +
+      '<div class="hpt">HP: ' + p.hp + '/' + p.mx + '</div>';
+
+    var itemsHtml = '';
+    ITEMS.forEach(function(it) {
+      var cnt = p.it[it.id] || 0;
+      var disabled = (G.phase !== 'play' || G.cp !== i || !p.al || G.bf || cnt <= 0);
+      var cls = 'ibtn' + (cnt <= 0 ? ' done' : '');
+      itemsHtml += '<button class="' + cls + '" onclick="useI(' + i + ',\'' + it.id + '\')"' +
+        (disabled ? ' disabled' : '') +
+        ' ontouchstart="showTip(event,\'' + it.name + '\',\'' + it.desc + '\')"' +
+        ' ontouchend="hideTip()">' +
+        itemIco[it.ico] + ' ' + it.name + (cnt > 1 ? ' ×' + cnt : '') + '</button>';
+    });
+    div.innerHTML += '<div class="irow">' + itemsHtml + '</div>';
+    row.appendChild(div);
+  }
+}
+
+function renderGun() {
+  var c = $('chb');
+  c.innerHTML = '';
+  for (var i = 0; i < G.s.ch; i++) {
+    var d = document.createElement('div');
+    d.className = 'ch';
+    if (i === G.cc && G.rs) d.classList.add('cur');
+    if (G.bf && isHit(i)) { d.classList.add('fired'); d.textContent = '💥'; }
+    else if (G.br && i === G.bp) { d.classList.add('fired'); d.textContent = '💥'; }
+    else if (!G.br && G.bp >= 0) { d.classList.add('unk'); d.textContent = '?'; }
+    else d.textContent = i + 1;
+    c.appendChild(d);
+  }
+  var bi = $('bulI');
+  if (G.br && G.bp >= 0) bi.textContent = '🔍 子弹在第' + (G.bp + 1) + '发';
+  else if (G.bf) bi.textContent = '💥 子弹已击发';
+  else bi.textContent = (G.phase === 'loading') ? '🔒 子弹位置已隐藏' : (G.bp >= 0 ? '弹仓已锁' : '');
+}
+
+function upBan() {
+  var b = $('ban');
+  if (G.phase === 'loading') {
+    b.textContent = '🔫 ' + G.p[G.ld].n + ' 正在秘密装弹...';
+    b.className = 'ban';
+    return;
+  }
+  if (G.phase === 'play') {
+    var cp = G.cp;
+    var p = G.p[cp];
+    var t = '🎯 ' + p.n + ' 的回合';
+    if (p.wa) t += ' ⏱️【逆转】';
+    var r = G.ps - G.st + 1;
+    if (G.st > 0 && r > 0) t += ' 🔫(还需' + r + '枪)';
+    b.textContent = t;
+    b.className = 'ban' + (G.da ? ' dm' : '');
+    if (G.mode === 'ai' && cp === 1) b.textContent += ' 🤔 AI思考中...';
+    return;
+  }
+  if (G.phase === 'ready') {
+    b.textContent = '🔄 准备下一回合...';
+    b.className = 'ban';
+  }
+}
+
+function enActs() {
+  var a = $('actsBox');
+  a.innerHTML = '';
+  if (G.phase === 'play') {
+    a.innerHTML =
+      '<button class="abtn skip-act" onclick="doSkip()"' +
+      (G.s.noSk || G.bf || !G.p[G.cp].al ? ' disabled' : '') +
+      '>⚠️ 跳过</button>' +
+      '<button class="abtn shoot" onclick="pull()"' +
+      (G.bf || !G.p[G.cp].al ? ' disabled' : '') +
+      '>🎯 开枪</button>';
+    return;
+  }
+  a.innerHTML =
+    '<button class="abtn" onclick="showRules()">📖 教程</button>' +
+    '<button class="abtn" onclick="showCred()">📜 制作人员</button>';
+}
+
+function addL(msg, cls) {
+  G.log.push({ msg: msg, cls: cls, rd: G.rd });
+  var area = $('logA');
+  var entry = document.createElement('div');
+  entry.className = 'le' + (cls ? ' ' + cls : '');
+  entry.innerHTML = '<span style="color:#6a5540;font-size:.8em">[R' + G.rd + ']</span> ' + msg;
+  area.appendChild(entry);
+  area.scrollTop = area.scrollHeight;
+}
+
+// ====== TOOLTIP ======
+function showTip(e, n, d) {
+  var tip = $('tip');
+  $('tipN').textContent = n;
+  $('tipD').textContent = d;
+  var x = e.touches ? e.touches[0].clientX : e.clientX;
+  var y = e.touches ? e.touches[0].clientY : e.clientY;
+  tip.style.left = Math.min(x + 10, window.innerWidth - 230) + 'px';
+  tip.style.top = Math.max(y - 80, 10) + 'px';
+  tip.classList.add('on');
+}
+var tipTimer = null;
+
+function hideTip() {
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(function() { $('tip').classList.remove('on'); }, 100);
+}
+
+// ====== MISC ======
+function showRules() {
+  $('rHp').textContent = G.s.hp;
+  $('rCh').textContent = G.s.ch;
+  $('rBu').textContent = G.s.bu;
+  $('rSk').textContent = G.s.noSk ? '禁止' : G.s.sk;
+  $('rIt').textContent = G.s.it;
+  $('rulesO').classList.add('on');
+}
+
+function hideRules() { $('rulesO').classList.remove('on'); }
+
+function showCred() {
+  $('credO').classList.add('on');
+  var s = $('credS');
+  s.style.animation = 'none';
+  void s.offsetWidth;
+  s.style.animation = 'crdR 25s linear forwards';
+}
+
+function hideCred() { $('credO').classList.remove('on'); }
+
+// ====== P2P RECV ======
+function recvAction(a) {
+  if (a.type === 'load') {
+    G.bp = a.pos;
+    G.cc = 0;
+    G.rs = true;
+    G.bf = false;
+    G.ld = a.ld;
+    G.cp = a.cp;
+    G.ps = a.ps || 0;
+    addL('对手装弹完毕', 'in');
+    G.phase = 'play';
+    rdAll();
+    enActs();
+    upBan();
+  } else if (a.type === 'shoot') {
+    if (a.hit) {
+      G.bf = true;
+      G.p[a.dt].hp = Math.max(0, G.p[a.dt].hp - a.dmg);
+      addL('对手开枪: 击中!', 'da');
+      if (G.p[a.dt].hp <= 0) {
+        G.p[a.dt].al = false;
+        addL(G.p[a.dt].n + ' 倒下了!', 'da');
+        gameOver(a.dt === 0 ? 1 : 0);
+        return;
+      }
+      G.phase = 'ready';
+      rdAll();
+      setTimeout(function() { nxtRd(); }, 600);
+    } else {
+      addL('对手开枪: 空枪', '');
+      G.cc = a.cc;
+      G.cp = a.cp;
+      rdAll();
+      enActs();
+      upBan();
+    }
+  } else if (a.type === 'skip') {
+    G.cp = a.cp;
+    rdAll();
+    enActs();
+    upBan();
+  } else if (a.type === 'item') {
+    var names = {};
+    ITEMS.forEach(function(it) { names[it.id] = it.name; });
+    addL('对手使用了 ' + names[a.id], 'in');
+  }
+}
+
+// ====== INIT ======
+document.addEventListener('DOMContentLoaded', function() {
+  setMode('local');
+});
 </script>
+<script src="achieve.js"></script> 
+<script src="save.js"></script> 
+<script src="sfx.js"></script> 
+<!-- Custom Difficulty Panel -->
+<div class="cd-panel" id="cdPanel">
+  <div class="cd-box">
+    <h3>⚙️ 自定义AI难度</h3>
+    <div class="cd-row"><label>谨慎程度</label><input type="range" id="cdCaut" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdCautV">50</span></div>
+    <div class="cd-row"><label>道具使用率</label><input type="range" id="cdItem" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdItemV">50</span></div>
+    <div class="cd-row"><label>精准度</label><input type="range" id="cdAcc" min="0" max="100" value="50" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdAccV">50</span></div>
+    <div class="cd-row"><label>虚张声势</label><input type="range" id="cdBluf" min="0" max="100" value="30" oninput="this.nextElementSibling.textContent=this.value"><span class="cdv" id="cdBlufV">30</span></div>
+    <button class="cd-close" onclick="document.getElementById('cdPanel').classList.remove('on')">确认</button>
+  </div>
+</div>
 <script src="achieve.js"></script>
 <script src="save.js"></script>
 <script src="sfx.js"></script>
 <script src="plus.js"></script>
-</body>
+</body>  
 </html>
