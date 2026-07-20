@@ -465,9 +465,34 @@ css.textContent += '.pp-fr-add{display:flex;gap:6px;margin:8px 0}.pp-fr-add inpu
 css.textContent += '.pp-fr-add input:focus{border-color:#c8943a}';
 
 function renderFriends(cnt) {
+  var connected = (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1);
   var myId = '';
-  if (typeof wsConn !== 'undefined' && wsConn && wsConn.myId) myId = wsConn.myId;
-  var html = '<div style="font-size:.75em;color:#c8943a;margin-bottom:6px;text-align:center">你的ID: <b style="color:#ff6b35;font-size:1.1em">' + (myId || '连接后显示') + '</b></div>';
+  if (connected && wsConn.myId) myId = wsConn.myId;
+  if (!connected) {
+    // Try to connect
+    if (typeof wsConnect === 'function') {
+      wsConnect(function() {
+        // After connecting, register and re-render
+        wsConn.send(JSON.stringify({ type: 'register_online', name: G && G.p[0] ? G.p[0].n : '旅者' }));
+        var c = document.getElementById('ppContent');
+        if (c) renderFriends(c);
+      });
+    }
+    var html = '<div style="font-size:.8em;color:#a08070;text-align:center;margin:10px 0">🔌 正在连接服务器...</div>';
+    if (cnt) cnt.innerHTML = html;
+    return;
+  }
+  if (!myId) {
+    // Register to get ID
+    wsConn.send(JSON.stringify({ type: 'register_online', name: G && G.p[0] ? G.p[0].n : '旅者' }));
+    setTimeout(function() {
+      if (wsConn && wsConn.myId) {
+        var c = document.getElementById('ppContent');
+        if (c) renderFriends(c);
+      }
+    }, 500);
+  }
+  var html = '<div style="font-size:.75em;color:#c8943a;margin-bottom:6px;text-align:center">你的ID: <b style="color:#ff6b35;font-size:1.1em">' + (myId || '获取中...') + '</b></div>';
   html += '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">👥 好友列表 (' + friends.length + ')</div>';
   if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540">还没有好友，把你的ID发给朋友吧</div>';
   friends.forEach(function(f) {
@@ -523,6 +548,11 @@ window.wsEventBus.push(function(msg) {
       var active = document.querySelector('#ppTabs .pp-tab.on');
       if (active && active.textContent.includes('好友')) renderFriends(cnt);
     }
+  }
+  if (msg.type === 'registered' && msg.id) {
+    if (typeof wsConn !== 'undefined' && wsConn) wsConn.myId = msg.id;
+    var cnt = document.getElementById('ppContent');
+    if (cnt && document.querySelector('#ppTabs .pp-tab.on')?.textContent.includes('好友')) renderFriends(cnt);
   }
   if (msg.type === 'friend_invite' && msg.fromName) {
     if (confirm(msg.fromName + ' 邀请你一起玩西部对决！\n是否接受？')) {

@@ -665,7 +665,14 @@ function wsConnect(onOpen) {
     $('p2pStatus').textContent = '❌ 无法连接服务器，检查网络';
     return;
   }
-  wsConn.onopen = function() { if (onOpen) onOpen(); };
+  wsConn.onopen = function() {
+    // Auto-register for friend system
+    var name = '旅者';
+    if (G && G.p && G.p[0] && G.p[0].n) name = G.p[0].n;
+    else if (G && G.p && G.p[1] && G.p[1].n) name = G.p[1].n;
+    wsConn.send(JSON.stringify({ type: 'register_online', name: name }));
+    if (onOpen) onOpen();
+  };
   wsConn.onmessage = function(e) {
     var msg;
     try { msg = JSON.parse(e.data); } catch { return; }
