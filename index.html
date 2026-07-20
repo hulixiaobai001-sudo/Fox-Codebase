@@ -532,6 +532,7 @@ function startP2P() {
     '<button class="p2p-scan-btn" onclick="hostP2P()">🏠 创建房间</button>' +
     '<button class="p2p-scan-btn" onclick="joinP2P()">🚪 加入房间</button>' +
     '<button class="p2p-scan-btn" onclick="matchP2P()">🎲 随机匹配</button>' +
+    '<button class="p2p-scan-btn" onclick="specP2P()">👁️ 观战</button>' +
     '</div>' +
     '<div id="p2pRoomList" style="margin-bottom:8px"></div>' +
     '<div id="p2pGlobalChat" style="border-top:1px solid rgba(139,69,19,.3);padding-top:8px"></div>';
@@ -672,6 +673,39 @@ function cancelMatch() {
   startP2P();
 }
 
+// —— SPECTATOR ——
+function specP2P() {
+  $('p2pSteps').textContent = '输入房间码观战';
+  $('p2pStatus').textContent = '';
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pQrArea').innerHTML =
+    '<div style="margin:6px auto;max-width:260px">' +
+    '<input type="text" id="specRoomInput" maxlength="10" placeholder="输入房间码" ' +
+    'style="background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;' +
+    'color:#f0e6d3;padding:9px 12px;font-size:1.1em;width:100%;text-align:center;outline:none;margin:4px 0">' +
+    '<input type="text" id="specNameInput" maxlength="8" placeholder="你的昵称" ' +
+    'style="background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;' +
+    'color:#f0e6d3;padding:9px 12px;font-size:1em;width:100%;text-align:center;outline:none;margin:4px 0">' +
+    '</div>';
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="doSpectate()">👁️ 观战</button>' +
+    '<button class="p2p-scan-btn" onclick="startP2P()">返回</button>';
+  setTimeout(function() { var inp = $('specRoomInput'); if (inp) inp.focus(); }, 300);
+}
+function doSpectate() {
+  var code = ($('specRoomInput') ? $('specRoomInput').value.trim() : '').toUpperCase();
+  var name = ($('specNameInput') ? $('specNameInput').value.trim() : '') || '观战者';
+  if (!code) { T('请输入房间码'); return; }
+  G.isHost = false;
+  G.mode = 'p2p';
+  $('p2pSteps').textContent = '正在连接...';
+  $('p2pStatus').textContent = '连接中';
+  $('p2pActions').innerHTML = '';
+  wsConnect(function() {
+    wsConn.send(JSON.stringify({ type: 'spectate_room', code, name }));
+  });
+}
+
 // —— ROOM LIST ——
 function fetchRoomList() {
   if (wsConn && wsConn.readyState === 1) {
@@ -706,16 +740,16 @@ var gcMsgs = [];
 function renderGlobalChat() {
   var el = $('p2pGlobalChat');
   if (!el) return;
-  if (gcMsgs.length === 0) {
-    el.innerHTML = '<div style="font-size:.7em;color:#6a5540;text-align:center">💬 大厅聊天</div>' +
-      '<div id="gcMsgsBox" style="max-height:100px;overflow-y:auto;margin:4px 0;font-size:.75em;color:#8a7a60">暂无消息</div>' +
-      '<div style="display:flex;gap:4px"><input type="text" id="gcInput" maxlength="50" placeholder="说点什么..." ' +
-      'style="flex:1;background:rgba(60,30,20,.4);border:1px solid #5a3a2a;border-radius:6px;padding:4px 8px;color:#c0a090;font-size:.75em;outline:none" ' +
-      'onkeydown="if(event.key===\'Enter\')sendGC()">' +
-      '<button onclick="sendGC()" style="background:rgba(139,69,19,.4);border:1px solid #6b3a2a;border-radius:6px;padding:4px 10px;color:#c0a090;font-size:.7em;cursor:pointer">发</button></div>';
-  } else {
-    renderGCMsgs();
-  }
+  // Clear first to prevent duplicates
+  el.innerHTML = '<div style="font-size:.7em;color:#6a5540;text-align:center">💬 大厅聊天</div>' +
+    '<div id="gcMsgsBox" style="max-height:100px;overflow-y:auto;margin:4px 0;font-size:.75em;color:#8a7a60">' +
+    (gcMsgs.length === 0 ? '暂无消息' : '') +
+    '</div>' +
+    '<div style="display:flex;gap:4px"><input type="text" id="gcInput" maxlength="50" placeholder="说点什么..." ' +
+    'style="flex:1;background:rgba(60,30,20,.4);border:1px solid #5a3a2a;border-radius:6px;padding:4px 8px;color:#c0a090;font-size:.75em;outline:none" ' +
+    'onkeydown="if(event.key===\'Enter\')sendGC()">' +
+    '<button onclick="sendGC()" style="background:rgba(139,69,19,.4);border:1px solid #6b3a2a;border-radius:6px;padding:4px 10px;color:#c0a090;font-size:.7em;cursor:pointer">发</button></div>';
+  renderGCMsgs();
   // Request chat history
   if (wsConn && wsConn.readyState === 1) wsConn.send(JSON.stringify({ type: 'get_chat_history' }));
 }
@@ -847,6 +881,30 @@ function wsHandle(msg) {
       break;
     }
 
+    case 'spectating': {
+      $('scrP2P').classList.remove('on');
+      $('gameBoard').classList.add('on');
+      // Show spectator view
+      G.p[0].n = msg.names[0] || '玩家1';
+      G.p[1].n = msg.names[1] || '玩家2';
+      G.phase = 'play';
+      $('ban').textContent = '👁️ 观战模式 - ' + G.p[0].n + ' VS ' + G.p[1].n;
+      $('ban').className = 'ban dm';
+      $('actsBox').innerHTML = '<button class="abtn" onclick="cancelP2P()">离开观战</button>';
+      $('mli').textContent = '👁️';
+      break;
+    }
+
+    case 'spectator_joined': {
+      addL('👁️ ' + (msg.name || '有人') + ' 来观战了', 'in');
+      break;
+    }
+
+    case 'spectator_left': {
+      addL('👁️ 观战者离开了', '');
+      break;
+    }
+
     default: {
       // Game messages relayed from the other player
       if (msg.type === 'game_begin' && !G.isHost) {
@@ -878,6 +936,10 @@ function wsHandle(msg) {
         G.p[1].hp = msg.hp;
         G.p[1].al = msg.al;
         rdAll();
+
+      } else if (msg.type === 'rematch_req') {
+        clearP2PTimer();
+        showRematchPrompt();
 
       } else if (msg.type === 'rematch') {
         if (msg.ok) {
@@ -930,11 +992,12 @@ function p2pOverrideConfirm() {
 
 // —— REMATCH ——
 function p2pRematch() {
-  sendP2P({ type: 'rematch', ok: true });
+  sendP2P({ type: 'rematch_req' });
   showRematchWait();
 }
 
 function p2pNoRematch() {
+  // Decline: send no, go back
   sendP2P({ type: 'rematch', ok: false });
   backToLobby();
 }
@@ -946,17 +1009,60 @@ function showRematchWait() {
   $('p2pSteps').textContent = '已发送再来一局请求';
   $('p2pStatus').textContent = '等待对方确认...';
   $('p2pQrArea').innerHTML = '';
-  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="backToLobby()">取消</button>';
+}
+
+function showRematchPrompt() {
+  // Show a prompt asking if the player wants to rematch
+  $('goO').classList.remove('on');
+  $('gameBoard').classList.remove('on');
+  $('scrP2P').classList.add('on');
+  $('p2pTitle').textContent = '🔄 再来一局';
+  $('p2pSteps').textContent = '对方邀请你再来一局！';
+  $('p2pStatus').textContent = '';
+  $('p2pQrArea').innerHTML = '<div style="font-size:2em;margin:16px 0">🤠</div>';
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="acceptRematch()" ' +
+    'style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35;font-weight:bold">✅ 接受</button>' +
+    '<button class="p2p-scan-btn" onclick="p2pNoRematch()">❌ 拒绝</button>';
+}
+
+function acceptRematch() {
+  sendP2P({ type: 'rematch', ok: true });
+  // If I'm joiner, I need to wait for host
+  // If I'm host, I need to start
+  doRematch();
 }
 
 function doRematch() {
   $('goO').classList.remove('on');
   $('gameBoard').classList.remove('on');
   $('scrP2P').classList.remove('on');
+  G.phase = 'setup';
+  G.mode = 'p2p';
+  // Reset everything
+  for (var i = 0; i < 2; i++) {
+    G.p[i].hp = G.s.hp;
+    G.p[i].mx = G.s.hp;
+    G.p[i].al = true;
+    G.p[i].wa = false; G.p[i].wp = 0;
+    G.p[i].ba = false; G.p[i].bu = false;
+    G.p[i].fa = false; G.p[i].fc = 0; G.p[i].ft = 0; G.p[i].fr = 0;
+    G.p[i].it = {};
+  }
+  G.mult = 1; G.rd = 0; G.tr = 0;
+  G.de = false; G.da = false;
+  G.log = [];
+  G.certShown = false;
+  G.freezeTarget = undefined;
+  G.extraBullets = [];
+  p2pItemReady = [false, false];
+  
+  // Host starts item select, joiner waits for host
   if (G.isHost) {
-    p2pItemReady = [false, false];
     showItemSelect(0);
   } else {
+    // Joiner waits for host to start
     $('scrP2P').classList.add('on');
     $('p2pTitle').textContent = '🔄 再来一局';
     $('p2pSteps').textContent = '主机正在开始新游戏...';

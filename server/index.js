@@ -16,7 +16,7 @@ function genCode() {
 
 function other(ws) {
   const r = rooms.get(ws.roomCode);
-  if (!r) return null;
+  if (!r || ws.spectator) return null;
   return r.players[0] === ws ? r.players[1] : r.players[0];
 }
 
@@ -61,7 +61,8 @@ wss.on('connection', (ws) => {
           players: [ws, null],
           names: [msg.name || '治安官', null],
           password: msg.password || '',
-          state: 'waiting', // waiting | playing | ended
+          spectators: [],
+          state: 'waiting',
           votes: {},
           settings: null,
           gameState: null
@@ -86,6 +87,19 @@ wss.on('connection', (ws) => {
         ws.send(JSON.stringify({ type: 'room_joined', code, myName: r.names[1], opponentName: r.names[0] }));
         r.players[0].send(JSON.stringify({ type: 'opponent_joined', name: r.names[1], myName: r.names[0] }));
         updateRoomList();
+        break;
+      }
+
+      case 'spectate_room': {
+        const code = (msg.code || '').toUpperCase();
+        const r = rooms.get(code);
+        if (!r) { ws.send(JSON.stringify({ type: 'error', text: '房间不存在' })); break; }
+        ws.roomCode = code;
+        ws.spectator = true;
+        if (!r.spectators) r.spectators = [];
+        r.spectators.push(ws);
+        ws.send(JSON.stringify({ type: 'spectating', code, names: r.names }));
+        r.players.forEach(p => { if (p && p.readyState === 1) p.send(JSON.stringify({ type: 'spectator_joined', name: msg.name || '观战者' })); });
         break;
       }
 
@@ -210,12 +224,23 @@ wss.on('connection', (ws) => {
 
       // ====== RELAY ======
       default: {
+        if (ws.spectator) {
+          // Spectators can't send game messages to players
+          ws.send(JSON.stringify({ type: 'error', text: '观战模式不能操作' }));
+          break;
+        }
+        // Relay to the other player
         const o = other(ws);
         if (o && o.readyState === 1) o.send(raw.toString());
-        else if (o) ws.send(JSON.stringify({ type: 'error', text: '对方已断线' }));
+        // Also relay to spectators
+        const r = rooms.get(ws.roomCode);
+        if (r && r.spectators) {
+          r.spectators.forEach(s => {
+            if (s.readyState === 1) s.send(raw.toString());
+          });
+        }
         break;
       }
-    }
   });
 
   ws.on('close', () => {
@@ -231,9 +256,27 @@ function leaveRoom(ws, msg) {
   if (!ws.roomCode) return;
   const r = rooms.get(ws.roomCode);
   if (!r) { ws.roomCode = null; return; }
+  
+  // Handle spectator leave
+  if (ws.spectator && r.spectators) {
+    const idx = r.spectators.indexOf(ws);
+    if (idx >= 0) r.spectators.splice(idx, 1);
+    r.players.forEach(p => {
+      if (p && p.readyState === 1) p.send(JSON.stringify({ type: 'spectator_left' }));
+    });
+    ws.roomCode = null;
+    return;
+  }
+  
   const o = r.players[0] === ws ? r.players[1] : r.players[0];
   if (o && o.readyState === 1) {
     o.send(JSON.stringify({ type: 'opponent_left', reason: msg }));
+  }
+  // Notify spectators
+  if (r.spectators) {
+    r.spectators.forEach(s => {
+      if (s.readyState === 1) s.send(JSON.stringify({ type: 'game_ended' }));
+    });
   }
   rooms.delete(ws.roomCode);
   ws.roomCode = null;
