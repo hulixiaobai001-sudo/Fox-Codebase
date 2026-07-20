@@ -486,6 +486,12 @@ function renderSetting(c){
 
 
 
+// ====== 自定义服务 URL 加载 ======
+try{
+  var customWs=localStorage.getItem('wd_custom_ws');
+  if(customWs&&typeof WS_URL!=='undefined'){WS_URL=customWs;}
+}catch(e){}
+
 // ====== 初始化 ======
 loadD();initThemes();
 var hi=setInterval(function(){if(typeof G!=='undefined'&&G){hook();clearInterval(hi)}},500);
@@ -625,6 +631,17 @@ setTimeout(function(){
   var frBt = document.createElement('button'); frBt.className = 'pp-btn'; frBt.textContent = '👥 好友';
   frBt.onclick = function() { showPanel('friends'); };
   ui.appendChild(frBt);
+  // 左上角自定义服务/AI
+  var tlUi=document.createElement('div');tlUi.style.cssText='position:fixed;top:50px;left:12px;z-index:9999;display:flex;gap:4px;opacity:0.4;transition:opacity .3s';
+  tlUi.onmouseenter=function(){tlUi.style.opacity='1'};
+  tlUi.onmouseleave=function(){tlUi.style.opacity='0.4'};
+  var cfgBtn=document.createElement('button');cfgBtn.className='pp-btn';cfgBtn.textContent='⚙️ 自定义服务/AI';
+  cfgBtn.onclick=function(){
+    var u=prompt('WebSocket服务器地址',typeof WS_URL!=='undefined'?WS_URL:'wss://fox-codebase-production.up.railway.app');
+    if(u&&u.trim()){try{localStorage.setItem('wd_custom_ws',u.trim());T('✅ 自定义服务已设置，刷新后生效')}catch(e){}}
+  };
+  tlUi.appendChild(cfgBtn);
+  document.body.appendChild(tlUi);
   // 如果游戏已开始，开始录像
   if(typeof G!=='undefined'&&G&&G.phase!=='setup')startRec();
   // 每日检查
