@@ -488,8 +488,6 @@ function renderRank(c){
   if(typeof wsConn!=='undefined'&&wsConn&&wsConn.readyState===1){
     wsConn.send(JSON.stringify({type:'get_leaderboard'}));
   }
-  }
-  c.innerHTML=html;
 }
 
 function renderSetting(c){
