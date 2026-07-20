@@ -169,7 +169,8 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crds .ccf{font-size:.95em;color:#d8f;margin-top:20px}.crds .ccs{font-size:.72em;color:#7a6a50;margin-top:6px;line-height:1.5}
 .crds .ccg{font-size:1em;color:#d4b87a;margin:5px 0;cursor:pointer;transition:color .15s}
 .crds .ccg:hover{color:#f0d8a0}.crds .ccp{font-size:.9em;color:#9ab8d4;margin:5px 0}
-.crds .ccm{font-size:.9em;color:#a8c8a8;margin:5px 0}.crds .cch{font-size:.9em;color:#d4b070;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .ccm{font-size:.9em;color:#a8c8a8;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .ccm:hover{color:#c8e8c8}.crds .cch{font-size:.9em;color:#d4b070;margin:5px 0;cursor:pointer;transition:color .15s}
 .crds .cch:hover{color:#f0cc80}.crds .ccb{font-size:1.1em;color:#c8943a;margin:12px 0 6px;letter-spacing:1px}
 .crds .cca{font-size:1.3em;color:#f0e6d3;margin:6px 0;letter-spacing:3px}
 .crds .ccl{font-size:.72em;color:#8a8a70;margin:3px 0}.ccl a{color:#8a8a70;text-decoration:underline}
@@ -333,20 +334,21 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div class="ccd"></div>
 
     <div class="ccb">作者</div>
-    <div class="cca">狐狸白沁</div>
+    <div class="cca" onclick="showDetail('狐狸白沁','制作人 / 策划 / 设计 / 调试','西部对决的发起者、设计者和开发者，从一行代码到完整游戏，花了小10亿token')">狐狸白沁</div>
     <div class="ccl"><a href="https://b23.tv/khe0ong" target="_blank">B站：狐狸不想营业</a></div>
     <div class="ccl"><a href="https://www.ifdian.net/a/HLBQ0905" target="_blank">爱发电：HLBQ0905</a></div>
     <div class="ccd"></div>
 
     <div class="ccb">AI 模型</div>
-    <div class="ccp">deepseek-V4-fish · deepseek-V4 等</div>
+    <div class="ccp" onclick="showDetail('deepseek-V4-fish','AI 模型','为本游戏提供代码生成和逻辑研发支持')">deepseek-V4-fish</div>
+    <div class="ccp">· deepseek-V4 等</div>
     <div class="ccr">代码制作 · 逻辑研发</div>
     <div class="ccd"></div>
 
     <div class="ccb">鸣谢工作室</div>
-    <div class="ccm">英雄主义公会全体成员</div>
-    <div class="ccm">小苏狐狸工作室测试组</div>
-    <div class="ccm">云麓工作室</div>
+    <div class="ccm" onclick="showDetail('英雄主义公会','测试组','全员参与西部对决的功能测试和bug反馈，为游戏质量保驾护航')">英雄主义公会全体成员</div>
+    <div class="ccm" onclick="showDetail('小苏狐狸工作室','测试组','协助游戏测试工作，提供反馈意见')">小苏狐狸工作室测试组</div>
+    <div class="ccm" onclick="showDetail('云麓工作室','测试 / 特别鸣谢','参与测试并给予全方位支持')">云麓工作室</div>
     <div class="ccd"></div>
 
     <div class="ccb">鸣谢人员</div>
