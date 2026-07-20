@@ -164,14 +164,23 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crdo.on{display:block}
 .crdo::-webkit-scrollbar{width:3px}.crdo::-webkit-scrollbar-thumb{background:#5a3a2a;border-radius:4px}
 .crds{text-align:center;max-width:500px;margin:0 auto;padding:20px}
-.crds .cct{font-size:2em;color:#ff6b35;margin-bottom:4px}.crds .ccn{font-size:1em;color:#e0d8d0;margin:5px 0;line-height:1.6}
-.crds .ccr{font-size:.8em;color:#a08070;margin:2px 0}.crds .ccd{width:40px;height:1px;background:#8b4513;margin:12px auto}
+.crds .cct{font-size:2em;color:#ff6b35;margin-bottom:4px}.crds .ccn{font-size:1em;color:#e0d8d0;margin:5px 0;line-height:1.6;cursor:pointer;transition:color .15s}
+.crds .ccn:hover{color:#ff6b35}.crds .ccr{font-size:.8em;color:#a08070;margin:2px 0}.crds .ccd{width:40px;height:1px;background:#8b4513;margin:12px auto}
 .crds .ccf{font-size:.95em;color:#d8f;margin-top:20px}.crds .ccs{font-size:.72em;color:#7a6a50;margin-top:6px;line-height:1.5}
-.crds .ccg{font-size:1em;color:#f0e6d3;margin:5px 0}.crds .ccp{font-size:.9em;color:#c0b090;margin:5px 0}
-.crds .ccm{font-size:.9em;color:#c0b090;margin:5px 0}.crds .cch{font-size:.9em;color:#e0d0a0;margin:5px 0}
-.crds .ccb{font-size:1.1em;color:#c8943a;margin:12px 0 6px;letter-spacing:1px}
+.crds .ccg{font-size:1em;color:#d4b87a;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .ccg:hover{color:#f0d8a0}.crds .ccp{font-size:.9em;color:#9ab8d4;margin:5px 0}
+.crds .ccm{font-size:.9em;color:#a8c8a8;margin:5px 0}.crds .cch{font-size:.9em;color:#d4b070;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .cch:hover{color:#f0cc80}.crds .ccb{font-size:1.1em;color:#c8943a;margin:12px 0 6px;letter-spacing:1px}
 .crds .cca{font-size:1.3em;color:#f0e6d3;margin:6px 0;letter-spacing:3px}
 .crds .ccl{font-size:.72em;color:#8a8a70;margin:3px 0}.ccl a{color:#8a8a70;text-decoration:underline}
+
+/* detail popup */
+.cr-detail{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;background:rgba(20,10,8,.97);border:1px solid #8b4513;border-radius:12px;padding:20px 24px;max-width:300px;width:90%;backdrop-filter:blur(8px);box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.cr-detail.on{display:block}
+.cr-detail .dt-name{font-size:1.1em;color:#ff6b35;font-weight:bold;margin-bottom:4px}
+.cr-detail .dt-role{font-size:.8em;color:#c8943a;margin-bottom:8px}
+.cr-detail .dt-desc{font-size:.78em;color:#c0a090;line-height:1.6}
+.cr-detail .dt-close{display:block;margin:10px auto 0;background:rgba(139,69,19,.3);border:1px solid #6b3a2a;border-radius:6px;padding:5px 16px;color:#a08070;cursor:pointer;font-size:.75em;font-family:inherit}
 .crdc{position:sticky;bottom:20px;margin:0 auto -20px;z-index:210;background:rgba(255,107,53,.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:.85em;display:block;text-align:center;width:fit-content}
 .itip{display:none;position:fixed;z-index:50;background:rgba(10,5,3,.95);border:1px solid #8b4513;border-radius:10px;padding:10px 14px;max-width:220px;font-size:.75em;color:#c0a090;pointer-events:none;backdrop-filter:blur(4px)}
 .itip.on{display:block}.itip .itn{font-weight:bold;color:#ff6b35}
@@ -331,24 +340,24 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 
     <div class="ccb">AI 模型</div>
     <div class="ccp">deepseek-V4-fish · deepseek-V4 等</div>
-    <div class="ccr">代码制作 + 逻辑研发</div>
+    <div class="ccr">代码制作 · 逻辑研发</div>
     <div class="ccd"></div>
 
     <div class="ccb">鸣谢工作室</div>
-    <div class="ccn">英雄主义公会全体成员</div>
-    <div class="ccn">小苏狐狸工作室测试组</div>
-    <div class="ccn">云麓工作室</div>
+    <div class="ccm">英雄主义公会全体成员</div>
+    <div class="ccm">小苏狐狸工作室测试组</div>
+    <div class="ccm">云麓工作室</div>
     <div class="ccd"></div>
 
-    <div class="ccb">鸣谢人员（圈名）</div>
-    <div class="ccn">元宝 — 测试</div>
-    <div class="ccn">玉米 — 测试 · 代码调试</div>
-    <div class="ccn">苏杭夜雪 — 测试</div>
-    <div class="ccn">林格 — 游戏代码创意提供</div>
-    <div class="ccn">云麓 — 公会会长 · 特别鸣谢</div>
-    <div class="ccn">幸运喵 — 测试 · 联机创意</div>
-    <div class="ccn">John Yoss — GitHub 意见 · 特别鸣谢</div>
-    <div class="ccn">所有参与测试的人员</div>
+    <div class="ccb">鸣谢人员</div>
+    <div class="ccn" onclick="showDetail('元宝','测试人员','参与了游戏功能测试和bug反馈')">元宝</div>
+    <div class="ccn" onclick="showDetail('玉米','测试人员 / 代码调试','参与功能测试，协助排查和修复代码问题')">玉米</div>
+    <div class="ccn" onclick="showDetail('苏杭夜雪','测试人员','参与了游戏功能测试')">苏杭夜雪</div>
+    <div class="cch" onclick="showDetail('林格','游戏代码创意提供','为西部对决提供了核心玩法创意和设计思路')">林格</div>
+    <div class="ccg" onclick="showDetail('云麓','公会会长 / 特别鸣谢','领导英雄主义公会，组织测试并给予全方位支持')">云麓</div>
+    <div class="ccg" onclick="showDetail('幸运喵','测试人员 / 联机创意','参与测试并提出了联机模式的创意方案')">幸运喵</div>
+    <div class="ccg" onclick="showDetail('John Yoss','GitHub 意见提供 / 特别鸣谢','在GitHub上提供宝贵意见和反馈')">John Yoss</div>
+    <div class="ccn" onclick="showDetail('所有参与测试的人员','测试人员','感谢每一位参与测试的朋友，你们的帮助让游戏变得更好')">所有参与测试的人员</div>
     <div class="ccd"></div>
 
     <div class="ccf">感谢你的游玩</div>
@@ -359,6 +368,12 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div class="ccr" style="font-size:.6em;color:#6a5540">花了小10亿token变成完整游戏，如果觉得不错请支持我谢谢喵</div>
   </div>
   <div class="crdc" onclick="hideCred()">关闭</div>
+</div>
+<div class="cr-detail" id="crDetail">
+  <div class="dt-name" id="dtName"></div>
+  <div class="dt-role" id="dtRole"></div>
+  <div class="dt-desc" id="dtDesc"></div>
+  <button class="dt-close" onclick="hideDetail()">关闭</button>
 </div>
 <div class="itip" id="tip"><div class="itn" id="tipN"></div><div id="tipD"></div></div>
 </div>
@@ -2000,7 +2015,15 @@ function showCred() {
   $('credO').scrollTop = 0;
 }
 
-function hideCred() { $('credO').classList.remove('on'); }
+function hideCred() { $('credO').classList.remove('on'); hideDetail(); }
+
+function showDetail(name, role, desc) {
+  $('dtName').textContent = name;
+  $('dtRole').textContent = role;
+  $('dtDesc').textContent = desc;
+  $('crDetail').classList.add('on');
+}
+function hideDetail() { $('crDetail').classList.remove('on'); }
 
 // ====== P2P RECV ======
 function recvAction(a) {
