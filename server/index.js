@@ -140,6 +140,7 @@ wss.on('connection', (ws) => {
         r.players[1] = ws;
         r.names[1] = msg.name || '旅者';
         ws.roomCode = code;
+        registerOnline(msg.name);
         ws.send(JSON.stringify({ type: 'room_joined', code, myName: r.names[1], opponentName: r.names[0] }));
         r.players[0].send(JSON.stringify({ type: 'opponent_joined', name: r.names[1], myName: r.names[0] }));
         updateRoomList();

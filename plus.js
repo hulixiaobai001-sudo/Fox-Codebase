@@ -465,8 +465,11 @@ css.textContent += '.pp-fr-add{display:flex;gap:6px;margin:8px 0}.pp-fr-add inpu
 css.textContent += '.pp-fr-add input:focus{border-color:#c8943a}';
 
 function renderFriends(cnt) {
-  var html = '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">👥 好友列表 (' + friends.length + ')</div>';
-  if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540">还没有好友，输入ID添加</div>';
+  var myId = '';
+  if (typeof wsConn !== 'undefined' && wsConn && wsConn.myId) myId = wsConn.myId;
+  var html = '<div style="font-size:.75em;color:#c8943a;margin-bottom:6px;text-align:center">你的ID: <b style="color:#ff6b35;font-size:1.1em">' + (myId || '连接后显示') + '</b></div>';
+  html += '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">👥 好友列表 (' + friends.length + ')</div>';
+  if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540">还没有好友，把你的ID发给朋友吧</div>';
   friends.forEach(function(f) {
     var online = onlineList && onlineList.find(function(u) { return u.id === f.id; });
     html += '<div class="pp-fr"><span>' + f.name + '</span>' +

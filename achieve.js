@@ -175,12 +175,14 @@ function showPanel(tab){
   // Stats
   var sd=$('waStats');
   var lastG=G2.last||{};
+  var wr = S.pl > 0 ? Math.round(S.wi / S.pl * 100) : 0;
+  var hitRate = S.sh > 0 ? Math.round((S.sh - S.ms) / S.sh * 100) : 0;
   sd.innerHTML=
-    '<span class="sn">'+S.wi+'</span> 胜 / <span class="sn">'+(S.pl-S.wi)+'</span> 负 · '+S.pl+' 局<br>'+
-    '开枪: <span class="sn">'+S.sh+'</span> · 命中: ??? · 空枪: <span class="sn">'+S.ms+'</span> · 暴击: <span class="sn">'+S.cr+'</span><br>'+
-    '跳过: <span class="sn">'+S.sk+'</span> · 被击中: <span class="sn">'+S.ht+'</span>'+
-    (lastG.rd?'<br><br>上局: '+lastG.winner+' ('+lastG.rd+'回合)':'')+
-    '<br><br><span style="font-size:.6em;color:#5a4030;line-height:1.5;display:block;margin-top:6px">本代码基于 <a style="color:#6a5540" href="https://github.com/hulixiaobai001-sudo/Fox-Codebase" target="_blank">Fox-Codebase</a> 开发<br>仓库开源协议: GPL-3.0</span>';
+    '<span class="sn">'+S.wi+'</span> 胜 / <span class="sn">'+(S.pl-S.wi)+'</span> 负 · <span class="sn">'+S.pl+'</span> 局 · 胜率 <span class="sn">'+wr+'%</span><br>'+
+    '开枪: <span class="sn">'+S.sh+'</span> · 命中: <span class="sn">'+(S.sh-S.ms)+'</span> · 命中率 <span class="sn">'+hitRate+'%</span><br>'+
+    '空枪: <span class="sn">'+S.ms+'</span> · 暴击: <span class="sn">'+S.cr+'</span> · 跳过: <span class="sn">'+S.sk+'</span> · 被击中: <span class="sn">'+S.ht+'</span>'+
+    (lastG.rd?'<br><br>📋 上局: '+lastG.winner+' ('+lastG.rd+'回合)':'')+
+    '<br><br><span style="font-size:.6em;color:#5a4030;line-height:1.5;display:block;margin-top:6px">基于 <a style="color:#6a5540" href="https://github.com/hulixiaobai001-sudo/Fox-Codebase" target="_blank">Fox-Codebase</a> · GPL-3.0</span>';
   
   S.aii=ucnt;save();
   $('waBox').querySelector('.st').textContent=ucnt+'/'+cnt+' 已解锁 · 点击查看详情';
