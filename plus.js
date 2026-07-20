@@ -486,11 +486,133 @@ function renderSetting(c){
 
 
 
-// ====== 自定义服务 URL 加载 ======
+// ====== 自定义服务 URL + DeepSeek API ======
 try{
   var customWs=localStorage.getItem('wd_custom_ws');
   if(customWs&&typeof WS_URL!=='undefined'){WS_URL=customWs;}
 }catch(e){}
+
+// DeepSeek API configuration
+var dsApiKey = '';
+try { dsApiKey = localStorage.getItem('wd_ds_key') || ''; } catch(e) {}
+
+// Hook into AI decision making
+function dsAIOverride() {
+  if (!dsApiKey || typeof G === 'undefined' || !G || G.mode !== 'ai') return false;
+  var p = G.p[1];
+  if (!p || !p.al || G.cp !== 1 || G.phase !== 'play' || G.bf) return false;
+
+  // Build game state prompt
+  var chamberState = '';
+  for (var i = 0; i < G.s.ch; i++) {
+    if (i === G.cc) chamberState += '【当前位置】';
+    if (i === G.bp && G.br) chamberState += '💥';
+    else if (i === G.bp) chamberState += '?';
+    else chamberState += '○';
+    chamberState += ' ';
+  }
+
+  var prompt = '你正在玩一个西部主题的轮盘赌游戏"西部对决"。\n\n' +
+    '## 当前状态\n' +
+    '- 你的名字: ' + p.n + '\n' +
+    '- 你的HP: ' + p.hp + '/' + p.mx + '\n' +
+    '- 对手HP: ' + G.p[0].hp + '/' + G.p[0].mx + '\n' +
+    '- 弹巢大小: ' + G.s.ch + ', 子弹数量: ' + G.s.bu + '\n' +
+    '- 当前弹巢位置: 第' + (G.cc + 1) + '发\n' +
+    '- 弹巢状态: ' + chamberState + '\n' +
+    '- 跳过扣血: ' + G.s.sk + 'HP\n' +
+    '- 是否禁止跳过: ' + (G.s.noSk ? '是' : '否') + '\n';
+
+  // Add item info
+  var items = ['watch','book','check','wash','medkit','armor','rapid','freeze','swap','flag'];
+  var itemNames = {watch:'反转怀表(调转枪口)',book:'我没死之书(免死)',check:'查看子弹',wash:'洗枪(重置子弹)',medkit:'急救包(+2HP)',armor:'防弹衣(挡一次)',rapid:'连射(空枪可再开)',freeze:'冰冻(击中强制跳过)',swap:'交换HP',flag:'公会旗帜(护盾)'};
+  var hasItems = [];
+  items.forEach(function(it) {
+    if (p.it[it] && p.it[it] > 0) hasItems.push(itemNames[it] || it);
+  });
+  prompt += '- 你的道具: ' + (hasItems.length > 0 ? hasItems.join(', ') : '无') + '\n\n';
+
+  prompt += '## 可用操作\n' +
+    '1. 开枪 - 扣动扳机，可能击中对手或空枪\n' +
+    '2. 跳过 - 放弃本回合，扣除' + G.s.sk + 'HP，随机获得一个已用道具\n' +
+    (hasItems.length > 0 ? '3. 使用道具 - 从你的道具中选择一个使用\n' : '') +
+    '\n请只回复一个JSON，格式如：{"action":"shoot"} 或 {"action":"skip"} 或 {"action":"item","item":"medkit"}，不要有其他文字。';
+
+  // Call DeepSeek API
+  fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + dsApiKey
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        {role: 'system', content: '你是西部对决AI玩家，请根据游戏状态做出最佳决策。只回复JSON。'},
+        {role: 'user', content: prompt}
+      ],
+      max_tokens: 100,
+      temperature: 0.7
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    try {
+      var text = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+      var decision = JSON.parse(text);
+      executeDSDecision(decision);
+    } catch(e) {
+      // Fallback: shoot
+      if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+    }
+  })
+  .catch(function() {
+    // Fallback on error
+    if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+  });
+
+  return true;
+}
+
+function executeDSDecision(decision) {
+  if (!decision || !decision.action) {
+    if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+    return;
+  }
+  if (decision.action === 'shoot') {
+    if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+  } else if (decision.action === 'skip') {
+    if (typeof doSkip === 'function' && !G.s.noSk) doSkip();
+  } else if (decision.action === 'item' && decision.item) {
+    // Use the item via the existing system
+    var itemMap = {watch:'watch',book:'book',check:'check',wash:'wash',medkit:'medkit',armor:'armor',rapid:'rapid',freeze:'freeze',swap:'swap',flag:'flag'};
+    var itemId = itemMap[decision.item] || decision.item;
+    if (typeof useI === 'function') {
+      useI(1, itemId);
+      // After using item, the AI might need to decide again
+      setTimeout(function() {
+        if (G.phase === 'play' && G.cp === 1 && !G.bf && G.p[1] && G.p[1].al) {
+          // If still AI's turn, call original aiGo as fallback
+          if (typeof aiGo === 'function') aiGo();
+        }
+      }, 500);
+    } else {
+      if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+    }
+  } else {
+    if (typeof pull === 'function' && G.phase === 'play' && G.cp === 1 && !G.bf) pull();
+  }
+}
+
+// Hook into the game's aiGo function
+setInterval(function() {
+  if (dsApiKey && typeof G !== 'undefined' && G && G.mode === 'ai' && G.phase === 'play' && G.cp === 1 && !G.bf) {
+    // Check if the original aiGo is about to run and intercept
+    if (G.p[1] && G.p[1].al) {
+      dsAIOverride();
+    }
+  }
+}, 300);
 
 // ====== 初始化 ======
 loadD();initThemes();
@@ -637,8 +759,16 @@ setTimeout(function(){
   tlUi.onmouseleave=function(){tlUi.style.opacity='0.4'};
   var cfgBtn=document.createElement('button');cfgBtn.className='pp-btn';cfgBtn.textContent='⚙️ 自定义服务/AI';
   cfgBtn.onclick=function(){
-    var u=prompt('WebSocket服务器地址',typeof WS_URL!=='undefined'?WS_URL:'wss://fox-codebase-production.up.railway.app');
-    if(u&&u.trim()){try{localStorage.setItem('wd_custom_ws',u.trim());T('✅ 自定义服务已设置，刷新后生效')}catch(e){}}
+    var choice = prompt('选择设置:\n1. 修改服务器地址\n2. 设置DeepSeek API Key\n3. 清除API Key', '1');
+    if (choice === '1') {
+      var u=prompt('WebSocket服务器地址',typeof WS_URL!=='undefined'?WS_URL:'wss://fox-codebase-production.up.railway.app');
+      if(u&&u.trim()){try{localStorage.setItem('wd_custom_ws',u.trim());T('✅ 自定义服务已设置，刷新后生效')}catch(e){}}
+    } else if (choice === '2') {
+      var key=prompt('输入你的DeepSeek API Key', 'sk-');
+      if(key&&key.trim()){try{localStorage.setItem('wd_ds_key',key.trim());dsApiKey=key.trim();T('✅ DeepSeek API Key已设置，AI将使用API决策')}catch(e){}}
+    } else if (choice === '3') {
+      try{localStorage.removeItem('wd_ds_key');dsApiKey='';T('🗑️ API Key已清除')}catch(e){}
+    }
   };
   tlUi.appendChild(cfgBtn);
   document.body.appendChild(tlUi);
