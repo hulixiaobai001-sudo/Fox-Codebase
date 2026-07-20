@@ -239,6 +239,15 @@ function hook(){
         E.scores.push({t:Date.now(),rd:G.rd||0,w:G.p[wi]?.n||'?',p1:G.p[0]?.n,p2:G.p[1]?.n});
         if(E.scores.length>100)E.scores=E.scores.slice(-100);
         saveD();
+        // 联机排行榜提交
+        if(G.mode==='p2p'&&typeof wsConn!=='undefined'&&wsConn&&wsConn.readyState===1){
+          var winnerName=G.p[wi]?G.p[wi].n:'';
+          if(winnerName){
+            wsConn.send(JSON.stringify({type:'submit_score',name:winnerName,won:true}));
+            var loserName=G.p[wi===0?1:0]?G.p[wi===0?1:0].n:'';
+            if(loserName)wsConn.send(JSON.stringify({type:'submit_score',name:loserName,won:false}));
+          }
+        }
       }catch(e){}
     };
     window.gameOver.__pp=true;
@@ -459,20 +468,26 @@ function renderEgg(c){
 }
 
 function renderRank(c){
+  var html = '<div class="pp-st">🏆 联机排行榜</div>';
+  html += '<div id="ppLbContent" style="font-size:.72em;color:#6a5540;text-align:center">加载中...</div>';
+  html += '<div class="pp-st" style="margin-top:12px">📋 本地战绩</div>';
   var scores=E.scores||[];
-  // 按回合排序
-  var sorted=scores.slice().sort(function(a,b){return a.rd-b.rd});
-  var top=sorted.slice(0,20);
-  var html='<div class="pp-st"><span class="sn">'+scores.length+'</span> 局记录</div>';
-  if(top.length===0)html+='<div class="pp-st" style="color:#6a5540">暂无数据</div>';
-  else{
-    html+='<div style="max-height:180px;overflow-y:auto">';
-    top.forEach(function(s,i){
-      var medal=i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
-      html+='<div style="display:flex;justify-content:space-between;padding:2px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.1)">'+
-        '<span>'+medal+' '+s.w+'</span><span>R'+s.rd+'</span><span style="color:#5a4030">'+new Date(s.t).toLocaleDateString()+'</span></div>';
+  html+='<div style="font-size:.7em;color:#a08070;margin-bottom:4px">'+scores.length+' 局记录</div>';
+  if(scores.length>0){
+    html+='<div style="max-height:120px;overflow-y:auto">';
+    scores.slice().sort(function(a,b){return a.rd-b.rd}).slice(0,10).forEach(function(s,i){
+      var m=i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+      html+='<div style="display:flex;justify-content:space-between;padding:2px 8px;font-size:.68em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">'+
+        '<span>'+m+' '+s.w+'</span><span>R'+s.rd+'</span></div>';
     });
     html+='</div>';
+  }
+  if(c) c.innerHTML = html;
+
+  // Request online leaderboard
+  if(typeof wsConn!=='undefined'&&wsConn&&wsConn.readyState===1){
+    wsConn.send(JSON.stringify({type:'get_leaderboard'}));
+  }
   }
   c.innerHTML=html;
 }
@@ -590,6 +605,28 @@ window.wsEventBus.push(function(msg) {
     if (typeof wsConn !== 'undefined' && wsConn) wsConn.myId = msg.id;
     var cnt = document.getElementById('ppContent');
     if (cnt && document.querySelector('#ppTabs .pp-tab.on')?.textContent.includes('好友')) renderFriends(cnt);
+  }
+  if (msg.type === 'score_updated' && msg.stats) {
+    // Show rank notification
+    T('🏆 当前段位: ' + msg.stats.rank + ' · ' + msg.stats.score + '分');
+  }
+  if (msg.type === 'leaderboard' && msg.entries) {
+    var el = document.getElementById('ppLbContent');
+    if (el) {
+      if (msg.entries.length === 0) {
+        el.innerHTML = '<div style="color:#6a5540;padding:6px">暂无排行数据，打一局就会有了</div>';
+      } else {
+        var h = '';
+        msg.entries.slice(0, 15).forEach(function(e, i) {
+          var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+          h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">' +
+            '<span>' + medal + ' <b style="color:#c8943a">' + e.name + '</b></span>' +
+            '<span style="color:#dd8844">' + e.rank + '</span>' +
+            '<span>' + e.wins + '胜/' + e.games + '局 · <b style="color:#ff6b35">' + e.score + '</b>分</span></div>';
+        });
+        el.innerHTML = h;
+      }
+    }
   }
   if (msg.type === 'friend_invite' && msg.fromName) {
     if (confirm(msg.fromName + ' 邀请你一起玩西部对决！\n是否接受？')) {
