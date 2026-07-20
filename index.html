@@ -1121,6 +1121,10 @@ function wsHandle(msg) {
       break;
     }
   }
+  // Dispatch event for external JS modules (plus.js etc)
+  if (window.wsEventBus) {
+    window.wsEventBus.forEach(function(cb) { try { cb(msg); } catch(e) {} });
+  }
 }
 
 // —— HOST begins game ——

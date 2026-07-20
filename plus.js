@@ -298,8 +298,8 @@ function showPanel(tab){
 
 function renderTabs(){
   var tabs=$('ppTabs');tabs.innerHTML='';
-  ['share','daily','replay','egg','rank','setting'].forEach(function(t){
-    var names={share:'📤分享',daily:'🎯每日',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
+  ['share','friends','daily','replay','egg','rank','setting'].forEach(function(t){
+    var names={share:'📤分享',friends:'👥好友',daily:'🎯每日',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
     var tb=document.createElement('button');tb.className='pp-tab'+(t===P.tab?' on':'');tb.textContent=names[t]||t;
     tb.onclick=function(){showPanel(t)};tabs.appendChild(tb);
   });
@@ -310,6 +310,7 @@ function renderContent(){
   if(!cnt)return;
   switch(P.tab){
     case 'share':renderShare(cnt);break;
+    case 'friends':renderFriends(cnt);break;
     case 'daily':renderDaily(cnt);break;
     case 'replay':renderReplay(cnt);break;
     case 'egg':renderEgg(cnt);break;
@@ -454,12 +455,89 @@ function renderSetting(c){
 loadD();initThemes();
 var hi=setInterval(function(){if(typeof G!=='undefined'&&G){hook();clearInterval(hi)}},500);
 
+// ====== 好友系统 ======
+var friends = [];
+try { var f = localStorage.getItem('wd_friends'); if (f) friends = JSON.parse(f); } catch(e) {}
+
+css.textContent += '.pp-fr{font-size:.78em;color:#c0a090;margin:4px 0;padding:6px 8px;background:rgba(60,30,20,.3);border-radius:8px;display:flex;justify-content:space-between;align-items:center}';
+css.textContent += '.pp-fr .st{font-size:.65em}.pp-fr .st.on{color:#4c6}.pp-fr .st.off{color:#644}';
+css.textContent += '.pp-fr-add{display:flex;gap:6px;margin:8px 0}.pp-fr-add input{flex:1;background:rgba(60,30,20,.5);border:1px solid #6b3a2a;border-radius:6px;padding:5px 8px;color:#f0e6d3;font-size:.8em;outline:none;font-family:inherit}';
+css.textContent += '.pp-fr-add input:focus{border-color:#c8943a}';
+
+function renderFriends(cnt) {
+  var html = '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">👥 好友列表 (' + friends.length + ')</div>';
+  if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540">还没有好友，输入ID添加</div>';
+  friends.forEach(function(f) {
+    var online = onlineList && onlineList.find(function(u) { return u.id === f.id; });
+    html += '<div class="pp-fr"><span>' + f.name + '</span>' +
+      '<span class="st ' + (online ? 'on' : 'off') + '">' + (online ? '● 在线' : '○ 离线') + '</span>' +
+      (online ? '<button class="pp-btn" onclick="inviteFriend(\'' + f.id + '\',\'' + f.name + '\')" style="font-size:.7em;padding:2px 8px">邀请</button>' : '') +
+      '<button class="pp-btn" onclick="removeFriend(\'' + f.id + '\')" style="font-size:.7em;padding:2px 6px;color:#866">✕</button></div>';
+  });
+  html += '<div class="pp-fr-add"><input type="text" id="frInput" placeholder="输入好友ID"><button class="pp-btn" onclick="addFriend()">添加</button></div>';
+  if (cnt) cnt.innerHTML = html;
+  // Request online list
+  if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
+    wsConn.send(JSON.stringify({ type: 'get_online' }));
+  }
+}
+var onlineList = [];
+function addFriend() {
+  var inp = document.getElementById('frInput');
+  if (!inp || !inp.value.trim()) return;
+  var id = inp.value.trim().toUpperCase();
+  if (friends.find(function(f) { return f.id === id; })) { alert('已经是好友了'); return; }
+  var name = prompt('给这个好友起个名字', id) || id;
+  friends.push({ id: id, name: name });
+  localStorage.setItem('wd_friends', JSON.stringify(friends));
+  inp.value = '';
+  var cnt = document.getElementById('ppContent');
+  if (cnt) renderFriends(cnt);
+}
+function removeFriend(id) {
+  friends = friends.filter(function(f) { return f.id !== id; });
+  localStorage.setItem('wd_friends', JSON.stringify(friends));
+  var cnt = document.getElementById('ppContent');
+  if (cnt) renderFriends(cnt);
+}
+function inviteFriend(id, name) {
+  if (typeof wsConn === 'undefined' || !wsConn || wsConn.readyState !== 1) {
+    T('请先连接到服务器'); return;
+  }
+  var code = '';
+  if (typeof G !== 'undefined' && G && G.roomCode) code = G.roomCode;
+  wsConn.send(JSON.stringify({ type: 'friend_invite', toId: id, fromName: G ? (G.p[0] ? G.p[0].n : '旅者') : '旅者', roomCode: code }));
+  T('已向 ' + name + ' 发送邀请');
+}
+// Listen for WebSocket messages via event bus
+if (typeof window.wsEventBus === 'undefined') window.wsEventBus = [];
+window.wsEventBus.push(function(msg) {
+  if (msg.type === 'online_list') {
+    onlineList = msg.users || [];
+    // Update friend display if visible
+    var cnt = document.getElementById('ppContent');
+    if (cnt && document.getElementById('ppTabs')) {
+      var active = document.querySelector('#ppTabs .pp-tab.on');
+      if (active && active.textContent.includes('好友')) renderFriends(cnt);
+    }
+  }
+  if (msg.type === 'friend_invite' && msg.fromName) {
+    if (confirm(msg.fromName + ' 邀请你一起玩西部对决！\n是否接受？')) {
+      T('尝试连接 ' + msg.fromName + '...');
+    }
+  }
+});
+
 setTimeout(function(){
   var ui=document.createElement('div');ui.className='pp-ui';
   var bt=document.createElement('button');bt.className='pp-btn';bt.textContent='🎮 更多';
   bt.onclick=function(){showPanel('share')};
   ui.appendChild(bt);
   document.body.appendChild(ui);
+  // Add friend button
+  var frBt = document.createElement('button'); frBt.className = 'pp-btn'; frBt.textContent = '👥 好友';
+  frBt.onclick = function() { showPanel('friends'); };
+  ui.appendChild(frBt);
   // 如果游戏已开始，开始录像
   if(typeof G!=='undefined'&&G&&G.phase!=='setup')startRec();
   // 每日检查

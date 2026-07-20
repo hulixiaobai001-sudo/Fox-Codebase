@@ -42,11 +42,41 @@ const server = http.createServer((req, res) => {
   res.end();
 });
 
+// —— Friends / Online ——
+const onlineUsers = new Map(); // id -> { ws, name }
+let onlineIdCounter = 0;
+
+function broadcastOnlineList() {
+  const list = [];
+  onlineUsers.forEach(u => list.push({ id: u.id, name: u.name }));
+  const payload = JSON.stringify({ type: 'online_list', users: list });
+  wss.clients.forEach(c => { if (c.readyState === 1) c.send(payload); });
+}
+
 // —— WS ——
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
   ws.roomCode = null;
+  ws.onlineId = null;
+
+  // Register online after a short delay (when we get the name)
+  function registerOnline(name) {
+    if (ws.onlineId) return;
+    onlineIdCounter++;
+    const id = 'U' + onlineIdCounter.toString(16).toUpperCase();
+    ws.onlineId = id;
+    onlineUsers.set(id, { id, name: name || '旅者', ws });
+    broadcastOnlineList();
+  }
+
+  function unregisterOnline() {
+    if (ws.onlineId) {
+      onlineUsers.delete(ws.onlineId);
+      ws.onlineId = null;
+      broadcastOnlineList();
+    }
+  }
 
   ws.on('message', (raw) => {
     let msg;
@@ -55,8 +85,34 @@ wss.on('connection', (ws) => {
     switch (msg.type) {
 
       // ====== ROOM ======
+      // ====== FRIENDS ======
+      case 'register_online': {
+        registerOnline(msg.name);
+        ws.send(JSON.stringify({ type: 'registered', id: ws.onlineId }));
+        break;
+      }
+      case 'get_online': {
+        const list = [];
+        onlineUsers.forEach(u => list.push({ id: u.id, name: u.name }));
+        ws.send(JSON.stringify({ type: 'online_list', users: list }));
+        break;
+      }
+      case 'friend_invite': {
+        const target = onlineUsers.get(msg.toId);
+        if (target && target.ws.readyState === 1) {
+          target.ws.send(JSON.stringify({ type: 'friend_invite', fromId: ws.onlineId, fromName: msg.fromName, roomCode: msg.roomCode }));
+          ws.send(JSON.stringify({ type: 'invite_sent', toName: target.name }));
+        } else {
+          ws.send(JSON.stringify({ type: 'invite_failed', reason: '对方不在线' }));
+        }
+        break;
+      }
+
+      // ====== ROOM ======
       case 'create_room': {
         const code = genCode();
+        // Register online with name
+        registerOnline(msg.name);
         rooms.set(code, {
           players: [ws, null],
           names: [msg.name || '治安官', null],
@@ -244,6 +300,7 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
+    unregisterOnline();
     leaveRoom(ws, '对方断线了');
     const qi = queue.indexOf(ws);
     if (qi >= 0) queue.splice(qi, 1);
