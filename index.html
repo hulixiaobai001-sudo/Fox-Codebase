@@ -559,8 +559,7 @@ function hostP2P() {
   $('p2pStatus').textContent = '请稍候';
   $('p2pActions').innerHTML = '';
   initPeer(function(id) {
-    var code = id.length > 6 ? id.substring(0, 6).toUpperCase() : id;
-    showHostLobby(code);
+    showHostLobby(id);
     p2pPeer.on('connection', function(conn) {
       p2pConn = conn;
       p2pConn.on('data', function(data) { p2pRecv(data); });
