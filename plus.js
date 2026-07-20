@@ -239,15 +239,7 @@ function hook(){
         E.scores.push({t:Date.now(),rd:G.rd||0,w:G.p[wi]?.n||'?',p1:G.p[0]?.n,p2:G.p[1]?.n});
         if(E.scores.length>100)E.scores=E.scores.slice(-100);
         saveD();
-        // 联机排行榜提交
-        if(G.mode==='p2p'&&typeof wsConn!=='undefined'&&wsConn&&wsConn.readyState===1){
-          var winnerName=G.p[wi]?G.p[wi].n:'';
-          if(winnerName){
-            wsConn.send(JSON.stringify({type:'submit_score',name:winnerName,won:true}));
-            var loserName=G.p[wi===0?1:0]?G.p[wi===0?1:0].n:'';
-            if(loserName)wsConn.send(JSON.stringify({type:'submit_score',name:loserName,won:false}));
-          }
-        }
+
       }catch(e){}
     };
     window.gameOver.__pp=true;
@@ -326,7 +318,7 @@ function showPanel(tab){
   if(!p){
     p=document.createElement('div');p.className='pp-panel';p.id='ppPanel';
     var b=document.createElement('div');b.className='pp-box';b.id='ppBox';
-    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 好友 · 录像 · 彩蛋 · 排行 · 设置</div>';
+    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 好友 · 录像 · 彩蛋 · 设置</div>';
     var tabs=document.createElement('div');tabs.className='pp-tabs';tabs.id='ppTabs';
     b.appendChild(tabs);
     var cnt=document.createElement('div');cnt.id='ppContent';cnt.style.cssText='min-height:120px';
@@ -343,8 +335,8 @@ function showPanel(tab){
 
 function renderTabs(){
   var tabs=$('ppTabs');tabs.innerHTML='';
-  ['share','friends','replay','egg','rank','setting'].forEach(function(t){
-    var names={share:'📤分享',friends:'👥好友',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
+  ['share','friends','replay','egg','setting'].forEach(function(t){
+    var names={share:'📤分享',friends:'👥好友',replay:'📹录像',egg:'🎪彩蛋',setting:'⚙️设置'};
     var tb=document.createElement('button');tb.className='pp-tab'+(t===P.tab?' on':'');tb.textContent=names[t]||t;
     tb.onclick=function(){showPanel(t)};tabs.appendChild(tb);
   });
@@ -358,7 +350,6 @@ function renderContent(){
     case 'friends':renderFriends(cnt);break;
     case 'replay':renderReplay(cnt);break;
     case 'egg':renderEgg(cnt);break;
-    case 'rank':renderRank(cnt);break;
     case 'setting':renderSetting(cnt);break;
   }
 }
@@ -467,59 +458,20 @@ function renderEgg(c){
 }
 
 function renderRank(c){
-  var html = '<div class="pp-st">🏆 联机排行榜</div>';
-  html += '<div id="ppLbContent" style="font-size:.72em;color:#6a5540;text-align:center">加载中...</div>';
-  html += '<div class="pp-st" style="margin-top:12px">📋 本地战绩</div>';
   var scores=E.scores||[];
-  html+='<div style="font-size:.7em;color:#a08070;margin-bottom:4px">'+scores.length+' 局记录</div>';
+  var html='<div style="font-size:.7em;color:#a08070;margin-bottom:4px">📋 战绩 · '+scores.length+' 局</div>';
   if(scores.length>0){
-    html+='<div style="max-height:120px;overflow-y:auto">';
-    scores.slice().sort(function(a,b){return a.rd-b.rd}).slice(0,10).forEach(function(s,i){
+    html+='<div style="max-height:160px;overflow-y:auto">';
+    scores.slice().sort(function(a,b){return a.rd-b.rd}).slice(0,15).forEach(function(s,i){
       var m=i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
       html+='<div style="display:flex;justify-content:space-between;padding:2px 8px;font-size:.68em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">'+
         '<span>'+m+' '+s.w+'</span><span>R'+s.rd+'</span></div>';
     });
     html+='</div>';
+  } else {
+    html+='<div style="font-size:.68em;color:#6a5540">暂无战绩</div>';
   }
   if(c) c.innerHTML = html;
-
-  // Request online leaderboard (HTTP + WebSocket dual)
-  var el = document.getElementById('ppLbContent');
-  var lbUrl = (typeof WS_URL !== 'undefined' ? WS_URL : 'wss://fox-codebase-production.up.railway.app').replace('wss://', 'https://').replace('ws://', 'http://');
-  fetch(lbUrl + '/leaderboard', { mode: 'cors' })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data && data.entries) renderLBData(data.entries);
-      else if (el) el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
-    })
-    .catch(function() {
-      // WebSocket fallback
-      if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
-        wsConn.send(JSON.stringify({type:'get_leaderboard'}));
-        setTimeout(function() {
-          if (el && el.textContent === '加载中...') el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
-        }, 5000);
-      } else {
-        if (el) el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
-      }
-    });
-
-  function renderLBData(entries) {
-    if (!el) return;
-    if (entries.length === 0) {
-      el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
-    } else {
-      var h = '';
-      entries.slice(0, 15).forEach(function(e, i) {
-        var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
-        h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">' +
-          '<span>' + medal + ' <b style="color:#c8943a">' + e.name + '</b></span>' +
-          '<span style="color:#dd8844">' + e.rank + '</span>' +
-          '<span>' + e.wins + '胜/' + e.games + '局 · <b style="color:#ff6b35">' + e.score + '</b>分</span></div>';
-      });
-      el.innerHTML = h;
-    }
-  }
 }
 
 function renderSetting(c){
@@ -532,81 +484,7 @@ function renderSetting(c){
     '<div class="pp-st" style="font-size:.6em;color:#5a4030;margin-top:10px">主题实时切换，不需要刷新页面</div>';
 }
 
-// ====== Rank badge (P2P lobby + game) ======
-function updateRankBadge(rank) {
-  if (!rank) {
-    try { if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说'; } catch(e) {}
-    if (!rank) try { rank = localStorage.getItem('wd_my_rank'); } catch(e) {}
-  }
-  try { if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说'; } catch(e) {}
 
-  // Show rank in P2P lobby (between title and actions)
-  if (rank) {
-    var steps = document.getElementById('p2pSteps');
-    if (steps) {
-      var existing = steps.parentNode.querySelector('.p2p-rank');
-      if (!existing) {
-        var el = document.createElement('div');
-        el.className = 'p2p-rank';
-        el.style.cssText = 'font-size:.7em;color:#c8943a;text-align:center;margin:2px 0 8px';
-        el.textContent = '🏆 ' + rank;
-        steps.parentNode.insertBefore(el, steps.nextSibling);
-      } else {
-        existing.textContent = '🏆 ' + rank;
-      }
-    }
-  }
-
-  // Also show in game header during P2P match
-  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && rank && G.phase !== 'setup') {
-    var gtit = document.querySelector('.gtit');
-    if (gtit) {
-      var existing = gtit.querySelector('.rank-badge');
-      if (existing) existing.remove();
-      var badge = document.createElement('span');
-      badge.className = 'rank-badge';
-      badge.style.cssText = 'display:block;font-size:.45em;color:#c8943a;margin-top:2px';
-      badge.textContent = '🏆 ' + rank;
-      gtit.appendChild(badge);
-    }
-  }
-}
-
-// Poll for WebSocket messages as fallback
-setInterval(function() {
-  if (window._lastWsMsg) {
-    var msg = window._lastWsMsg;
-    window._lastWsMsg = null;
-    // Re-dispatch to handlers
-    if (msg.type === 'leaderboard' && msg.entries) {
-      var el = document.getElementById('ppLbContent');
-      if (el && !el.dataset.rendered) {
-        el.dataset.rendered = '1';
-        if (msg.entries.length === 0) {
-          el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
-        } else {
-          var h = '';
-          msg.entries.slice(0, 15).forEach(function(e, i) {
-            var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
-            h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">' +
-              '<span>' + medal + ' <b style="color:#c8943a">' + e.name + '</b></span>' +
-              '<span style="color:#dd8844">' + e.rank + '</span>' +
-              '<span>' + e.wins + '胜/' + e.games + '局 · <b style="color:#ff6b35">' + e.score + '</b>分</span></div>';
-          });
-          el.innerHTML = h;
-        }
-      }
-    }
-    if (msg.type === 'score_updated' && msg.stats) {
-      try { localStorage.setItem('wd_my_rank', msg.stats.rank); } catch(e) {}
-      updateRankBadge(msg.stats.rank);
-    }
-  }
-  // Update rank in P2P lobby
-  if (typeof G !== 'undefined' && G && (G.mode === 'p2p' || document.getElementById('scrP2P')?.classList.contains('on'))) {
-    updateRankBadge();
-  }
-}, 2000);
 
 // ====== 初始化 ======
 loadD();initThemes();
@@ -711,14 +589,6 @@ window.wsEventBus.push(function(msg) {
     if (typeof wsConn !== 'undefined' && wsConn) wsConn.myId = msg.id;
     var cnt = document.getElementById('ppContent');
     if (cnt && document.querySelector('#ppTabs .pp-tab.on')?.textContent.includes('好友')) renderFriends(cnt);
-  }
-  if (msg.type === 'score_updated' && msg.stats) {
-    // Show rank notification
-    T('🏆 当前段位: ' + msg.stats.rank + ' · ' + msg.stats.score + '分');
-    // Save rank for display
-    try { localStorage.setItem('wd_my_rank', msg.stats.rank); } catch(e) {}
-    // Update game header with rank badge
-    updateRankBadge(msg.stats.rank);
   }
   if (msg.type === 'leaderboard' && msg.entries) {
     var el = document.getElementById('ppLbContent');

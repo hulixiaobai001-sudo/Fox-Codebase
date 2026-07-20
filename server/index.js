@@ -38,48 +38,10 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ rooms: rooms.size, queue: queue.length }));
     return;
   }
-  if (req.url === '/leaderboard') {
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-    res.end(JSON.stringify({ entries: leaderboard.slice(0, 50) }));
-    return;
-  }
+
   res.writeHead(404);
   res.end();
 });
-
-// —— Leaderboard / Rank ——
-const leaderboard = []; // [{name, score, wins, games, rank, ts}]
-const playerStats = new Map(); // name -> {wins, games, score, rank}
-
-function calcScore(wins, games) {
-  if (games === 0) return 0;
-  return Math.round(wins * 100 + wins/games * 50 + games * 2);
-}
-
-function updateLeaderboard(name, won) {
-  if (!name) return;
-  var s = playerStats.get(name) || {wins: 0, games: 0, score: 0, rank: '未定'};
-  s.games++;
-  if (won) s.wins++;
-  s.score = calcScore(s.wins, s.games);
-  // Simple rank system
-  var wr = s.games > 0 ? s.wins / s.games : 0;
-  if (s.games < 5) s.rank = '新秀';
-  else if (wr >= 0.75 && s.games >= 20) s.rank = '西部传说';
-  else if (wr >= 0.6 && s.games >= 10) s.rank = '西部枪神';
-  else if (wr >= 0.5 || s.games >= 30) s.rank = '赏金猎人';
-  else if (wr >= 0.3 || s.games >= 15) s.rank = '牛仔';
-  else s.rank = '亡命徒';
-  playerStats.set(name, s);
-
-  // Rebuild leaderboard
-  leaderboard.length = 0;
-  playerStats.forEach((v, k) => {
-    leaderboard.push({name: k, score: v.score, wins: v.wins, games: v.games, rank: v.rank, ts: Date.now()});
-  });
-  leaderboard.sort((a, b) => b.score - a.score);
-  if (leaderboard.length > 100) leaderboard.length = 100;
-}
 
 // —— Friends / Online ——
 const onlineUsers = new Map(); // id -> { ws, name }
@@ -144,22 +106,6 @@ wss.on('connection', (ws) => {
         } else {
           ws.send(JSON.stringify({ type: 'invite_failed', reason: '对方不在线' }));
         }
-        break;
-      }
-
-      // ====== LEADERBOARD ======
-      case 'submit_score': {
-        updateLeaderboard(msg.name, msg.won);
-        var s = playerStats.get(msg.name);
-        // Return player's updated stats
-        ws.send(JSON.stringify({ type: 'score_updated', stats: s }));
-        // Broadcast updated leaderboard
-        var payload = JSON.stringify({ type: 'leaderboard', entries: leaderboard.slice(0, 50) });
-        wss.clients.forEach(c => { if (c.readyState === 1 && c.onlineId) c.send(payload); });
-        break;
-      }
-      case 'get_leaderboard': {
-        ws.send(JSON.stringify({ type: 'leaderboard', entries: leaderboard.slice(0, 50) }));
         break;
       }
 
