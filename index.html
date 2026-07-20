@@ -1074,6 +1074,9 @@ function pull() {
       rdAll();
     }
 
+    // Notify opponent before game over (P2P)
+    if (G.mode === 'p2p') { sendAction({ type: 'shoot', hit: true, dmg: dmg, dt: dt, oh: oh }); sendState(); }
+
     if (target.hp <= 0) {
       target.al = false;
       addL(target.n + ' 倒下了!', 'da');
@@ -1096,8 +1099,6 @@ function pull() {
         if (G.phase !== 'go') { tickFlag(); nxtRd(); }
       }, 600);
     }
-
-    if (G.mode === 'p2p') { sendAction({ type: 'shoot', hit: true, dmg: dmg, dt: dt, oh: oh }); sendState(); }
     return;
   }
 
@@ -1416,6 +1417,8 @@ function upDuel() {
 function gameOver(wi) {
   G.phase = 'go';
   clearP2PTimer();
+  $('chatBtn').classList.remove('on');
+  $('chatPanel').classList.remove('on');
   var w = G.p[wi];
   var l = G.p[(wi === 0) ? 1 : 0];
   $('goT').textContent = '游戏结束';
