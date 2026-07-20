@@ -466,48 +466,48 @@ css.textContent += '.pp-fr-add input:focus{border-color:#c8943a}';
 
 function renderFriends(cnt) {
   var connected = (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1);
-  var myId = '';
-  if (connected && wsConn.myId) myId = wsConn.myId;
   if (!connected) {
-    // Try to connect
     if (typeof wsConnect === 'function') {
       wsConnect(function() {
-        // After connecting, register and re-render
         wsConn.send(JSON.stringify({ type: 'register_online', name: G && G.p[0] ? G.p[0].n : '旅者' }));
         var c = document.getElementById('ppContent');
         if (c) renderFriends(c);
       });
     }
-    var html = '<div style="font-size:.8em;color:#a08070;text-align:center;margin:10px 0">🔌 正在连接服务器...</div>';
-    if (cnt) cnt.innerHTML = html;
-    return;
+    var h = '<div style="font-size:.8em;color:#a08070;text-align:center;margin:10px 0">🔌 正在连接服务器...</div>';
+    if (cnt) cnt.innerHTML = h; return;
   }
-  if (!myId) {
-    // Register to get ID
-    wsConn.send(JSON.stringify({ type: 'register_online', name: G && G.p[0] ? G.p[0].n : '旅者' }));
-    setTimeout(function() {
-      if (wsConn && wsConn.myId) {
-        var c = document.getElementById('ppContent');
-        if (c) renderFriends(c);
-      }
-    }, 500);
-  }
-  var html = '<div style="font-size:.75em;color:#c8943a;margin-bottom:6px;text-align:center">你的ID: <b style="color:#ff6b35;font-size:1.1em">' + (myId || '获取中...') + '</b></div>';
-  html += '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">👥 好友列表 (' + friends.length + ')</div>';
-  if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540">还没有好友，把你的ID发给朋友吧</div>';
+
+  // Combine friends and online users
+  var html = '<div style="font-size:.8em;color:#a08070;margin-bottom:6px">🌐 在线玩家</div>';
+  var onlineOthers = (onlineList || []).filter(function(u) {
+    return !friends.find(function(f) { return f.id === u.id; });
+  });
+  if (onlineOthers.length === 0) html += '<div style="font-size:.7em;color:#6a5540;margin-bottom:10px">暂无其他在线玩家</div>';
+  onlineOthers.forEach(function(u) {
+    html += '<div class="pp-fr"><span>' + u.name + '</span><span class="st on">● 在线</span>' +
+      '<button class="pp-btn" onclick="quickAddFriend(\'' + u.id + '\',\'' + u.name.replace(/'/g,"\\'") + '\')" style="font-size:.7em;padding:2px 8px">＋添加</button></div>';
+  });
+
+  html += '<div style="font-size:.8em;color:#a08070;margin:10px 0 6px">👥 我的好友 (' + friends.length + ')</div>';
+  if (friends.length === 0) html += '<div style="font-size:.7em;color:#6a5540;margin-bottom:8px">还没有好友，从上方在线列表添加吧</div>';
   friends.forEach(function(f) {
     var online = onlineList && onlineList.find(function(u) { return u.id === f.id; });
     html += '<div class="pp-fr"><span>' + f.name + '</span>' +
       '<span class="st ' + (online ? 'on' : 'off') + '">' + (online ? '● 在线' : '○ 离线') + '</span>' +
-      (online ? '<button class="pp-btn" onclick="inviteFriend(\'' + f.id + '\',\'' + f.name + '\')" style="font-size:.7em;padding:2px 8px">邀请</button>' : '') +
+      (online ? '<button class="pp-btn" onclick="inviteFriend(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="font-size:.7em;padding:2px 8px">邀请</button>' : '') +
       '<button class="pp-btn" onclick="removeFriend(\'' + f.id + '\')" style="font-size:.7em;padding:2px 6px;color:#866">✕</button></div>';
   });
-  html += '<div class="pp-fr-add"><input type="text" id="frInput" placeholder="输入好友ID"><button class="pp-btn" onclick="addFriend()">添加</button></div>';
   if (cnt) cnt.innerHTML = html;
-  // Request online list
-  if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
-    wsConn.send(JSON.stringify({ type: 'get_online' }));
-  }
+  wsConn.send(JSON.stringify({ type: 'get_online' }));
+}
+
+function quickAddFriend(id, name) {
+  if (friends.find(function(f) { return f.id === id; })) { alert('已经是好友了'); return; }
+  friends.push({ id: id, name: name });
+  localStorage.setItem('wd_friends', JSON.stringify(friends));
+  var cnt = document.getElementById('ppContent');
+  if (cnt) renderFriends(cnt);
 }
 var onlineList = [];
 function addFriend() {
