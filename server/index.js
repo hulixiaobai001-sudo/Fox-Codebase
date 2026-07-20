@@ -1,5 +1,6 @@
 const { WebSocketServer } = require('ws');
 const http = require('http');
+const https = require('https');
 
 const PORT = process.env.PORT || 3000;
 
@@ -36,6 +37,35 @@ const server = http.createServer((req, res) => {
   if (req.url === '/stats') {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ rooms: rooms.size, queue: queue.length }));
+    return;
+  }
+  // DeepSeek API proxy (POST only)
+  if (req.url === '/api/chat' && req.method === 'POST') {
+    var body = '';
+    req.on('data', function(chunk) { body += chunk; });
+    req.on('end', function() {
+      var opts = {
+        hostname: 'api.deepseek.com',
+        path: '/v1/chat/completions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': req.headers.authorization || '',
+          'Content-Length': Buffer.byteLength(body)
+        }
+      };
+      var proxyReq = https.request(opts, function(proxyRes) {
+        var data = '';
+        proxyRes.on('data', function(c) { data += c; });
+        proxyRes.on('end', function() {
+          res.writeHead(proxyRes.statusCode, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(data);
+        });
+      });
+      proxyReq.on('error', function() { res.writeHead(500); res.end('{}'); });
+      proxyReq.write(body);
+      proxyReq.end();
+    });
     return;
   }
 

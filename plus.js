@@ -598,15 +598,87 @@ function executeDSDecision(decision) {
   }
 }
 
-// Hook into the game's aiGo function
-setInterval(function() {
-  if (dsApiKey && typeof G !== 'undefined' && G && G.mode === 'ai' && G.phase === 'play' && G.cp === 1 && !G.bf) {
-    // Check if the original aiGo is about to run and intercept
-    if (G.p[1] && G.p[1].al) {
-      dsAIOverride();
+// Hook into aiGo - replace it when API key is set
+function hookAI() {
+  if (typeof G === 'undefined' || !G || typeof window.aiGo === 'undefined') return;
+  if (window.__dsHooked) return;
+  var origAiGo = window.aiGo;
+  window.aiGo = function() {
+    if (!dsApiKey || G.mode !== 'ai' || G.cp !== 1 || G.phase !== 'play' || G.bf || !G.p[1] || !G.p[1].al) {
+      origAiGo();
+      return;
     }
+    // Use API
+    dsAIAct();
+  };
+  window.__dsHooked = true;
+}
+
+// Simpler API call with CORS proxy fallback
+function dsAIAct() {
+  var p = G.p[1];
+  if (!p || !p.al || G.cp !== 1 || G.phase !== 'play' || G.bf) return;
+
+  var prompt = '西部对决轮盘赌，当前状态:\n';
+  prompt += '我HP:' + p.hp + '/' + p.mx + ', 对手HP:' + G.p[0].hp + '/' + G.p[0].mx + '\n';
+  prompt += '弹巢:' + G.s.ch + '发, 第' + (G.cc+1) + '发, 子弹:' + G.s.bu + '发\n';
+  prompt += '跳过扣' + G.s.sk + 'HP' + (G.s.noSk ? '(禁止跳过)' : '') + '\n';
+
+  var itemNames = {watch:'怀表(枪口反转)',book:'免死书',check:'查弹',wash:'洗枪',medkit:'急救+2HP',armor:'防弹衣',rapid:'连射',freeze:'冰冻',swap:'换HP',flag:'旗帜盾'};
+  var its = [];
+  for (var k in p.it) { if (p.it[k] > 0 && itemNames[k]) its.push(itemNames[k]); }
+  prompt += '道具:' + (its.join(',') || '无') + '\n';
+  prompt += '请用JSON回复: {"a":"shoot"} 或 {"a":"skip"} 或 {"a":"item","i":"medkit"}';
+
+  // Try direct fetch first, then proxy
+  var url = 'https://api.deepseek.com/v1/chat/completions';
+  var body = JSON.stringify({
+    model: 'deepseek-chat',
+    messages: [
+      {role: 'system', content: '你玩西部对决，只输出JSON。'},
+      {role: 'user', content: prompt}
+    ],
+    max_tokens: 60,
+    temperature: 0.5
+  });
+
+  // Use our own server as proxy (no CORS issues)
+  var wsUrl = typeof WS_URL !== 'undefined' ? WS_URL : 'wss://fox-codebase-production.up.railway.app';
+  var apiUrl = wsUrl.replace('wss://', 'https://').replace('ws://', 'http://') + '/api/chat';
+  fetch(apiUrl, {
+    method: 'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer '+dsApiKey},
+    body: body
+  })
+  .then(function(r){return r.json()})
+  .then(function(data){
+    try {
+      var text = data.choices[0].message.content;
+      var dec = JSON.parse(text);
+      if (dec.a === 'shoot' && typeof pull === 'function') pull();
+      else if (dec.a === 'skip' && typeof doSkip === 'function' && !G.s.noSk) doSkip();
+      else if (dec.a === 'item' && dec.i && typeof useI === 'function') {
+        var imap = {watch:'watch',book:'book',check:'check',wash:'wash',medkit:'medkit',armor:'armor',rapid:'rapid',freeze:'freeze',swap:'swap',flag:'flag'};
+        useI(1, imap[dec.i] || dec.i);
+        setTimeout(function(){if(G.phase==='play'&&G.cp===1&&!G.bf&&typeof pull==='function')pull()},400);
+      }
+      else if (typeof pull === 'function') pull();
+    } catch(e) { if(typeof pull==='function') pull(); }
+  })
+  .catch(function(){
+    // fetch failed - fallback to original AI
+    if (typeof window.__origAiGo === 'function') window.__origAiGo();
+    else if (typeof pull === 'function') pull();
+  });
+}
+
+var aiHookTimer = setInterval(function() {
+  if (typeof G !== 'undefined' && G && typeof window.aiGo !== 'undefined') {
+    // Store original
+    if (!window.__origAiGo) window.__origAiGo = window.aiGo;
+    hookAI();
+    clearInterval(aiHookTimer);
   }
-}, 300);
+}, 500);
 
 // ====== 初始化 ======
 loadD();initThemes();
