@@ -150,6 +150,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 @keyframes tf{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @media(max-width:640px){.gc{padding:14px}.prow{grid-template-columns:1fr}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
 </style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 <div class="gc" id="app">
@@ -449,8 +450,8 @@ function nextPly() {
   }
 }
 
-// ====== P2P ======
-var pc = null, dc = null, p2pStep = 0, scanInt = null;
+// ====== P2P (PeerJS) ======
+var p2pPeer = null, p2pConn = null, scanInt = null;
 
 function startP2P() {
   $('scrSetup').classList.remove('on');
@@ -462,339 +463,113 @@ function startP2P() {
   $('p2pScanBtn').style.display = 'none';
   $('p2pStatus').textContent = '';
   $('p2pVideo').style.display = 'none';
-  p2pStep = 0;
   $('p2pActions').innerHTML =
     '<button class="p2p-scan-btn" onclick="hostP2P()">创建房间</button>' +
     '<button class="p2p-scan-btn" onclick="joinP2P()">加入房间</button>';
 }
 
 function cancelP2P() {
-  if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+  if (p2pConn) { try { p2pConn.close(); } catch(e) {} p2pConn = null; }
+  if (p2pPeer) { try { p2pPeer.destroy(); } catch(e) {} p2pPeer = null; }
   if (scanInt) { clearInterval(scanInt); scanInt = null; }
-  stopCam();
   $('scrP2P').classList.remove('on');
   $('scrSetup').classList.add('on');
 }
 
 function hostP2P() {
   G.isHost = true;
-  $('p2pSteps').textContent = '正在创建连接...';
-  $('p2pStatus').textContent = '';
-  createPC(true);
+  initPeer();
+  $('p2pSteps').textContent = '正在创建房间...';
+  $('p2pStatus').textContent = '请稍候';
+  $('p2pActions').innerHTML = '';
 }
 
 function joinP2P() {
   G.isHost = false;
-  $('p2pSteps').textContent = '请扫描主机的二维码';
-  $('p2pScanBtn').style.display = 'inline-block';
-  $('p2pScanBtn').textContent = '扫描主机二维码';
-  $('p2pScanBtn').onclick = function() { startScanner(); };
-  startScanner();
-}
-
-function createPC(isOffer) {
-  var cfg = {
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' }
-    ]
-  };
-  try {
-    pc = new RTCPeerConnection(cfg);
-  } catch (e) {
-    T('浏览器不支持WebRTC');
-    return;
-  }
-
-  pc.onicecandidate = function(e) {
-    if (e.candidate) return;
-    if (isOffer && p2pStep === 0) { p2pStep = 1; showOffer(); }
-    else if (!isOffer && p2pStep === 0) { p2pStep = 1; showAnswer(); }
-  };
-
-  pc.ondatachannel = function(e) {
-    dc = e.channel;
-    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
-    dc.onopen = function() { onP2PConnect(); };
-  };
-
-  if (isOffer) {
-    dc = pc.createDataChannel('game', { ordered: true });
-    dc.onmessage = function(ev) { recvMsg(JSON.parse(ev.data)); };
-    dc.onopen = function() { onP2PConnect(); };
-    pc.createOffer().then(function(d) { pc.setLocalDescription(d); }).catch(function(e) {});
-  }
-}
-
-function showOffer() {
-  var data = JSON.stringify(pc.localDescription);
-  $('p2pSteps').textContent = '让对方扫描此二维码，然后点"扫描应答"';
-  showQR(data);
-  $('p2pScanBtn').style.display = 'inline-block';
-  $('p2pScanBtn').textContent = '扫描应答二维码';
-  $('p2pScanBtn').onclick = function() { startScanner(); };
-  $('p2pStatus').textContent = '等待对方扫描...';
-  $('p2pActions').innerHTML = '';
-}
-
-function showAnswer() {
-  var data = JSON.stringify(pc.localDescription);
-  $('p2pSteps').textContent = '让主机扫描此二维码完成连接';
-  showQR(data);
-  $('p2pScanBtn').style.display = 'none';
-  $('p2pStatus').textContent = '等待主机扫描...';
-  $('p2pActions').innerHTML = '';
-}
-function showQR(data) {
-  var area = $('p2pQrArea');
-  area.innerHTML = '';
-  var wrap = document.createElement('div');
-  wrap.className = 'p2p-qr';
-  var canvas = document.createElement('canvas');
-  canvas.width = 230;
-  canvas.height = 230;
-  wrap.appendChild(canvas);
-  area.appendChild(wrap);
-  // [修改] 同时显示文本代码，方便复制粘贴
-  $('p2pCode').textContent = data;
-  drawQR(canvas, data, 230);
-}
-
-function drawQR(canvas, data, size) {
-  try {
-    var qr = generateQRMatrix(data);
-    var ctx = canvas.getContext('2d');
-    var margin = 4;
-    var cellSize = (size - margin * 2) / qr.length;
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, size, size);
-    for (var y = 0; y < qr.length; y++) {
-      for (var x = 0; x < qr.length; x++) {
-        ctx.fillStyle = qr[y][x] ? '#000' : '#fff';
-        ctx.fillRect(margin + x * cellSize, margin + y * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
-      }
-    }
-  } catch (e) {
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = '#333';
-    ctx.font = '14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('二维码生成失败', size / 2, size / 2 - 20);
-    ctx.fillText('请使用下方文本代码', size / 2, size / 2 + 10);
-    $('p2pCode').textContent = data;
-  }
-}
-
-function generateQRMatrix(text) {
-  var data = text.split('').map(function(c) { return c.charCodeAt(0); });
-  data.unshift(4);
-  var len = data.length;
-  data.unshift(len >> 4 & 15, len & 15);
-  while (data.length < 106) data.push(236, 17);
-
-  var size = 25;
-  var grid = [];
-  for (var y = 0; y < size; y++) {
-    grid[y] = [];
-    for (var x = 0; x < size; x++) grid[y][x] = 0;
-  }
-
-  function drawFinder(ox, oy) {
-    for (var y = -1; y <= 7; y++) {
-      for (var x = -1; x <= 7; x++) {
-        var v = (Math.abs(x) < 2 && Math.abs(y) < 2) ||
-          (Math.abs(x) > 4 && Math.abs(y) > 4) ||
-          (x === 0 || x === 6 || y === 0 || y === 6);
-        if (ox + x >= 0 && ox + x < size && oy + y >= 0 && oy + y < size) {
-          grid[oy + y][ox + x] = v ? 1 : 0;
-        }
-      }
-    }
-  }
-
-  drawFinder(1, 1);
-  drawFinder(17, 1);
-  drawFinder(1, 17);
-
-  for (var i = 8; i < 17; i++) {
-    grid[6][i] = 1 - (i % 2);
-    grid[i][6] = 1 - (i % 2);
-  }
-  grid[17][8] = 1;
-
-  var bits = [];
-  for (var i = 0; i < data.length; i++) {
-    for (var b = 7; b >= 0; b--) bits.push((data[i] >> b) & 1);
-  }
-
-  var bi = 0;
-  for (var y = 0; y < size && bi < bits.length; y++) {
-    for (var x = 0; x < size && bi < bits.length; x++) {
-      if (grid[y][x] !== 0) continue;
-      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
-      if ((x < 8 && y < 8) || (x > 16 && y < 8) || (x < 8 && y > 16)) continue;
-      grid[y][x] = bits[bi++] ? 1 : 0;
-    }
-  }
-
-  for (var y = 0; y < size; y++) {
-    for (var x = 0; x < size; x++) {
-      if (grid[y][x] < 0) continue;
-      if (x >= 6 && x <= 8 && y >= 6 && y <= 8) continue;
-      if ((x + y) % 2 === 0) grid[y][x] = grid[y][x] ? 0 : 1;
-    }
-  }
-  return grid;
-}
-
-function startScanner() {
-  if ('BarcodeDetector' in window) {
-    try {
-      var detector = new BarcodeDetector({ formats: ['qr_code'] });
-      navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: 640, height: 480 }
-      }).then(function(stream) {
-        var video = $('p2pVideo');
-        video.srcObject = stream;
-        video.style.display = 'block';
-        video.play();
-        $('p2pStatus').textContent = '正在扫描二维码...';
-        scanInt = setInterval(function() {
-          if (video.readyState < 2) return;
-          detector.detect(video).then(function(codes) {
-            if (codes.length > 0) {
-              stopCam();
-              processScan(codes[0].rawValue);
-            }
-          }).catch(function() {});
-        }, 300);
-      }).catch(function(e) {
-        T('无法打开摄像头: ' + e.message);
-      });
-      return;
-    } catch (e) {}
-  }
-  fallbackToTextInput();
-}
-
-// [新增] 相册选择截图相关
-var p2pFileInput = null;
-
-function addGalleryInput() {
-  if (!p2pFileInput) {
-    p2pFileInput = document.createElement('input');
-    p2pFileInput.type = 'file';
-    p2pFileInput.accept = 'image/*';
-    p2pFileInput.style.display = 'none';
-    p2pFileInput.id = 'p2pGalleryInput';
-    p2pFileInput.onchange = function(e) {
-      if (e.target.files.length > 0) scanFromImage(e.target.files[0]);
-    };
-    document.body.appendChild(p2pFileInput);
-  }
-}
-
-function scanFromImage(file) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      var c = document.createElement('canvas');
-      c.width = img.width;
-      c.height = img.height;
-      var ctx = c.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-
-      if ('BarcodeDetector' in window) {
-        try {
-          var detector = new BarcodeDetector({ formats: ['qr_code'] });
-          detector.detect(c).then(function(codes) {
-            if (codes.length > 0) {
-              processScan(codes[0].rawValue);
-              T('二维码识别成功!');
-            } else {
-              T('未在图片中找到二维码');
-            }
-          }).catch(function() {
-            T('识别失败，请尝试文本输入');
-          });
-          return;
-        } catch (e) {}
-      }
-      T('当前浏览器不支持图片识别，请使用文本输入');
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-// [修改] 新增了「从相册选择截图」按钮
-function fallbackToTextInput() {
-  stopCam();
-  $('p2pVideo').style.display = 'none';
+  initPeer();
+  $('p2pSteps').textContent = '输入对方的房间码';
   $('p2pStatus').textContent = '';
-  $('p2pSteps').textContent = '选择连接方式';
-  $('p2pQrArea').innerHTML = '';
-  var inp = document.createElement('textarea');
-  inp.style.cssText = 'width:90%;max-width:320px;height:80px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;color:#f0e6d3;padding:8px;font-size:.8em;font-family:monospace;margin:8px 0';
-  inp.placeholder = '粘贴对方显示的代码...';
-  inp.id = 'p2pTextInput';
-  var row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0';
-  var btn1 = document.createElement('button');
-  btn1.className = 'p2p-scan-btn'; btn1.textContent = '确认';
-  btn1.onclick = function() { var v=document.getElementById('p2pTextInput'); if(v&&v.value.trim()) processScan(v.value.trim()); };
-  var btn2 = document.createElement('button');
-  btn2.className = 'p2p-scan-btn'; btn2.textContent = '从相册选择截图';
-  btn2.onclick = function() { if(!p2pFileInput) addGalleryInput(); var fi=document.getElementById('p2pGalleryInput'); if(fi) fi.click(); };
-  row.appendChild(btn1); row.appendChild(btn2);
-  $('p2pQrArea').appendChild(inp); $('p2pQrArea').appendChild(row);
-  addGalleryInput();
+  $('p2pScanBtn').style.display = 'none';
+  $('p2pQrArea').innerHTML =
+    '<input type="text" id="p2pRoomInput" maxlength="10" placeholder="输入6位房间码" ' +
+    'style="background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;' +
+    'color:#f0e6d3;padding:9px 12px;font-size:1em;width:200px;text-align:center;' +
+    'outline:none;margin:8px 0;display:block">';
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="doJoin()">加入</button>' +
+    '<button class="p2p-scan-btn" onclick="cancelP2P()">返回</button>';
+  setTimeout(function() {
+    var inp = $('p2pRoomInput');
+    if (inp) inp.focus();
+  }, 300);
 }
 
-function stopCam() {
-  if (scanInt) { clearInterval(scanInt); scanInt = null; }
-  var video = $('p2pVideo');
-  if (video && video.srcObject) {
-    video.srcObject.getTracks().forEach(function(t) { t.stop(); });
-    video.srcObject = null;
-    video.style.display = 'none';
+function doJoin() {
+  var code = ($('p2pRoomInput') ? $('p2pRoomInput').value.trim() : '').toUpperCase();
+  if (!code) { T('请输入房间码'); return; }
+  $('p2pSteps').textContent = '正在连接房间 ' + code + '...';
+  $('p2pStatus').textContent = '连接中';
+  $('p2pActions').innerHTML = '';
+  p2pConn = p2pPeer.connect(code, { reliable: true });
+  p2pConn.on('open', function() { onP2PConnected(); });
+  p2pConn.on('error', function(e) { $('p2pStatus').textContent = '连接失败'; });
+}
+
+function initPeer() {
+  if (p2pPeer) return;
+  var myId = localStorage.getItem('p2pId') || '';
+  if (!myId || myId.length < 4) {
+    myId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    localStorage.setItem('p2pId', myId);
   }
-}
-
-function processScan(data) {
-  try {
-    var desc = JSON.parse(data);
-    if (desc.type === 'offer') {
-      pc = null;
-      p2pStep = 0;
-      createPC(false);
-      setTimeout(function() {
-        pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {
-          pc.createAnswer().then(function(d) { pc.setLocalDescription(d); });
-        });
-      }, 300);
-    } else if (desc.type === 'answer' && pc) {
-      pc.setRemoteDescription(new RTCSessionDescription(desc)).then(function() {});
+  p2pPeer = new Peer(myId, {
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' }
+      ]
     }
-  } catch (e) {
-    T('二维码无效或代码格式错误');
-  }
+  });
+  p2pPeer.on('open', function(id) {
+    localStorage.setItem('p2pId', id);
+    if (G.isHost) {
+      var code = id.length > 6 ? id.substring(0, 6).toUpperCase() : id;
+      $('p2pSteps').textContent = '你的房间码';
+      $('p2pQrArea').innerHTML =
+        '<div style="font-size:3.6em;font-weight:bold;color:#ff6b35;letter-spacing:12px;' +
+        'text-shadow:0 0 30px rgba(255,107,53,.3);margin:16px 0">' + code + '</div>' +
+        '<div style="font-size:.8em;color:#a08070">把房间码告诉对方</div>';
+      $('p2pStatus').textContent = '等待对方加入...';
+      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+      p2pPeer.on('connection', function(conn) {
+        p2pConn = conn;
+        G.dc = p2pConn;
+        p2pConn.on('data', function(data) { recvMsg(data); });
+        p2pConn.on('close', function() { addL('连接断开', 'da'); });
+        onP2PConnected();
+      });
+    }
+  });
+  p2pPeer.on('error', function(e) {
+    $('p2pStatus').textContent = '连接失败，PeerJS服务器可能暂时不可用';
+  });
 }
 
-function onP2PConnect() {
-  $('p2pStatus').textContent = '连接成功！';
+function onP2PConnected() {
+  G.dc = p2pConn;
+  p2pConn.on('data', function(data) { recvMsg(data); });
+  p2pConn.on('close', function() { addL('连接断开', 'da'); });
+  $('p2pStatus').textContent = '连接成功！🎉';
   $('p2pSteps').textContent = '已与对手建立连接';
   $('p2pQrArea').innerHTML = '';
   $('p2pCode').textContent = '';
   $('p2pScanBtn').style.display = 'none';
-  stopCam();
   if (G.isHost) {
     $('scrP2P').classList.remove('on');
     showItemSelect(0);
   } else {
+    $('p2pActions').innerHTML = '';
     $('p2pStatus').textContent = '等待主机开始游戏...';
   }
 }
@@ -832,7 +607,7 @@ function recvMsg(msg) {
 }
 
 function sendP2P(msg) {
-  if (dc && dc.readyState === 'open') dc.send(JSON.stringify(msg));
+  if (G.dc && G.dc.open) G.dc.send(msg);
 }
 
 function sendAction(a) { sendP2P({ type: 'action', action: a }); }
@@ -1661,9 +1436,6 @@ document.addEventListener('DOMContentLoaded', function() {
   setMode('local');
 });
 </script>
-<script src="achieve.js"></script> 
-<script src="save.js"></script> 
-<script src="sfx.js"></script> 
 <!-- Custom Difficulty Panel -->
 <div class="cd-panel" id="cdPanel">
   <div class="cd-box">
