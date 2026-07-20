@@ -168,11 +168,15 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crds .ccn:hover{color:#ff6b35}.crds .ccr{font-size:.8em;color:#a08070;margin:2px 0}.crds .ccd{width:40px;height:1px;background:#8b4513;margin:12px auto}
 .crds .ccf{font-size:.95em;color:#d8f;margin-top:20px}.crds .ccs{font-size:.72em;color:#7a6a50;margin-top:6px;line-height:1.5}
 .crds .ccg{font-size:1em;color:#d4b87a;margin:5px 0;cursor:pointer;transition:color .15s}
-.crds .ccg:hover{color:#f0d8a0}.crds .ccp{font-size:.9em;color:#9ab8d4;margin:5px 0}
+.crds .ccg:hover{color:#f0d8a0}.crds .ccp{font-size:.9em;color:#9ab8d4;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .ccp:hover{color:#bcd8f4}
 .crds .ccm{font-size:.9em;color:#a8c8a8;margin:5px 0;cursor:pointer;transition:color .15s}
 .crds .ccm:hover{color:#c8e8c8}.crds .cch{font-size:.9em;color:#d4b070;margin:5px 0;cursor:pointer;transition:color .15s}
 .crds .cch:hover{color:#f0cc80}.crds .ccb{font-size:1.1em;color:#c8943a;margin:12px 0 6px;letter-spacing:1px}
-.crds .cca{font-size:1.3em;color:#f0e6d3;margin:6px 0;letter-spacing:3px}
+.crds .cca{font-size:1.3em;color:#f0e6d3;margin:6px 0;letter-spacing:3px;cursor:pointer;transition:color .15s}
+.crds .cca:hover{color:#ff6b35}
+.crds .ccp{font-size:.9em;color:#9ab8d4;margin:5px 0;cursor:pointer;transition:color .15s}
+.crds .ccp:hover{color:#bcd8f4}
 .crds .ccl{font-size:.72em;color:#8a8a70;margin:3px 0}.ccl a{color:#8a8a70;text-decoration:underline}
 
 /* detail popup */
@@ -371,13 +375,13 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
   </div>
   <div class="crdc" onclick="hideCred()">关闭</div>
 </div>
+<div class="itip" id="tip"><div class="itn" id="tipN"></div><div id="tipD"></div></div>
+</div>
 <div class="cr-detail" id="crDetail">
   <div class="dt-name" id="dtName"></div>
   <div class="dt-role" id="dtRole"></div>
   <div class="dt-desc" id="dtDesc"></div>
   <button class="dt-close" onclick="hideDetail()">关闭</button>
-</div>
-<div class="itip" id="tip"><div class="itn" id="tipN"></div><div id="tipD"></div></div>
 </div>
 <script>
 var ITEMS = [
