@@ -2402,6 +2402,53 @@ function debugRefresh() {
   }
 }
 
+// ====== DEVICE DETECT ======
+var isMobile = /Android|iPhone|iPod|iPad|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+var isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+if (!isMobile && !isTouchDevice) document.body.classList.add('is-desktop');
+
+// ====== KEYBOARD SHORTCUTS (Desktop only) ======
+document.addEventListener('keydown', function(e) {
+  if (isTouchDevice || isMobile) return;
+  if (G.phase === 'play' && !G.bf) {
+    // Number keys 1-9 for chamber selection during loading
+    if (e.key >= '1' && e.key <= '9' && G.phase === 'loading') {
+      var idx = parseInt(e.key) - 1;
+      if (idx < G.s.ch && typeof pickB === 'function') pickB(idx);
+    }
+    // Space or Enter to shoot
+    if ((e.key === ' ' || e.key === 'Enter') && G.phase === 'play') {
+      e.preventDefault();
+      if (typeof pull === 'function') pull();
+    }
+    // S to skip
+    if ((e.key === 's' || e.key === 'S') && !G.s.noSk) {
+      if (typeof doSkip === 'function') doSkip();
+    }
+    // R for rematch (on game over)
+    if (e.key === 'r' || e.key === 'R') {
+      var go = $('goO');
+      if (go && go.classList.contains('on')) {
+        var btn = go.querySelector('.bre');
+        if (btn) btn.click();
+      }
+    }
+    // C for chat
+    if (e.key === 'c' || e.key === 'C') {
+      toggleChat();
+    }
+    // Escape to close panels
+    if (e.key === 'Escape') {
+      if ($('chatPanel').classList.contains('on')) toggleChat();
+      if ($('crDetail').classList.contains('on')) hideDetail();
+    }
+  }
+  // Enter in chat input sends message
+  if (e.key === 'Enter' && document.activeElement === $('chatInput')) {
+    sendChat();
+  }
+});
+
 // ====== INIT ======
 document.addEventListener('DOMContentLoaded', function() {
   setMode('local');

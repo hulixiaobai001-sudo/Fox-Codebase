@@ -116,6 +116,42 @@ function initThemes(){
     '.bch{background:rgba(30,30,70,.6)!important;border-color:#4444aa!important;color:#aab!important}'
   ].join('\n');
 
+  // 森林绿
+  themes['forest']=[
+    'body{background:linear-gradient(135deg,#1a2a1a,#2a4a2a,#1a2a1a)!important}',
+    '.gc{background:rgba(20,40,20,.92)!important;border-color:#4a8a4a!important}',
+    '.ban{background:rgba(50,130,50,.12)!important;border-color:#5a9a5a!important;color:#8ab8a0!important}',
+    '.pp.on{border-color:#5aca5a!important;box-shadow:0 0 20px rgba(80,200,80,.2)!important}',
+    '.abtn{background:linear-gradient(135deg,#1a3a1a,#0a2a0a)!important;border-color:#4a8a4a!important}',
+    '.abtn:hover:not(:disabled){background:linear-gradient(135deg,#2a5a2a,#1a4a1a)!important;border-color:#5aca5a!important}',
+    '.cd-box,.pp-box,.wa-box,.wd-cb{background:linear-gradient(135deg,#1e3e1e,#0e2e0e)!important;border-color:#4a8a4a!important}',
+    '.ch{background:rgba(30,70,30,.6)!important;border-color:#4a8a4a!important}',
+    '.ch.cur{border-color:#5aca5a!important;color:#5aca5a!important}',
+    '.bch{background:rgba(30,70,30,.6)!important;border-color:#4a8a4a!important;color:#8ab8a0!important}',
+    '.cct,.ccb{color:#5aca5a!important}',
+    '.gtit .gt,.form-title{color:#5aca5a!important}',
+    '.hl,.hl-gold{color:#5aca5a!important}',
+    '.abtn.shoot{background:linear-gradient(135deg,#4a2a1a,#2a1a0a)!important;border-color:#aa5a3a!important}'
+  ].join('\n');
+
+  // 日落橙
+  themes['sunset']=[
+    'body{background:linear-gradient(135deg,#2a1a1a,#4a2a1a,#2a1a1a)!important}',
+    '.gc{background:rgba(40,20,15,.92)!important;border-color:#cc6633!important}',
+    '.ban{background:rgba(200,100,50,.12)!important;border-color:#dd7744!important;color:#dda080!important}',
+    '.pp.on{border-color:#ff8844!important;box-shadow:0 0 20px rgba(255,136,68,.2)!important}',
+    '.abtn{background:linear-gradient(135deg,#3a1a0a,#2a0a00)!important;border-color:#cc6633!important}',
+    '.abtn:hover:not(:disabled){background:linear-gradient(135deg,#5a2a1a,#3a1a0a)!important;border-color:#ff8844!important}',
+    '.cd-box,.pp-box,.wa-box,.wd-cb{background:linear-gradient(135deg,#3e1e0e,#2e0e00)!important;border-color:#cc6633!important}',
+    '.ch{background:rgba(70,30,10,.6)!important;border-color:#cc6633!important}',
+    '.ch.cur{border-color:#ff8844!important;color:#ff8844!important}',
+    '.bch{background:rgba(70,30,10,.6)!important;border-color:#cc6633!important;color:#dda080!important}'
+  ].join('\n');
+
+  // 更新设置界面的主题选择器
+  themes['day']=themes['day']||'';
+  themes['night']=themes['night']||'';
+
   // 加载上次主题
   try{var saved=localStorage.getItem('wd_plus_theme');if(saved&&themes[saved])applyTheme(saved)}catch(e){}
 }
@@ -442,7 +478,7 @@ function renderRank(c){
 }
 
 function renderSetting(c){
-  var themeNames={'default':'🌙 默认暗色','day':'☀️ 沙漠白昼','night':'🌃 赛博之夜'};
+  var themeNames={'default':'🌙 默认暗色','day':'☀️ 沙漠白昼','night':'🌃 赛博之夜','forest':'🌲 森林绿野','sunset':'🌅 日落余晖'};
   c.innerHTML='<div class="pp-st">⚙️ 更多设置</div>'+
     '<div class="pp-set-row"><label>界面主题</label><select id="ppThemeSel" onchange="applyTheme(this.value)">'+
     Object.keys(themeNames).map(function(k){return '<option value="'+k+'"'+(currentTheme===k?' selected':'')+'>'+themeNames[k]+'</option>'}).join('')+
