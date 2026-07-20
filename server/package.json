@@ -1,0 +1,12 @@
+{
+  "name": "western-duel-server",
+  "version": "1.0.0",
+  "description": "西部对决 联机中继服务器",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

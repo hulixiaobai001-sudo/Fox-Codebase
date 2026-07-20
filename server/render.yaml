@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: western-duel-server
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "3000"

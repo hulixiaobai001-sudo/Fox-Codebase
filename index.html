@@ -175,7 +175,6 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 @keyframes tf{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @media(max-width:640px){.gc{padding:14px}.prow{grid-template-columns:1fr}.ch{width:36px;height:36px}.bch{width:46px;height:46px}.settings-grid{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr}.hit-text{font-size:2.2em}}
 </style>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 <div class="gc" id="app">
@@ -496,8 +495,9 @@ function showItemSelect(pi) {
   }
   }
 
-// ====== P2P (PeerJS) v2 ======
-var p2pPeer = null, p2pConn = null;
+// ====== P2P (WebSocket 服务器) ======
+var WS_URL = 'wss://western-duel-server.onrender.com'; // 部署后替换
+var wsConn = null;
 var p2pTimer = null, p2pTimeLeft = 0, p2pTimerMax = 30;
 var p2pItemReady = [false, false];
 
@@ -517,39 +517,46 @@ function startP2P() {
 }
 
 function cancelP2P() {
-  if (p2pConn) { try { p2pConn.close(); } catch(e) {} p2pConn = null; }
-  if (p2pPeer) { try { p2pPeer.destroy(); } catch(e) {} p2pPeer = null; }
+  closeWS();
   clearP2PTimer();
   $('scrP2P').classList.remove('on');
   $('scrSetup').classList.add('on');
 }
 
-function initPeer(onReady) {
-  if (p2pPeer) { if (onReady) onReady(p2pPeer.id); return; }
-  var myId = localStorage.getItem('p2pId') || '';
-  if (!myId || myId.length < 4) {
-    myId = 'WS-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-    localStorage.setItem('p2pId', myId);
+function wsConnect(onOpen) {
+  if (wsConn && wsConn.readyState === 1) { if (onOpen) onOpen(); return; }
+  try {
+    wsConn = new WebSocket(WS_URL);
+  } catch(e) {
+    $('p2pStatus').textContent = '❌ 无法连接服务器，检查网络';
+    return;
   }
-  p2pPeer = new Peer(myId, {
-    config: {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' }
-      ]
+  wsConn.onopen = function() { if (onOpen) onOpen(); };
+  wsConn.onmessage = function(e) {
+    var msg;
+    try { msg = JSON.parse(e.data); } catch { return; }
+    wsHandle(msg);
+  };
+  wsConn.onclose = function() {
+    if (G.phase === 'play' || G.phase === 'loading' || G.phase === 'ready') {
+      addL('⚠️ 服务器连接断开', 'da');
+      clearP2PTimer();
+      if (G.mode === 'p2p') gameOver(G.isHost ? 0 : 1);
+    } else {
+      $('p2pStatus').textContent = '连接已断开';
     }
-  });
-  p2pPeer.on('open', function(id) {
-    localStorage.setItem('p2pId', id);
-    if (onReady) onReady(id);
-  });
-  p2pPeer.on('error', function() {
-    $('p2pStatus').textContent = '⚠️ PeerJS服务暂不可用，请稍后重试';
-  });
-  p2pPeer.on('disconnected', function() {
-    p2pPeer.reconnect();
-  });
+  };
+  wsConn.onerror = function() {
+    $('p2pStatus').textContent = '⚠️ 服务器连接失败';
+  };
+}
+
+function closeWS() {
+  if (wsConn) {
+    try { wsConn.send(JSON.stringify({ type: 'leave_room' })); } catch(e) {}
+    try { wsConn.close(); } catch(e) {}
+    wsConn = null;
+  }
 }
 
 // —— HOST ——
@@ -558,22 +565,8 @@ function hostP2P() {
   $('p2pSteps').textContent = '正在创建房间...';
   $('p2pStatus').textContent = '请稍候';
   $('p2pActions').innerHTML = '';
-  initPeer(function(id) {
-    showHostLobby(id);
-    p2pPeer.on('connection', function(conn) {
-      p2pConn = conn;
-      p2pConn.on('data', function(data) { p2pRecv(data); });
-      p2pConn.on('close', function() {
-        if (G.phase === 'play' || G.phase === 'loading' || G.phase === 'ready') {
-          addL('⚠️ 对方断开了连接，游戏结束', 'da');
-          clearP2PTimer();
-          gameOver(G.isHost ? 0 : 1);
-        } else {
-          addL('对方离开了', 'da');
-          backToLobby();
-        }
-      });
-    });
+  wsConnect(function() {
+    wsConn.send(JSON.stringify({ type: 'create_room', name: '治安官' }));
   });
 }
 
@@ -620,21 +613,11 @@ function doJoin() {
   if (!code) { T('请输入房间码'); return; }
   G.p[1].n = name;
   G.p[0].n = '对方';
-  $('p2pSteps').textContent = '正在连接 ' + code + '...';
+  $('p2pSteps').textContent = '正在连接...';
   $('p2pStatus').textContent = '连接中';
   $('p2pActions').innerHTML = '';
-  initPeer(function() {
-    p2pConn = p2pPeer.connect(code, { reliable: true });
-    p2pConn.on('open', function() {
-      sendP2P({ type: 'join', name: G.p[1].n });
-      $('p2pStatus').textContent = '✅ 已连接，等待主机开始...';
-      $('p2pSteps').textContent = '已加入房间';
-      $('p2pQrArea').innerHTML = '<div style="font-size:.9em;color:#c0a090">等待主机设置游戏...</div>';
-      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">离开</button>';
-    });
-    p2pConn.on('data', function(data) { p2pRecv(data); });
-    p2pConn.on('error', function() { $('p2pStatus').textContent = '❌ 连接失败，请检查房间码'; });
-    p2pConn.on('close', function() { $('p2pStatus').textContent = '连接已断开'; backToLobby(); });
+  wsConnect(function() {
+    wsConn.send(JSON.stringify({ type: 'join_room', code: code, name: G.p[1].n }));
   });
 }
 
@@ -643,61 +626,99 @@ function backToLobby() {
   else { cancelP2P(); }
 }
 
-// —— RECV ——
-function p2pRecv(msg) {
-  if (msg.type === 'join' && G.isHost) {
-    G.p[1].n = msg.name;
-    $('p2pJoinerInfo').innerHTML = '✅ <b style="color:#ff6b35">' + G.p[1].n + '</b> 已加入！';
-    $('p2pActions').innerHTML =
-      '<button class="p2p-scan-btn" onclick="p2pBeginGame()" ' +
-      'style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35;font-weight:bold">🎮 开始游戏</button>' +
-      '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+// —— WS message handler ——
+function wsHandle(msg) {
+  switch (msg.type) {
 
-  } else if (msg.type === 'game_begin' && !G.isHost) {
-    G.s = msg.s;
-    G.p[0].n = msg.hostName;
-    G.p[1].n = msg.myName;
-    $('scrP2P').classList.remove('on');
-    p2pItemReady = [false, false];
-    showItemSelect(1);
-
-  } else if (msg.type === 'item_ready' && G.isHost) {
-    p2pItemReady[msg.pi] = true;
-    if (p2pItemReady[0] && p2pItemReady[1]) {
-      G.p[0].sel = selItems.slice();
-      $('scrItems').classList.remove('on');
-      sendP2P({ type: 'game_start' });
-      initGame();
+    case 'room_created': {
+      showHostLobby(msg.code);
+      break;
     }
 
-  } else if (msg.type === 'game_start' && !G.isHost) {
-    G.p[1].sel = selItems.slice();
-    $('scrItems').classList.remove('on');
-    initGame();
-
-  } else if (msg.type === 'action') {
-    recvAction(msg.action);
-
-  } else if (msg.type === 'state') {
-    G.p[1].hp = msg.hp;
-    G.p[1].al = msg.al;
-    rdAll();
-
-  } else if (msg.type === 'rematch') {
-    if (msg.ok) {
-      clearP2PTimer();
-      doRematch();
-    } else {
-      T('对方拒绝了再来一局');
-      backToLobby();
+    case 'room_joined': {
+      G.p[0].n = msg.opponentName;
+      G.p[1].n = msg.myName;
+      $('p2pStatus').textContent = '✅ 已连接，等待主机开始...';
+      $('p2pSteps').textContent = '已加入房间';
+      $('p2pQrArea').innerHTML = '<div style="font-size:.9em;color:#c0a090">等待主机设置游戏...</div>';
+      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">离开</button>';
+      break;
     }
 
-  } else if (msg.type === 'settings') {
-    G.s = msg.s;
+    case 'opponent_joined': {
+      G.p[1].n = msg.name;
+      $('p2pJoinerInfo').innerHTML = '✅ <b style="color:#ff6b35">' + G.p[1].n + '</b> 已加入！';
+      $('p2pActions').innerHTML =
+        '<button class="p2p-scan-btn" onclick="p2pBeginGame()" ' +
+        'style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35;font-weight:bold">🎮 开始游戏</button>' +
+        '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+      break;
+    }
 
-  } else if (msg.type === 'chat') {
-    var who = G.isHost ? G.p[1].n : G.p[0].n;
-    addChatMsg(who, msg.text, false);
+    case 'opponent_left': {
+      if (G.phase === 'play' || G.phase === 'loading' || G.phase === 'ready') {
+        addL('⚠️ 对方离开了游戏', 'da');
+        clearP2PTimer();
+        gameOver(G.isHost ? 0 : 1);
+      } else {
+        addL('对方离开了', 'da');
+        backToLobby();
+      }
+      break;
+    }
+
+    case 'error': {
+      $('p2pStatus').textContent = '❌ ' + msg.text;
+      break;
+    }
+
+    default: {
+      // Game messages relayed from the other player
+      if (msg.type === 'game_begin' && !G.isHost) {
+        G.s = msg.s;
+        G.p[0].n = msg.hostName;
+        G.p[1].n = msg.myName;
+        $('scrP2P').classList.remove('on');
+        p2pItemReady = [false, false];
+        showItemSelect(1);
+
+      } else if (msg.type === 'item_ready' && G.isHost) {
+        p2pItemReady[msg.pi] = true;
+        if (p2pItemReady[0] && p2pItemReady[1]) {
+          G.p[0].sel = selItems.slice();
+          $('scrItems').classList.remove('on');
+          sendP2P({ type: 'game_start' });
+          initGame();
+        }
+
+      } else if (msg.type === 'game_start' && !G.isHost) {
+        G.p[1].sel = selItems.slice();
+        $('scrItems').classList.remove('on');
+        initGame();
+
+      } else if (msg.type === 'action') {
+        recvAction(msg.action);
+
+      } else if (msg.type === 'state') {
+        G.p[1].hp = msg.hp;
+        G.p[1].al = msg.al;
+        rdAll();
+
+      } else if (msg.type === 'rematch') {
+        if (msg.ok) {
+          clearP2PTimer();
+          doRematch();
+        } else {
+          T('对方拒绝了再来一局');
+          backToLobby();
+        }
+
+      } else if (msg.type === 'chat') {
+        var who = G.isHost ? G.p[1].n : G.p[0].n;
+        addChatMsg(who, msg.text, false);
+      }
+      break;
+    }
   }
 }
 
@@ -783,7 +804,6 @@ function startP2PTimer(sec) {
     updateTimerDisplay();
     if (p2pTimeLeft <= 0) {
       clearP2PTimer();
-      // Auto-advance: if it's my turn, shoot
       if (G.phase === 'play' && G.cp === (G.isHost ? 0 : 1) && !G.bf) {
         addL('⏰ 时间到！自动开枪', 'da');
         pull();
@@ -811,7 +831,7 @@ function updateTimerDisplay() {
 }
 
 function sendP2P(msg) {
-  if (p2pConn && p2pConn.open) p2pConn.send(msg);
+  if (wsConn && wsConn.readyState === 1) wsConn.send(JSON.stringify(msg));
 }
 function sendAction(a) { sendP2P({ type: 'action', action: a }); }
 function sendState() { sendP2P({ type: 'state', hp: G.p[G.isHost?0:1].hp, al: G.p[G.isHost?0:1].al }); }
@@ -888,7 +908,7 @@ function initGame() {
   G.phase = 'ready';
   nxtRd();
   if (G.mode === 'p2p') {
-    G.dc = p2pConn;
+    G.dc = wsConn;
     addL('⚠️ 禁止使用外挂或修改数据，公平游戏', 'cr');
     showChatBtn();
     // Chat welcome
@@ -1427,10 +1447,7 @@ function rst() {
   $('scrSetup').classList.add('on');
   G.phase = 'setup';
   if (G.mode === 'p2p') {
-    try { p2pConn.close(); } catch (e) {}
-    try { p2pPeer.destroy(); } catch (e) {}
-    p2pConn = null;
-    p2pPeer = null;
+    closeWS();
   }
 }
 
