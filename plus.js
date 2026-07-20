@@ -483,14 +483,22 @@ function renderRank(c){
   }
   if(c) c.innerHTML = html;
 
-  // Request online leaderboard (with retry)
+  // Request online leaderboard (with retry + timeout)
   var lbRetries = 0;
   function tryGetLB() {
     if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
       wsConn.send(JSON.stringify({type:'get_leaderboard'}));
+      // Set a timeout - if no response in 5s, show timeout
+      setTimeout(function() {
+        var el = document.getElementById('ppLbContent');
+        if (el && el.textContent === '加载中...') el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
+      }, 5000);
     } else if (lbRetries < 10) {
       lbRetries++;
       setTimeout(tryGetLB, 1000);
+    } else {
+      var el = document.getElementById('ppLbContent');
+      if (el) el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
     }
   }
   tryGetLB();
@@ -505,6 +513,42 @@ function renderSetting(c){
     '<div class="pp-set-row"><label>录像帧率</label><select id="ppFpsSel"><option value="4">慢速 (4fps)</option><option value="7" selected>标准 (7fps)</option><option value="15">高速 (15fps)</option></select></div>'+
     '<div class="pp-st" style="font-size:.6em;color:#5a4030;margin-top:10px">主题实时切换，不需要刷新页面</div>';
 }
+
+// ====== Rank badge in game UI ======
+function updateRankBadge(rank) {
+  if (!rank) {
+    // Check debug mode
+    try {
+      if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说';
+    } catch(e) {}
+    if (!rank) try { rank = localStorage.getItem('wd_my_rank'); } catch(e) {}
+  }
+  // Debug mode = highest rank
+  try {
+    if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说';
+  } catch(e) {}
+
+  // Add rank badge to game header during P2P
+  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && rank) {
+    var gtit = document.querySelector('.gtit');
+    if (gtit) {
+      var existing = gtit.querySelector('.rank-badge');
+      if (existing) existing.remove();
+      var badge = document.createElement('span');
+      badge.className = 'rank-badge';
+      badge.style.cssText = 'display:block;font-size:.45em;color:#c8943a;margin-top:2px';
+      badge.textContent = '🏆 ' + rank;
+      gtit.appendChild(badge);
+    }
+  }
+}
+
+// Periodically check for rank display
+setInterval(function() {
+  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && G.phase !== 'setup') {
+    updateRankBadge();
+  }
+}, 3000);
 
 // ====== 初始化 ======
 loadD();initThemes();
@@ -613,12 +657,16 @@ window.wsEventBus.push(function(msg) {
   if (msg.type === 'score_updated' && msg.stats) {
     // Show rank notification
     T('🏆 当前段位: ' + msg.stats.rank + ' · ' + msg.stats.score + '分');
+    // Save rank for display
+    try { localStorage.setItem('wd_my_rank', msg.stats.rank); } catch(e) {}
+    // Update game header with rank badge
+    updateRankBadge(msg.stats.rank);
   }
   if (msg.type === 'leaderboard' && msg.entries) {
     var el = document.getElementById('ppLbContent');
     if (el) {
       if (msg.entries.length === 0) {
-        el.innerHTML = '<div style="color:#6a5540;padding:6px">暂无排行数据，打一局就会有了</div>';
+        el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
       } else {
         var h = '';
         msg.entries.slice(0, 15).forEach(function(e, i) {
