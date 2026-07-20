@@ -56,7 +56,7 @@ server/package.json  — 依赖
 
 ## 📜 许可
 
-GPL-3.0 · 附加协议: [Additional License.txt](./Additional%20License.txt) (BQ-CNfurry1.0)
+GPL-3.0 · 附加协议: [Additional License.md](./Additional%20License.md) (BQ-CNfurry1.0)
 
 > 本项目附有福瑞社区开源附加协议，补充了关于社区文化保护、使用限制等条款。
 > 详见仓库中的 `Additional License.txt` 文件。
