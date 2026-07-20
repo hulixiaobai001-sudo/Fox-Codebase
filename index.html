@@ -1024,8 +1024,21 @@ function wsHandle(msg) {
         recvAction(msg.action);
 
       } else if (msg.type === 'state') {
-        G.p[1].hp = msg.hp;
-        G.p[1].al = msg.al;
+        G.p[0].hp = msg.p0hp; G.p[0].al = msg.p0al;
+        G.p[1].hp = msg.p1hp; G.p[1].al = msg.p1al;
+        G.cp = msg.cp; G.phase = msg.phase; G.rd = msg.rd;
+        G.cc = msg.cc; G.bp = msg.bp; G.bf = msg.bf;
+        G.mult = msg.mult; G.da = msg.da;
+        G.freezeTarget = msg.freezeTarget;
+        G.ps = msg.ps; G.st = msg.st; G.br = msg.br; G.de = msg.de;
+        G.p[0].wa = msg.p0wa; G.p[0].wp = msg.p0wp;
+        G.p[0].ba = msg.p0ba; G.p[0].bu = msg.p0bu;
+        G.p[0].fa = msg.p0fa; G.p[0].fc = msg.p0fc;
+        if (msg.p0it) G.p[0].it = msg.p0it;
+        G.p[1].wa = msg.p1wa; G.p[1].wp = msg.p1wp;
+        G.p[1].ba = msg.p1ba; G.p[1].bu = msg.p1bu;
+        G.p[1].fa = msg.p1fa; G.p[1].fc = msg.p1fc;
+        if (msg.p1it) G.p[1].it = msg.p1it;
         rdAll();
 
       } else if (msg.type === 'rematch_req') {
@@ -1302,7 +1315,14 @@ function sendP2P(msg) {
   if (wsConn && wsConn.readyState === 1) wsConn.send(JSON.stringify(msg));
 }
 function sendAction(a) { sendP2P({ type: 'action', action: a }); }
-function sendState() { sendP2P({ type: 'state', hp: G.p[G.isHost?0:1].hp, al: G.p[G.isHost?0:1].al }); }
+function sendState() {
+  sendP2P({ type: 'state', p0hp: G.p[0].hp, p0al: G.p[0].al, p1hp: G.p[1].hp, p1al: G.p[1].al,
+    cp: G.cp, phase: G.phase, rd: G.rd, cc: G.cc, bp: G.bp, bf: G.bf, mult: G.mult, da: G.da,
+    freezeTarget: G.freezeTarget, ps: G.ps, st: G.st, br: G.br, de: G.de,
+    p0wa: G.p[0].wa, p0wp: G.p[0].wp, p0ba: G.p[0].ba, p0bu: G.p[0].bu, p0fa: G.p[0].fa, p0fc: G.p[0].fc, p0it: G.p[0].it,
+    p1wa: G.p[1].wa, p1wp: G.p[1].wp, p1ba: G.p[1].ba, p1bu: G.p[1].bu, p1fa: G.p[1].fa, p1fc: G.p[1].fc, p1it: G.p[1].it
+  });
+}
 
 // —— CHAT ——
 var chatOpen = false;
@@ -1722,7 +1742,7 @@ function useI(pidx, typ) {
     }
   }
 
-  if (G.mode === 'p2p') sendAction({ type: 'item', pi: pidx, id: typ });
+  if (G.mode === 'p2p') { sendAction({ type: 'item', pi: pidx, id: typ }); sendState(); }
 }
 
 function tryFlag(pidx) {
@@ -1810,7 +1830,7 @@ function doSkip() {
   enActs();
   upBan();
   if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 700);
-  if (G.mode === 'p2p') sendAction({ type: 'skip', cp: G.cp });
+  if (G.mode === 'p2p') { sendAction({ type: 'skip', cp: G.cp }); sendState(); }
 }
 
 // ====== NEW AI (Difficulty-scoring)
