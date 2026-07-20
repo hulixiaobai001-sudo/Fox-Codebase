@@ -1399,6 +1399,17 @@ function sendChat() {
   if (window.achiev) window.achiev.addChat();
 }
 function addChatMsg(who, text, isSelf) {
+  // Hidden achievement: 嗷伊大话唠
+  if (G.mode === 'p2p' && text.indexOf('嗷伊大话唠') >= 0) {
+    if (!window._aoyiCount) window._aoyiCount = 0;
+    window._aoyiCount++;
+    if (window._aoyiCount >= 2 && window.achiev) {
+      if (!window._aoyiDone) {
+        window._aoyiDone = true;
+        window.achiev.addEz('aoyi');
+      }
+    }
+  }
   var box = $('chatMsgs');
   if (!box) return;
   var d = new Date();

@@ -137,6 +137,7 @@ function genAch(){
   add({id:'ss',n:'六发全空',d:'一局内连续空枪6次',ic:'💨',c:'隐藏',ch:function(s){return s.ss},ti:4});
   add({id:'cert',n:'持证上岗',d:'生成一张鸣谢证书',ic:'📜',c:'隐藏',ch:function(s){return s.cert},ti:2});
   add({id:'nore',n:'绝不跳过',d:'连续5局不跳过',ic:'🚫',c:'隐藏',ch:function(s){return s.nore},ti:3});
+  add({id:'aoyi',n:'嗷伊大话唠',d:'联机对局发送2次"嗷伊大话唠"',ic:'📢',c:'隐藏',ch:function(s){return s.aoyi},ti:3});
   return a;
 }
 var ACH=genAch();
@@ -152,7 +153,7 @@ var ST={
   // ai
   aipl:0,aiw:0,aih:0,
   // hidden
-  ez1:0,ez2:0,ez3:0,cat:0,die:0,night:0,ss:0,cert:0,nore:0,
+  ez1:0,ez2:0,ez3:0,cat:0,die:0,night:0,ss:0,cert:0,nore:0,aoyi:0,
   // per-game challenge
   ht1n:0,ms0w:0,cb:0,rw:0,lg:0,bt3:0,nhw:0,ai:0,st3:0,st5:0,st10:0
 };
