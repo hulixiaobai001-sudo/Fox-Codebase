@@ -486,13 +486,7 @@ function renderSetting(c){
 
 
 
-// ====== 自定义服务 URL + DeepSeek API ======
-try{
-  var customWs=localStorage.getItem('wd_custom_ws');
-  if(customWs&&typeof WS_URL!=='undefined'){WS_URL=customWs;}
-}catch(e){}
-
-// DeepSeek API configuration
+// ====== DeepSeek API ======
 var dsApiKey = '';
 try { dsApiKey = localStorage.getItem('wd_ds_key') || ''; } catch(e) {}
 
@@ -757,17 +751,16 @@ setTimeout(function(){
   var tlUi=document.createElement('div');tlUi.style.cssText='position:fixed;top:50px;left:12px;z-index:9999;display:flex;gap:4px;opacity:0.4;transition:opacity .3s';
   tlUi.onmouseenter=function(){tlUi.style.opacity='1'};
   tlUi.onmouseleave=function(){tlUi.style.opacity='0.4'};
-  var cfgBtn=document.createElement('button');cfgBtn.className='pp-btn';cfgBtn.textContent='⚙️ 自定义服务/AI';
+  var cfgBtn=document.createElement('button');cfgBtn.className='pp-btn';cfgBtn.textContent='🧠 AI接入';
   cfgBtn.onclick=function(){
-    var choice = prompt('选择设置:\n1. 修改服务器地址\n2. 设置DeepSeek API Key\n3. 清除API Key', '1');
+    var choice = prompt('DeepSeek API Key 设置:\n1. 设置 Key\n2. 清除 Key\n3. 查看当前状态', '1');
     if (choice === '1') {
-      var u=prompt('WebSocket服务器地址',typeof WS_URL!=='undefined'?WS_URL:'wss://fox-codebase-production.up.railway.app');
-      if(u&&u.trim()){try{localStorage.setItem('wd_custom_ws',u.trim());T('✅ 自定义服务已设置，刷新后生效')}catch(e){}}
+      var key=prompt('输入你的DeepSeek API Key', dsApiKey || 'sk-');
+      if(key&&key.trim()){try{localStorage.setItem('wd_ds_key',key.trim());dsApiKey=key.trim();T('✅ DeepSeek API Key已设置，AI将用API决策')}catch(e){}}
     } else if (choice === '2') {
-      var key=prompt('输入你的DeepSeek API Key', 'sk-');
-      if(key&&key.trim()){try{localStorage.setItem('wd_ds_key',key.trim());dsApiKey=key.trim();T('✅ DeepSeek API Key已设置，AI将使用API决策')}catch(e){}}
-    } else if (choice === '3') {
       try{localStorage.removeItem('wd_ds_key');dsApiKey='';T('🗑️ API Key已清除')}catch(e){}
+    } else if (choice === '3') {
+      T(dsApiKey ? '✅ API Key 已设置 (' + dsApiKey.slice(0,8) + '...)' : '❌ 未设置API Key');
     }
   };
   tlUi.appendChild(cfgBtn);
