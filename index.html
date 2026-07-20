@@ -248,7 +248,11 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
       <label><input type="checkbox" id="sNoSk"> 禁止跳过</label>
     </div>
     <button class="btn-start" onclick="startGame()">开始对决</button>
-    <div class="footer">第六届绒兽汇图一乐小游戏<br><a onclick="showCred()">制作人员</a></div>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="abtn" onclick="showCred()" style="font-size:.78em">📜 制作人员</button>
+      <button class="abtn" onclick="startDaily()" style="font-size:.78em;background:rgba(255,200,50,.1);border-color:rgba(255,200,50,.3);color:#fc3">🎯 每日挑战</button>
+    </div>
+    <div class="footer">第六届绒兽汇图一乐小游戏</div>
   </div>
 </div>
 <div class="scr" id="scrItems">
@@ -641,6 +645,7 @@ function startP2P() {
 }
 
 function cancelP2P() {
+  if (roomListInterval) { clearInterval(roomListInterval); roomListInterval = null; }
   closeWS();
   clearP2PTimer();
   $('goO').classList.remove('on');
@@ -812,6 +817,8 @@ function doSpectate() {
 }
 
 // —— ROOM LIST ——
+var roomListInterval = null;
+
 function fetchRoomList() {
   if (wsConn && wsConn.readyState === 1) {
     wsConn.send(JSON.stringify({ type: 'list_rooms' }));
@@ -821,16 +828,23 @@ function renderRoomList(list) {
   var el = $('p2pRoomList');
   if (!el) return;
   if (!list || list.length === 0) {
-    el.innerHTML = '<div style="font-size:.75em;color:#6a5540;text-align:center">暂无可用房间</div>';
+    el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.7em;color:#6a5540">' +
+      '<span>📋 暂无可用房间</span>' +
+      '<button onclick="fetchRoomList()" style="background:none;border:none;color:#8a7a50;cursor:pointer;font-size:.9em">🔄</button></div>';
     return;
   }
-  var html = '<div style="font-size:.7em;color:#a08070;margin-bottom:4px">📋 可用房间</div>';
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.7em;color:#a08070;margin-bottom:4px">' +
+    '<span>📋 可用房间 (' + list.length + ')</span>' +
+    '<button onclick="fetchRoomList()" style="background:none;border:none;color:#8a7a50;cursor:pointer;font-size:.9em">🔄</button></div>';
   list.forEach(function(r) {
     html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:rgba(60,30,20,.3);border-radius:6px;margin:2px 0;font-size:.78em">' +
       '<span>' + r.host + (r.hasPassword ? ' 🔒' : '') + '</span>' +
       '<button class="ibtn" onclick="quickJoin(\'' + r.code + '\')" style="font-size:.85em;padding:2px 10px">加入</button></div>';
   });
   el.innerHTML = html;
+  // Auto refresh every 5s
+  if (roomListInterval) clearInterval(roomListInterval);
+  roomListInterval = setInterval(fetchRoomList, 5000);
 }
 function quickJoin(code) {
   joinP2P();
@@ -2222,6 +2236,33 @@ function showRules() {
 }
 
 function hideRules() { $('rulesO').classList.remove('on'); }
+
+function startDaily() {
+  // Check if plus.js daily challenge is available
+  if (typeof PP !== 'undefined' && PP.daily) {
+    PP.daily();
+  } else {
+    // Fallback: set random custom rules for a daily experience
+    var seed = new Date().toDateString();
+    var hash = 0;
+    for (var i = 0; i < seed.length; i++) { hash = ((hash << 5) - hash) + seed.charCodeAt(i); hash |= 0; }
+    var rules = [
+      { hp: 3, ch: 4, bu: 2, sk: 1, it: 3, desc: '短命速决 · 3HP 4弹巢 2子弹' },
+      { hp: 8, ch: 8, bu: 1, sk: 2, it: 5, desc: '持久战 · 8HP 8弹巢' },
+      { hp: 5, ch: 6, bu: 3, sk: 0, it: 3, desc: '疯狂装弹 · 3发子弹 禁止跳过' },
+      { hp: 4, ch: 5, bu: 1, sk: 3, it: 6, desc: '道具大师 · 6个道具 宽松跳过' },
+      { hp: 6, ch: 7, bu: 2, sk: 1, it: 4, desc: '标准困难 · 7弹巢 2子弹' },
+    ];
+    var r = rules[Math.abs(hash) % rules.length];
+    $('sHP').value = r.hp;
+    $('sCh').value = r.ch;
+    $('sBu').value = r.bu;
+    $('sSk').value = r.sk;
+    $('sIt').value = r.it;
+    $('sNoSk').checked = (r.sk === 0);
+    T('🎯 今日挑战: ' + r.desc);
+  }
+}
 
 function showCred() {
   $('credO').classList.add('on');
