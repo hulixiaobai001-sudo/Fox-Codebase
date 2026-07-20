@@ -483,10 +483,17 @@ function renderRank(c){
   }
   if(c) c.innerHTML = html;
 
-  // Request online leaderboard
-  if(typeof wsConn!=='undefined'&&wsConn&&wsConn.readyState===1){
-    wsConn.send(JSON.stringify({type:'get_leaderboard'}));
+  // Request online leaderboard (with retry)
+  var lbRetries = 0;
+  function tryGetLB() {
+    if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
+      wsConn.send(JSON.stringify({type:'get_leaderboard'}));
+    } else if (lbRetries < 10) {
+      lbRetries++;
+      setTimeout(tryGetLB, 1000);
+    }
   }
+  tryGetLB();
 }
 
 function renderSetting(c){
