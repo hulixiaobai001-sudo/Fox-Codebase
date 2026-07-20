@@ -1,32 +1,59 @@
 # Fox-Codebase
 
-**狐狸的代码基地**  
-用于快速测试各种想法、记录小工具和小实验的个人代码仓库。
+**狐狸的代码基地** 🦊
 
 ---
 
-## 🌟 项目目标
+## 🔫 西部对决
 
-- 快速验证新想法和实验
-- 积累有趣的小工具和网页 Demo
-- 记录学习笔记与代码片段
-- 偶尔整一些好玩的互动项目
+西部主题轮盘赌双人对战游戏，支持 **本地 / 人机 / 联机** 三种模式。
+
+### 🎮 在线游玩
+
+👉 **[https://hulixiaobai001-sudo.github.io/Fox-Codebase/](https://hulixiaobai001-sudo.github.io/Fox-Codebase/)**
+
+### 🤠 联机模式
+
+通过 WebSocket 服务器中继，任何网络环境下都能连：
+
+- 创建/加入房间（可选密码）
+- 随机匹配
+- 房间列表浏览
+- 全局大厅聊天
+- 局内聊天（游戏中对喷）
+- 30 秒回合计时
+- 再来一局
+
+### 🖥️ 联机服务器
+
+代码在 `server/` 目录下，部署在 Railway 免费套餐：
+
+```
+server/index.js      — WebSocket 中继服务器 (~200行)
+server/package.json  — 依赖
+```
+
+服务器功能：
+
+- 房间管理（创建 / 加入 / 密码 / 离开）
+- 消息中继（转发游戏指令）
+- 防作弊（回合校验）
+- 随机匹配队列
+- 全局聊天广播
+- 自定义规则投票
+
+> 可用任何 Node.js 环境自行部署。
 
 ---
 
-## 📁 当前内容
+## 📁 其他内容
 
-- **`computer.html`** —— 小型网页实验
-- **`deeoseek Chat System.html`** —— DeepSeek 聊天界面（输入 Key 即可使用）
-- **`Fox-SlotMachine.html`** —— 随机抽卡机（支持单抽 & 十连，带翻转动画，带个虚假排行榜）
-- 更多有趣项目正在路上...
--**`Additional License.txt`**--附加许可
+- **`Fox-SlotMachine.html`** — 抽卡机
+- **`computer.html`** — 网页实验
+- **`achieve.js` / `save.js` / `sfx.js` / `plus.js`** — 游戏附属脚本
+
 ---
 
-## 🚀 如何使用
+## 📜 许可
 
-1. **克隆仓库**（推荐）
-   ```bash
-   git clone https://github.com/hulixiaobai001-sudo/Fox-Codebase.git
-
-“本项目采用 GPL-3.0 协议发布，附加文件仅为社区倡议与价值观声明，不构成法律意义上的许可限制或义务。” 
+GPL-3.0
