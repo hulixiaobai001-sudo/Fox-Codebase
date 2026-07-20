@@ -400,7 +400,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <div class="ccn" onclick="showDetail('玉米','测试人员 / 代码调试','深入参与了游戏的功能测试和代码调试工作。不仅反馈了测试中发现的问题，还协助分析定位了多个关键bug的根因，帮助优化了部分逻辑实现。在联机模式的调试过程中提供了重要的技术支持。')">玉米</div>
     <div class="ccn" onclick="showDetail('苏杭夜雪','测试人员','参与了西部对决的整体功能测试，重点测试了游戏的道具系统和回合机制。在不同游戏模式下进行了反复验证，为游戏的平衡性调整提供了参考数据。反馈了多项用户体验改进建议。')">苏杭夜雪</div>
     <div class="cch" onclick="showDetail('林格','游戏代码创意提供','为西部对决提供了多个核心玩法创意和设计思路。从最初的游戏概念到具体的机制设计，林格的创意为游戏注入了独特的灵魂。轮盘赌与道具组合的核心玩法框架、西部主题的风格定位，都有林格的创意贡献。')">林格</div>
-    <div class="ccn" onclick="showDetail('潥鸢','终测人员 / 吉祥物 / Bug反馈', catArt)">潥鸢</div>
+    <div class="ccn" onclick="showDetail('潥鸢','终测人员 / 吉祥物 / Bug反馈', catArt);if(window.achiev)achiev.addCat()">潥鸢</div>
     <div class="ccg" onclick="showDetail('云麓','公会会长 / 特别鸣谢','作为英雄主义公会的会长，组织并协调了大规模的测试工作。统筹安排了多轮测试计划，汇总整理了大量的测试反馈。在游戏的开发方向上给予了战略性的建议和支持，是项目能够持续推进的重要力量。')">云麓</div>
     <div class="ccg" onclick="showDetail('幸运喵','测试人员 / 联机创意','参与了全面的功能测试，并提出了联机对战模式的创意方案。从玩家体验的角度出发，设计了联机模式的核心交互流程和匹配机制。为游戏从单机走向联机做出了开创性的贡献，让西部对决有了更丰富的社交玩法。')">幸运喵</div>
     <div class="ccg" onclick="showDetail('John Yoss','GitHub 意见提供 / 特别鸣谢','在GitHub上持续关注项目进展，提出了多项宝贵的改进建议和优化方向。从代码质量到用户体验，John Yoss 的意见帮助项目不断迭代和完善。作为开源社区的参与者，为项目带来了外部视角的专业反馈。')">John Yoss</div>
@@ -896,6 +896,7 @@ function sendGC() {
   var name = G.isHost ? (G.p[0].n || '治安官') : (G.p[1].n || '旅者');
   wsConn.send(JSON.stringify({ type: 'global_chat', text: inp.value.trim(), name: name }));
   inp.value = '';
+  if (window.achiev) window.achiev.addChat();
 }
 
 // —— WS message handler ——
@@ -977,6 +978,7 @@ function wsHandle(msg) {
     }
 
     case 'matched': {
+      G.matched = true;
       G.isHost = (msg.myIndex === 0);
       G.p[0].n = G.isHost ? msg.myName : msg.opponentName;
       G.p[1].n = G.isHost ? msg.opponentName : msg.myName;
@@ -1013,6 +1015,7 @@ function wsHandle(msg) {
     }
 
     case 'spectating': {
+      if (window.achiev) achiev.addSpec();
       $('scrP2P').classList.remove('on');
       $('gameBoard').classList.add('on');
       // Show spectator view
@@ -1393,6 +1396,7 @@ function sendChat() {
   var who = G.isHost ? G.p[0].n : G.p[1].n;
   addChatMsg(who, text, true);
   sendP2P({ type: 'chat', text: text });
+  if (window.achiev) window.achiev.addChat();
 }
 function addChatMsg(who, text, isSelf) {
   var box = $('chatMsgs');
@@ -2355,6 +2359,7 @@ function debugClick() {
     var pw = prompt('🔐 输入调试口令');
     if (pw === '牢白是废物狐狸') {
       debugUnlocked = true;
+      if (window.achiev) achiev.addEz('ez3');
       T('✅ 调试模式已解锁');
       showDebugPanel();
     } else {

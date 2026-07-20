@@ -506,6 +506,7 @@ function quickAddFriend(id, name) {
   if (friends.find(function(f) { return f.id === id; })) { alert('已经是好友了'); return; }
   friends.push({ id: id, name: name });
   localStorage.setItem('wd_friends', JSON.stringify(friends));
+  if (window.achiev) window.achiev.addFriend();
   var cnt = document.getElementById('ppContent');
   if (cnt) renderFriends(cnt);
 }
