@@ -194,7 +194,7 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
       <span class="diff-btn" data-d="hard" onclick="setDiff('hard')">💀困难</span>
       <span class="diff-btn" data-d="custom" onclick="setDiff('custom')">⚙️自定义</span>
     </div>
-    <div class="sgrid">
+    <div class="sgrid" id="sgrid">
       <div><label id="p1l">玩家1</label><input type="text" id="p1n" placeholder="输入名字" maxlength="10"></div>
       <div style="font-size:1.4em;color:#ff6b35">VS</div>
       <div><label id="p2l">玩家2</label><input type="text" id="p2n" placeholder="输入名字" maxlength="10"></div>
@@ -364,6 +364,20 @@ function setMode(m) {
     b.classList.toggle('on', b.dataset.m === m);
   });
   G.mode = m;
+  // Hide/show player inputs and settings for P2P
+  var sg = $('sgrid');
+  var grids = document.querySelectorAll('.settings-grid, .settings-grid + div');
+  var st = document.querySelector('.settings-grid');
+  var stt = document.querySelector('.settings-grid');
+  if (sg) sg.style.display = (m === 'p2p') ? 'none' : '';
+  if (st) st.style.display = (m === 'p2p') ? 'none' : '';
+  // The "自定义规则" title
+  var titles = document.querySelectorAll('[style*="color:#dd8844"]');
+  titles.forEach(function(t) { t.style.display = (m === 'p2p') ? 'none' : ''; });
+  if (m === 'p2p') {
+    $('diffBtns').style.display = 'none';
+    return;
+  }
   if (m === 'ai') {
     $('p2n').value = '';
     $('p2n').placeholder = '人机001号';
@@ -511,9 +525,18 @@ function startP2P() {
   $('p2pScanBtn').style.display = 'none';
   $('p2pStatus').textContent = '';
   $('p2pVideo').style.display = 'none';
+  // Connect to server for room list + global chat
+  wsConnect(function() { fetchRoomList(); });
   $('p2pActions').innerHTML =
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:10px">' +
     '<button class="p2p-scan-btn" onclick="hostP2P()">🏠 创建房间</button>' +
-    '<button class="p2p-scan-btn" onclick="joinP2P()">🚪 加入房间</button>';
+    '<button class="p2p-scan-btn" onclick="joinP2P()">🚪 加入房间</button>' +
+    '<button class="p2p-scan-btn" onclick="matchP2P()">🎲 随机匹配</button>' +
+    '</div>' +
+    '<div id="p2pRoomList" style="margin-bottom:8px"></div>' +
+    '<div id="p2pGlobalChat" style="border-top:1px solid rgba(139,69,19,.3);padding-top:8px"></div>';
+  renderRoomList();
+  renderGlobalChat();
 }
 
 function cancelP2P() {
@@ -561,12 +584,15 @@ function closeWS() {
 
 // —— HOST ——
 function hostP2P() {
+  var name = prompt('输入你的名字', '治安官') || '治安官';
+  var pw = prompt('设置房间密码（不设置直接点确定）', '') || '';
   G.isHost = true;
+  G.p[0].n = name;
   $('p2pSteps').textContent = '正在创建房间...';
   $('p2pStatus').textContent = '请稍候';
   $('p2pActions').innerHTML = '';
   wsConnect(function() {
-    wsConn.send(JSON.stringify({ type: 'create_room', name: '治安官' }));
+    wsConn.send(JSON.stringify({ type: 'create_room', name: name, password: pw }));
   });
 }
 
@@ -589,7 +615,7 @@ function showHostLobby(code) {
 // —— JOINER ——
 function joinP2P() {
   G.isHost = false;
-  $('p2pSteps').textContent = '输入房间码和你的名字';
+  $('p2pSteps').textContent = '输入房间码';
   $('p2pStatus').textContent = '';
   $('p2pScanBtn').style.display = 'none';
   $('p2pQrArea').innerHTML =
@@ -600,16 +626,20 @@ function joinP2P() {
     '<input type="text" id="p2pNameInput" maxlength="8" placeholder="你的名字" ' +
     'style="background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;' +
     'color:#f0e6d3;padding:9px 12px;font-size:1em;width:100%;text-align:center;outline:none;margin:4px 0">' +
+    '<input type="password" id="p2pPwInput" maxlength="10" placeholder="密码（没有则留空）" ' +
+    'style="background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:8px;' +
+    'color:#f0e6d3;padding:9px 12px;font-size:1em;width:100%;text-align:center;outline:none;margin:4px 0">' +
     '</div>';
   $('p2pActions').innerHTML =
     '<button class="p2p-scan-btn" onclick="doJoin()">✅ 加入</button>' +
-    '<button class="p2p-scan-btn" onclick="cancelP2P()">返回</button>';
+    '<button class="p2p-scan-btn" onclick="startP2P()">返回</button>';
   setTimeout(function() { var inp = $('p2pRoomInput'); if (inp) inp.focus(); }, 300);
 }
 
 function doJoin() {
   var code = ($('p2pRoomInput') ? $('p2pRoomInput').value.trim() : '').toUpperCase();
   var name = ($('p2pNameInput') ? $('p2pNameInput').value.trim() : '') || '旅者';
+  var pw = ($('p2pPwInput') ? $('p2pPwInput').value : '');
   if (!code) { T('请输入房间码'); return; }
   G.p[1].n = name;
   G.p[0].n = '对方';
@@ -617,13 +647,95 @@ function doJoin() {
   $('p2pStatus').textContent = '连接中';
   $('p2pActions').innerHTML = '';
   wsConnect(function() {
-    wsConn.send(JSON.stringify({ type: 'join_room', code: code, name: G.p[1].n }));
+    wsConn.send(JSON.stringify({ type: 'join_room', code: code, name: G.p[1].n, password: pw }));
   });
 }
 
 function backToLobby() {
   if ($('scrP2P').classList.contains('on')) startP2P();
   else { cancelP2P(); }
+}
+
+// —— MATCHMAKING ——
+function matchP2P() {
+  var name = prompt('输入你的名字', '玩家') || '玩家';
+  $('p2pSteps').textContent = '🎲 匹配中...';
+  $('p2pStatus').textContent = '正在寻找对手';
+  $('p2pQrArea').innerHTML = '<div style="font-size:1.5em;margin:16px 0">🔍 匹配中...</div>';
+  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelMatch()">取消</button>';
+  wsConnect(function() {
+    wsConn.send(JSON.stringify({ type: 'join_queue', name: name }));
+  });
+}
+function cancelMatch() {
+  if (wsConn) wsConn.send(JSON.stringify({ type: 'leave_queue' }));
+  startP2P();
+}
+
+// —— ROOM LIST ——
+function fetchRoomList() {
+  if (wsConn && wsConn.readyState === 1) {
+    wsConn.send(JSON.stringify({ type: 'list_rooms' }));
+  }
+}
+function renderRoomList(list) {
+  var el = $('p2pRoomList');
+  if (!el) return;
+  if (!list || list.length === 0) {
+    el.innerHTML = '<div style="font-size:.75em;color:#6a5540;text-align:center">暂无可用房间</div>';
+    return;
+  }
+  var html = '<div style="font-size:.7em;color:#a08070;margin-bottom:4px">📋 可用房间</div>';
+  list.forEach(function(r) {
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:rgba(60,30,20,.3);border-radius:6px;margin:2px 0;font-size:.78em">' +
+      '<span>' + r.host + (r.hasPassword ? ' 🔒' : '') + '</span>' +
+      '<button class="ibtn" onclick="quickJoin(\'' + r.code + '\')" style="font-size:.85em;padding:2px 10px">加入</button></div>';
+  });
+  el.innerHTML = html;
+}
+function quickJoin(code) {
+  joinP2P();
+  setTimeout(function() {
+    var inp = $('p2pRoomInput');
+    if (inp) { inp.value = code; doJoin(); }
+  }, 100);
+}
+
+// —— GLOBAL CHAT ——
+var gcMsgs = [];
+function renderGlobalChat() {
+  var el = $('p2pGlobalChat');
+  if (!el) return;
+  if (gcMsgs.length === 0) {
+    el.innerHTML = '<div style="font-size:.7em;color:#6a5540;text-align:center">💬 大厅聊天</div>' +
+      '<div id="gcMsgsBox" style="max-height:100px;overflow-y:auto;margin:4px 0;font-size:.75em;color:#8a7a60">暂无消息</div>' +
+      '<div style="display:flex;gap:4px"><input type="text" id="gcInput" maxlength="50" placeholder="说点什么..." ' +
+      'style="flex:1;background:rgba(60,30,20,.4);border:1px solid #5a3a2a;border-radius:6px;padding:4px 8px;color:#c0a090;font-size:.75em;outline:none" ' +
+      'onkeydown="if(event.key===\\'Enter\\')sendGC()">' +
+      '<button onclick="sendGC()" style="background:rgba(139,69,19,.4);border:1px solid #6b3a2a;border-radius:6px;padding:4px 10px;color:#c0a090;font-size:.7em;cursor:pointer">发</button></div>';
+  } else {
+    renderGCMsgs();
+  }
+  // Request chat history
+  if (wsConn && wsConn.readyState === 1) wsConn.send(JSON.stringify({ type: 'get_chat_history' }));
+}
+function renderGCMsgs() {
+  var box = document.getElementById('gcMsgsBox');
+  if (!box) return;
+  if (gcMsgs.length === 0) { box.innerHTML = '<span style="color:#6a5540">暂无消息</span>'; return; }
+  box.innerHTML = gcMsgs.slice(-20).map(function(m) {
+    var t = new Date(m.time);
+    var ts = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+    return '<div><b style="color:#c8943a">' + m.name + '</b> ' + m.text + ' <span style="color:#5a4030;font-size:.8em">' + ts + '</span></div>';
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+function sendGC() {
+  var inp = document.getElementById('gcInput');
+  if (!inp || !inp.value.trim()) return;
+  var name = G.isHost ? (G.p[0].n || '治安官') : (G.p[1].n || '旅者');
+  wsConn.send(JSON.stringify({ type: 'global_chat', text: inp.value.trim(), name: name }));
+  inp.value = '';
 }
 
 // —— WS message handler ——
@@ -657,18 +769,81 @@ function wsHandle(msg) {
 
     case 'opponent_left': {
       if (G.phase === 'play' || G.phase === 'loading' || G.phase === 'ready') {
-        addL('⚠️ 对方离开了游戏', 'da');
+        addL('⚠️ ' + (msg.reason || '对方离开了游戏'), 'da');
         clearP2PTimer();
         gameOver(G.isHost ? 0 : 1);
       } else {
-        addL('对方离开了', 'da');
+        addL(msg.reason || '对方离开了', 'da');
         backToLobby();
       }
       break;
     }
 
+    case 'opponent_game_over': {
+      addL('游戏结束！' + msg.winner + ' 获胜！', 'hi');
+      break;
+    }
+
     case 'error': {
       $('p2pStatus').textContent = '❌ ' + msg.text;
+      break;
+    }
+
+    case 'room_list': {
+      renderRoomList(msg.rooms);
+      break;
+    }
+
+    case 'global_chat': {
+      gcMsgs.push(msg);
+      if (gcMsgs.length > 100) gcMsgs.shift();
+      renderGCMsgs();
+      break;
+    }
+
+    case 'chat_history': {
+      gcMsgs = msg.messages || [];
+      renderGCMsgs();
+      break;
+    }
+
+    case 'in_queue': {
+      $('p2pStatus').textContent = '队列第 ' + msg.position + ' 位';
+      break;
+    }
+
+    case 'matched': {
+      G.isHost = (msg.myIndex === 0);
+      G.p[0].n = msg.opponentName;
+      G.p[1].n = msg.myName;
+      $('p2pStatus').textContent = '✅ 匹配成功！';
+      $('p2pSteps').textContent = '已与 ' + msg.opponentName + ' 匹配';
+      $('p2pQrArea').innerHTML = '<div style="font-size:.9em;color:#c0a090">正在进入游戏...</div>';
+      $('p2pActions').innerHTML = '';
+      if (G.isHost) {
+        // Host starts game flow
+        $('scrP2P').classList.remove('on');
+        p2pItemReady = [false, false];
+        showItemSelect(0);
+      }
+      break;
+    }
+
+    case 'settings_agreed': {
+      G.s = msg.settings;
+      addL('✅ 自定义规则已确认', 'su');
+      break;
+    }
+
+    case 'opponent_voted': {
+      addL('对方已完成投票', 'in');
+      break;
+    }
+
+    case 'validation': {
+      if (!msg.valid) {
+        addL('⚠️ 服务器验证失败: ' + (msg.reason || '操作被拒绝'), 'da');
+      }
       break;
     }
 
@@ -724,10 +899,8 @@ function wsHandle(msg) {
 
 // —— HOST begins game ——
 function p2pBeginGame() {
-  var name = ($('p2pHostName') ? $('p2pHostName').value.trim() : '') || '治安官';
-  if (!name.trim()) { T('请输入你的名字'); return; }
-  G.p[0].n = name;
-  sendP2P({ type: 'game_begin', s: G.s, hostName: G.p[0].n, myName: G.p[1].n });
+  var name = G.p[0].n || '治安官';
+  sendP2P({ type: 'game_begin', s: G.s, hostName: name, myName: G.p[1].n });
   $('scrP2P').classList.remove('on');
   p2pItemReady = [false, false];
   showItemSelect(0);
