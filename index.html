@@ -163,10 +163,19 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 .crdo{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:200;overflow:hidden}
 .crdo.on{display:block}
 .crds{position:absolute;left:50%;transform:translateX(-50%);text-align:center;animation:crdR 25s forwards;width:90%;max-width:500px}
-.crds .cct{font-size:2em;color:#ff6b35}.crds .ccn{font-size:1.2em;color:#f0e6d3;margin:6px 0}
+.crds .cct{font-size:2.2em;color:#ff6b35;text-shadow:0 0 30px rgba(255,107,53,.4)}.crds .ccn{font-size:1.2em;color:#f0e6d3;margin:6px 0}
 .crds .ccr{font-size:.8em;color:#a08070}.crds .ccd{width:50px;height:2px;background:#ff6b35;margin:14px auto}
 .crds .ccf{font-size:.95em;color:#d8f;margin-top:24px}.crds .ccs{font-size:.75em;color:#6a5540;margin-top:8px}
-@keyframes crdR{0%{top:100%}100%{top:-350%}}
+.crds .ccg{font-size:1.2em;color:#fc3;margin:6px 0;text-shadow:0 0 20px rgba(255,204,51,.6),0 0 40px rgba(255,204,51,.3);animation:glow 2s ease-in-out infinite alternate}
+.crds .ccp{font-size:1em;color:#6cf;margin:5px 0;text-shadow:0 0 12px rgba(100,200,255,.3)}
+.crds .ccm{font-size:.95em;color:#8f8;margin:5px 0;text-shadow:0 0 10px rgba(100,255,100,.2)}
+.crds .cch{font-size:.9em;color:#fa0;margin:5px 0;text-shadow:0 0 15px rgba(255,170,0,.3)}
+.crds .ccb{font-size:1.4em;font-weight:bold;color:#ff6b35;margin:10px 0 4px;letter-spacing:2px}
+.crds .cca{font-size:1.6em;font-weight:900;color:#f0e6d3;margin:8px 0;text-shadow:0 0 30px rgba(255,107,53,.3)}
+.crds .ccl{font-size:.75em;color:#5ac;margin:3px 0}.ccl a{color:#5ac;text-decoration:underline;cursor:pointer}
+.crds .ccl a:hover{color:#7df}
+@keyframes glow{0%{text-shadow:0 0 20px rgba(255,204,51,.6)}100%{text-shadow:0 0 40px rgba(255,204,51,.9),0 0 60px rgba(255,204,51,.3)}}
+@keyframes crdR{0%{top:100%}100%{top:-400%}}
 .crdc{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:210;background:rgba(255,107,53,.2);border:1px solid #ff6b35;border-radius:10px;padding:8px 24px;color:#ff6b35;cursor:pointer;font-size:.85em}
 .itip{display:none;position:fixed;z-index:50;background:rgba(10,5,3,.95);border:1px solid #8b4513;border-radius:10px;padding:10px 14px;max-width:220px;font-size:.75em;color:#c0a090;pointer-events:none;backdrop-filter:blur(4px)}
 .itip.on{display:block}.itip .itn{font-weight:bold;color:#ff6b35}
@@ -310,41 +319,48 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
 </div>
 <div class="crdo" id="credO">
   <div class="crds" id="credS">
-    <div class="cct">西部对决</div><div class="ccd"></div>
-    <div class="ccs">"第六届绒兽汇图一乐小游戏"</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
+    <div class="cct">⚔️ 西部对决 ⚔️</div>
+    <div class="ccs">"第六届绒兽汇图一乐小游戏"</div>
+    <div class="ccd"></div>
+
     <div class="ccr">本游戏基于</div>
     <div class="ccn">Fox-Codebase + GitHub Pages</div>
-    <div class="ccr">使用 GPL-3.0 协议开源发布</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
-    <div class="ccr">🎮 作者</div>
-    <div class="ccn">狐狸白沁</div>
-    <div class="ccr">B站: 狐狸不想营业</div>
-    <div class="ccr">爱发电: HLBQ0905</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
-    <div class="ccr">🤖 AI模型</div>
-    <div class="ccn">deepseek-V4-fish</div>
-    <div class="ccn">deepseek-V4等</div>
-    <div class="ccr">（代码制作 + 逻辑研发）</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
-    <div class="ccr">🧪 测试组</div>
-    <div class="ccn">英雄主义公会全体成员</div>
-    <div class="ccn">小苏狐狸工作室测试组</div>
-    <div class="ccn">云麓工作室</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
-    <div class="ccr">📋 鸣谢人员（圈名）</div>
-    <div class="ccn">元宝（测试人员）</div>
-    <div class="ccn">玉米（测试+代码调试）</div>
-    <div class="ccn">苏杭夜雪（测试人员）</div>
-    <div class="ccn">林格（游戏代码创意提供）</div>
-    <div class="ccn">云麓（公会会长+特别鸣谢）</div>
-    <div class="ccn">幸运喵（测试+联机创意）</div>
-    <div class="ccn">John Yoss（GitHub意见+特别鸣谢）</div>
-    <div class="ccn">所有参与测试的人员</div><div class="ccd"></div>
-    <div class="ccr">⠀</div><div class="ccd" style="width:30px"></div>
-    <div class="ccf">感谢你的游玩！</div>
-    <div class="ccs">"兽毛飘落之处！绒兽生生不息！"</div>
-    <div class="ccs">"绒兽还在举办！传奇永不落幕！"</div><div class="ccd"></div>
+    <div class="ccr">使用 GPL-3.0 协议开源发布</div>
+    <div class="ccd"></div>
+
+    <div class="ccb">🎮 作者</div>
+    <div class="cca">狐 狸 白 沁</div>
+    <div class="ccl">🐾 B站: <a href="https://b23.tv/khe0ong" target="_blank">狐狸不想营业</a></div>
+    <div class="ccl">⚡ 爱发电: <a href="https://www.ifdian.net/a/HLBQ0905" target="_blank">HLBQ0905</a></div>
+    <div class="ccd"></div>
+
+    <div class="ccb">🤖 AI 模型</div>
+    <div class="ccp">deepseek-V4-fish</div>
+    <div class="ccp">deepseek-V4 等</div>
+    <div class="ccr">（代码制作 + 逻辑研发）</div>
+    <div class="ccd"></div>
+
+    <div class="ccb">🏢 鸣谢工作室</div>
+    <div class="ccm">✦ 小苏狐狸工作室测试组 ✦</div>
+    <div class="ccm">✦ 云麓工作室 ✦</div>
+    <div class="ccg">✦ 英雄主义公会全体成员 ✦</div>
+    <div class="ccd"></div>
+
+    <div class="ccb">📋 鸣谢人员（圈名）</div>
+    <div class="ccn">元宝 — 测试人员</div>
+    <div class="ccm">玉米 — 测试 + 代码调试 🔧</div>
+    <div class="ccn">苏杭夜雪 — 测试人员</div>
+    <div class="cch">林格 — 游戏代码创意提供 💡</div>
+    <div class="ccg">✦ 云麓 — 公会会长 · 特别鸣谢 ✦</div>
+    <div class="ccg">✦ 幸运喵 — 测试 · 联机创意提供 ✦</div>
+    <div class="ccg">✦ John Yoss — GitHub意见 · 特别鸣谢 ✦</div>
+    <div class="ccn">所有参与测试的人员</div>
+    <div class="ccd"></div>
+
+    <div class="ccf">✨ 感谢你的游玩！✨</div>
+    <div class="ccs">" 兽毛飘落之处！绒兽生生不息！"</div>
+    <div class="ccs">" 绒兽还在举办！传奇永不落幕！"</div>
+    <div class="ccd"></div>
     <div class="ccr" style="font-size:.65em;color:#6a5540">本游戏最初为绒兽汇图一乐demo</div>
     <div class="ccr" style="font-size:.65em;color:#6a5540">花了小10亿token变成完整游戏</div>
     <div class="ccr" style="font-size:.65em;color:#6a5540">如果觉得不错，请支持我谢谢喵 🦊</div>
