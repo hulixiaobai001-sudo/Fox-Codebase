@@ -1137,8 +1137,10 @@ function wsHandle(msg) {
   }
   // Dispatch event for external JS modules (plus.js etc)
   if (window.wsEventBus) {
-    window.wsEventBus.forEach(function(cb) { try { cb(msg); } catch(e) {} });
+    window.wsEventBus.forEach(function(cb) { try { cb(msg); } catch(e) { console.error('wsEventBus err', e); } });
   }
+  // Also store last message for plus.js polling
+  window._lastWsMsg = msg;
 }
 
 // —— HOST begins game ——

@@ -514,22 +514,33 @@ function renderSetting(c){
     '<div class="pp-st" style="font-size:.6em;color:#5a4030;margin-top:10px">主题实时切换，不需要刷新页面</div>';
 }
 
-// ====== Rank badge in game UI ======
+// ====== Rank badge (P2P lobby + game) ======
 function updateRankBadge(rank) {
   if (!rank) {
-    // Check debug mode
-    try {
-      if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说';
-    } catch(e) {}
+    try { if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说'; } catch(e) {}
     if (!rank) try { rank = localStorage.getItem('wd_my_rank'); } catch(e) {}
   }
-  // Debug mode = highest rank
-  try {
-    if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说';
-  } catch(e) {}
+  try { if (localStorage.getItem('wd_cheat_unlock') === '1') rank = '西部传说'; } catch(e) {}
 
-  // Add rank badge to game header during P2P
-  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && rank) {
+  // Show rank in P2P lobby (between title and actions)
+  if (rank) {
+    var steps = document.getElementById('p2pSteps');
+    if (steps) {
+      var existing = steps.parentNode.querySelector('.p2p-rank');
+      if (!existing) {
+        var el = document.createElement('div');
+        el.className = 'p2p-rank';
+        el.style.cssText = 'font-size:.7em;color:#c8943a;text-align:center;margin:2px 0 8px';
+        el.textContent = '🏆 ' + rank;
+        steps.parentNode.insertBefore(el, steps.nextSibling);
+      } else {
+        existing.textContent = '🏆 ' + rank;
+      }
+    }
+  }
+
+  // Also show in game header during P2P match
+  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && rank && G.phase !== 'setup') {
     var gtit = document.querySelector('.gtit');
     if (gtit) {
       var existing = gtit.querySelector('.rank-badge');
@@ -543,12 +554,41 @@ function updateRankBadge(rank) {
   }
 }
 
-// Periodically check for rank display
+// Poll for WebSocket messages as fallback
 setInterval(function() {
-  if (typeof G !== 'undefined' && G && G.mode === 'p2p' && G.phase !== 'setup') {
+  if (window._lastWsMsg) {
+    var msg = window._lastWsMsg;
+    window._lastWsMsg = null;
+    // Re-dispatch to handlers
+    if (msg.type === 'leaderboard' && msg.entries) {
+      var el = document.getElementById('ppLbContent');
+      if (el && !el.dataset.rendered) {
+        el.dataset.rendered = '1';
+        if (msg.entries.length === 0) {
+          el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
+        } else {
+          var h = '';
+          msg.entries.slice(0, 15).forEach(function(e, i) {
+            var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+            h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">' +
+              '<span>' + medal + ' <b style="color:#c8943a">' + e.name + '</b></span>' +
+              '<span style="color:#dd8844">' + e.rank + '</span>' +
+              '<span>' + e.wins + '胜/' + e.games + '局 · <b style="color:#ff6b35">' + e.score + '</b>分</span></div>';
+          });
+          el.innerHTML = h;
+        }
+      }
+    }
+    if (msg.type === 'score_updated' && msg.stats) {
+      try { localStorage.setItem('wd_my_rank', msg.stats.rank); } catch(e) {}
+      updateRankBadge(msg.stats.rank);
+    }
+  }
+  // Update rank in P2P lobby
+  if (typeof G !== 'undefined' && G && (G.mode === 'p2p' || document.getElementById('scrP2P')?.classList.contains('on'))) {
     updateRankBadge();
   }
-}, 3000);
+}, 2000);
 
 // ====== 初始化 ======
 loadD();initThemes();
