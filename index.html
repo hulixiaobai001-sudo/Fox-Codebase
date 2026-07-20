@@ -1041,6 +1041,33 @@ function wsHandle(msg) {
           backToLobby();
         }
 
+      } else if (msg.type === 'vote_custom') {
+        if (G.isHost) {
+          G.joinerVote = msg.vote;
+          var hv = G.vote, jv = msg.vote;
+          if (hv && jv) {
+            showCustomSettings();
+          } else {
+            sendP2P({ type: 'vote_result', custom: false });
+            $('scrP2P').classList.remove('on');
+            p2pItemReady = [false, false];
+            showItemSelect(0);
+            G.vote = undefined; G.joinerVote = undefined;
+          }
+        } else {
+          showVoteScreen(false);
+        }
+
+      } else if (msg.type === 'vote_result') {
+        if (!msg.custom) {
+          p2pItemReady = [false, false];
+          showItemSelect(1);
+        } else if (msg.settings) {
+          G.s = msg.settings;
+          p2pItemReady = [false, false];
+          showItemSelect(1);
+        }
+
       } else if (msg.type === 'forfeit') {
         addL('🏳️ 对方逃跑了！你赢了！', 'su');
         gameOver(G.isHost ? 0 : 1);
@@ -1056,12 +1083,72 @@ function wsHandle(msg) {
 
 // —— HOST begins game ——
 function p2pBeginGame() {
-  var name = G.p[0].n || '治安官';
-  sendP2P({ type: 'game_begin', s: G.s, hostName: name, myName: G.p[1].n });
+  // Show voting screen for custom rules
+  showVoteScreen(true);
+}
+
+function showCustomSettings() {
+  // Show custom rules configuration for host
+  $('scrP2P').classList.add('on');
+  $('p2pTitle').textContent = '⚙️ 自定义规则';
+  $('p2pSteps').textContent = '双方已同意，请主机设置规则';
+  $('p2pStatus').textContent = '';
+  $('p2pQrArea').innerHTML =
+    '<div style="margin:8px auto;max-width:300px;text-align:left">' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0">初始血量 <input type="number" id="sHP2" value="' + G.s.hp + '" min="1" max="99" style="width:50px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:3px 6px;color:#f0e6d3;text-align:center;outline:none"></label>' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0">弹巢大小 <input type="number" id="sCh2" value="' + G.s.ch + '" min="2" max="99" style="width:50px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:3px 6px;color:#f0e6d3;text-align:center;outline:none"></label>' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0">子弹数量 <input type="number" id="sBu2" value="' + G.s.bu + '" min="1" max="99" style="width:50px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:3px 6px;color:#f0e6d3;text-align:center;outline:none"></label>' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0">跳过扣血 <input type="number" id="sSk2" value="' + G.s.sk + '" min="0" max="99" style="width:50px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:3px 6px;color:#f0e6d3;text-align:center;outline:none"></label>' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0">道具数量 <input type="number" id="sIt2" value="' + G.s.it + '" min="1" max="10" style="width:50px;background:rgba(60,30,20,.6);border:1px solid #6b3a2a;border-radius:6px;padding:3px 6px;color:#f0e6d3;text-align:center;outline:none"></label>' +
+    '<label style="font-size:.75em;color:#c0a090;display:flex;justify-content:space-between;margin:4px 0"><span>禁止跳过</span><input type="checkbox" id="sNoSk2" ' + (G.s.noSk ? 'checked' : '') + ' style="width:18px;height:18px;accent-color:#ff6b35"></label>' +
+    '</div>';
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="confirmCustomSettings()" style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35;font-weight:bold">✅ 确认规则</button>' +
+    '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+}
+
+function confirmCustomSettings() {
+  G.s.hp = parseInt($('sHP2').value) || 5;
+  G.s.ch = parseInt($('sCh2').value) || 6;
+  G.s.bu = parseInt($('sBu2').value) || 1;
+  G.s.sk = parseInt($('sSk2').value) || 1;
+  G.s.it = Math.min(10, Math.max(1, parseInt($('sIt2').value) || 4));
+  G.s.noSk = $('sNoSk2').checked;
+  // Send agreed settings to joiner
+  sendP2P({ type: 'vote_result', custom: true, settings: G.s });
   $('scrP2P').classList.remove('on');
   p2pItemReady = [false, false];
   showItemSelect(0);
 }
+
+function showVoteScreen(isHost) {
+  $('p2pQrArea').innerHTML =
+    '<div style="font-size:1.2em;margin:12px 0;color:#f0e6d3">📋 是否开启自定义规则？</div>' +
+    '<div style="font-size:.78em;color:#a08070;margin-bottom:14px">双方都同意才能自定义，否则使用默认规则</div>';
+  $('p2pStatus').textContent = '';
+  $('p2pSteps').textContent = '请投票';
+  if (isHost) {
+    $('p2pActions').innerHTML =
+      '<button class="p2p-scan-btn" onclick="voteCustom(true)" style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35">✅ 开启自定义</button>' +
+      '<button class="p2p-scan-btn" onclick="voteCustom(false)">➡️ 默认规则</button>';
+  }
+}
+
+function voteCustom(yes) {
+  G.vote = yes;
+  sendP2P({ type: 'vote_custom', vote: yes });
+  $('p2pSteps').textContent = '已投票，等待对方...';
+  $('p2pStatus').textContent = yes ? '✅ 你选择了自定义' : '➡️ 你选择了默认';
+  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+  if (G.isHost) {
+    // Host waits for joiner's vote - handled in wsHandle
+  } else {
+    // Joiner sends vote, host will tally
+  }
+}
+
+// Handle voting in wsHandle - add to existing handlers
+// (vote_custom received from other player handled in wsHandle)
 
 // —— Override confirmItems for P2P ——
 var _origConfirmItems = confirmItems;
