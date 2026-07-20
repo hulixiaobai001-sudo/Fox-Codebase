@@ -607,8 +607,13 @@ function startP2P() {
 function cancelP2P() {
   closeWS();
   clearP2PTimer();
+  $('goO').classList.remove('on');
+  $('gameBoard').classList.remove('on');
+  $('chatBtn').classList.remove('on');
+  $('chatPanel').classList.remove('on');
   $('scrP2P').classList.remove('on');
   $('scrSetup').classList.add('on');
+  G.phase = 'setup';
 }
 
 function wsConnect(onOpen) {
