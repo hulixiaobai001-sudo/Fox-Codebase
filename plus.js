@@ -326,7 +326,7 @@ function showPanel(tab){
   if(!p){
     p=document.createElement('div');p.className='pp-panel';p.id='ppPanel';
     var b=document.createElement('div');b.className='pp-box';b.id='ppBox';
-    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 每日 · 录像 · 彩蛋 · 排行 · 设置</div>';
+    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 好友 · 录像 · 彩蛋 · 排行 · 设置</div>';
     var tabs=document.createElement('div');tabs.className='pp-tabs';tabs.id='ppTabs';
     b.appendChild(tabs);
     var cnt=document.createElement('div');cnt.id='ppContent';cnt.style.cssText='min-height:120px';
@@ -343,8 +343,8 @@ function showPanel(tab){
 
 function renderTabs(){
   var tabs=$('ppTabs');tabs.innerHTML='';
-  ['share','friends','daily','replay','egg','rank','setting'].forEach(function(t){
-    var names={share:'📤分享',friends:'👥好友',daily:'🎯每日',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
+  ['share','friends','replay','egg','rank','setting'].forEach(function(t){
+    var names={share:'📤分享',friends:'👥好友',replay:'📹录像',egg:'🎪彩蛋',rank:'🏆排行',setting:'⚙️设置'};
     var tb=document.createElement('button');tb.className='pp-tab'+(t===P.tab?' on':'');tb.textContent=names[t]||t;
     tb.onclick=function(){showPanel(t)};tabs.appendChild(tb);
   });
@@ -356,7 +356,6 @@ function renderContent(){
   switch(P.tab){
     case 'share':renderShare(cnt);break;
     case 'friends':renderFriends(cnt);break;
-    case 'daily':renderDaily(cnt);break;
     case 'replay':renderReplay(cnt);break;
     case 'egg':renderEgg(cnt);break;
     case 'rank':renderRank(cnt);break;
