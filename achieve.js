@@ -389,7 +389,17 @@ window.achiev = {
 };
 
 var hi=setInterval(function(){if(typeof G!=='undefined'&&G){hook();clearInterval(hi)}},500);
-setInterval(function(){if(typeof G!=='undefined'&&G&&G.phase!=='setup'){checkAll();save()}},10000);
+setInterval(function(){
+  if(typeof G!=='undefined'&&G&&G.phase!=='setup'){checkAll();save()}
+  // Check for external triggers (certificate, etc)
+  try{
+    if(localStorage.getItem('wd_cert_done')==='1'&&!ST.cert){
+      ST.cert=1;sUT('cert');save();checkAll();
+      localStorage.removeItem('wd_cert_done');
+      T('<span class="wi">📜</span><span class="wn">成就解锁: 持证上岗</span><span class="wd">生成一张鸣谢证书</span>');
+    }
+  }catch(e){}
+},5000);
 
 setTimeout(function(){
   var ui=document.createElement('div');ui.className='wa-ui';
