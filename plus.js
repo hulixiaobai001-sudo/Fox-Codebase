@@ -483,25 +483,43 @@ function renderRank(c){
   }
   if(c) c.innerHTML = html;
 
-  // Request online leaderboard (with retry + timeout)
-  var lbRetries = 0;
-  function tryGetLB() {
-    if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
-      wsConn.send(JSON.stringify({type:'get_leaderboard'}));
-      // Set a timeout - if no response in 5s, show timeout
-      setTimeout(function() {
-        var el = document.getElementById('ppLbContent');
-        if (el && el.textContent === '加载中...') el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
-      }, 5000);
-    } else if (lbRetries < 10) {
-      lbRetries++;
-      setTimeout(tryGetLB, 1000);
+  // Request online leaderboard (HTTP + WebSocket dual)
+  var el = document.getElementById('ppLbContent');
+  var lbUrl = (typeof WS_URL !== 'undefined' ? WS_URL : 'wss://fox-codebase-production.up.railway.app').replace('wss://', 'https://').replace('ws://', 'http://');
+  fetch(lbUrl + '/leaderboard', { mode: 'cors' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.entries) renderLBData(data.entries);
+      else if (el) el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
+    })
+    .catch(function() {
+      // WebSocket fallback
+      if (typeof wsConn !== 'undefined' && wsConn && wsConn.readyState === 1) {
+        wsConn.send(JSON.stringify({type:'get_leaderboard'}));
+        setTimeout(function() {
+          if (el && el.textContent === '加载中...') el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
+        }, 5000);
+      } else {
+        if (el) el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
+      }
+    });
+
+  function renderLBData(entries) {
+    if (!el) return;
+    if (entries.length === 0) {
+      el.innerHTML = '<div style="color:#6a5540;padding:6px">无</div>';
     } else {
-      var el = document.getElementById('ppLbContent');
-      if (el) el.innerHTML = '<div style="color:#f44;padding:6px">⏰ 连接超时</div>';
+      var h = '';
+      entries.slice(0, 15).forEach(function(e, i) {
+        var medal = i===0?'🥇':(i===1?'🥈':(i===2?'🥉':''));
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;font-size:.7em;color:#a08070;border-bottom:1px solid rgba(139,69,19,.08)">' +
+          '<span>' + medal + ' <b style="color:#c8943a">' + e.name + '</b></span>' +
+          '<span style="color:#dd8844">' + e.rank + '</span>' +
+          '<span>' + e.wins + '胜/' + e.games + '局 · <b style="color:#ff6b35">' + e.score + '</b>分</span></div>';
+      });
+      el.innerHTML = h;
     }
   }
-  tryGetLB();
 }
 
 function renderSetting(c){

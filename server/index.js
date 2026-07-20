@@ -38,6 +38,11 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ rooms: rooms.size, queue: queue.length }));
     return;
   }
+  if (req.url === '/leaderboard') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ entries: leaderboard.slice(0, 50) }));
+    return;
+  }
   res.writeHead(404);
   res.end();
 });
