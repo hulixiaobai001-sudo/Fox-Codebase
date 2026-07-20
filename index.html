@@ -632,12 +632,14 @@ function p2pRecv(msg) {
     p2pItemReady[msg.pi] = true;
     if (p2pItemReady[0] && p2pItemReady[1]) {
       G.p[0].sel = selItems.slice();
+      $('scrItems').classList.remove('on');
       sendP2P({ type: 'game_start' });
       initGame();
     }
 
   } else if (msg.type === 'game_start' && !G.isHost) {
     G.p[1].sel = selItems.slice();
+    $('scrItems').classList.remove('on');
     initGame();
 
   } else if (msg.type === 'action') {
@@ -685,6 +687,7 @@ function p2pOverrideConfirm() {
       $('btnItemConfirm').disabled = true;
       if (G.isHost && p2pItemReady[0] && p2pItemReady[1]) {
         G.p[0].sel = selItems.slice();
+        $('scrItems').classList.remove('on');
         sendP2P({ type: 'game_start' });
         initGame();
       }
