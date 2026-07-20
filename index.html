@@ -296,7 +296,22 @@ body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-s
     <button onclick="toggleChat()">✕</button>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-emoji" id="chatEmoji" style="display:none;padding:4px 14px;border-top:1px solid rgba(139,69,19,.1);flex-wrap:wrap;gap:4px">
+    <span onclick="addEmoji('😂')" style="cursor:pointer;font-size:1.1em">😂</span>
+    <span onclick="addEmoji('🤠')" style="cursor:pointer;font-size:1.1em">🤠</span>
+    <span onclick="addEmoji('🔥')" style="cursor:pointer;font-size:1.1em">🔥</span>
+    <span onclick="addEmoji('💀')" style="cursor:pointer;font-size:1.1em">💀</span>
+    <span onclick="addEmoji('🦊')" style="cursor:pointer;font-size:1.1em">🦊</span>
+    <span onclick="addEmoji('😎')" style="cursor:pointer;font-size:1.1em">😎</span>
+    <span onclick="addEmoji('🤡')" style="cursor:pointer;font-size:1.1em">🤡</span>
+    <span onclick="addEmoji('💪')" style="cursor:pointer;font-size:1.1em">💪</span>
+    <span onclick="addEmoji('👻')" style="cursor:pointer;font-size:1.1em">👻</span>
+    <span onclick="addEmoji('🎯')" style="cursor:pointer;font-size:1.1em">🎯</span>
+    <span onclick="addEmoji('😭')" style="cursor:pointer;font-size:1.1em">😭</span>
+    <span onclick="addEmoji('🐱')" style="cursor:pointer;font-size:1.1em">🐱</span>
+  </div>
   <div class="chat-inp-row">
+    <button onclick="toggleEmoji()" style="background:none;border:none;font-size:1.2em;cursor:pointer;padding:0 4px">😊</button>
     <input type="text" id="chatInput" placeholder="说点什么..." maxlength="100" onkeydown="if(event.key==='Enter')sendChat()">
     <button onclick="sendChat()">发送</button>
   </div>
@@ -1332,6 +1347,14 @@ function toggleChat() {
   $('chatBadge').classList.remove('on');
   if (chatOpen) { var inp = $('chatInput'); if (inp) { inp.focus(); } }
 }
+function toggleEmoji() {
+  var e = $('chatEmoji');
+  e.style.display = e.style.display === 'none' ? 'flex' : 'none';
+}
+function addEmoji(emoji) {
+  var inp = $('chatInput');
+  if (inp) { inp.value += emoji; inp.focus(); }
+}
 function sendChat() {
   var inp = $('chatInput');
   if (!inp) return;
@@ -1836,41 +1859,91 @@ function doSkip() {
 // ====== NEW AI (Difficulty-scoring)
 function aiGo() {
   if (G.phase !== 'play' || G.bf) return;
-  var aiIdx = 1, p = G.p[aiIdx];
-  if (!p.al || G.cp !== aiIdx) return;
-  var opponent = G.p[0];
-  var isLoader = (G.ld === aiIdx);
+  var idx = 1, p = G.p[idx];
+  if (!p.al || G.cp !== idx) return;
+  var opp = G.p[0];
+  var isLoader = (G.ld === idx);
   var safeCount = -1;
   if (isLoader) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
   else if (G.br) safeCount = G.bp >= G.cc ? G.bp - G.cc : G.s.ch - G.cc + G.bp;
+
+  // AI personality config
   var diff = G.aiDiff || 'medium';
-  var dc = G.aiCustom || {caut:50, item:50, acc:50, bluf:30};
-  var mul = {easy:{caut:0.3,item:0.3,acc:0.3,bluf:0.7,skipHp:3},medium:{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2},hard:{caut:0.9,item:0.9,acc:0.9,bluf:0.1,skipHp:1},custom:{caut:dc.caut/100,item:dc.item/100,acc:dc.acc/100,bluf:dc.bluf/100,skipHp:dc.caut<33?3:(dc.caut<66?2:1)}}[diff]||{caut:0.6,item:0.6,acc:0.6,bluf:0.4,skipHp:2};
-  var skipHp = mul.skipHp;
-  if (p.it.medkit>0 && p.hp<=Math.floor(p.mx*(0.7-mul.caut*0.3)) && Math.random()<mul.item) {
-    p.it.medkit=0; p.hp=Math.min(p.mx,p.hp+2); addL('AI使用急救包','su'); rdAll(); setTimeout(function(){aiGo()},400); return; }
-  if (p.hp<=Math.floor(p.mx*0.5) && !p.fa) {
-    if (p.it.armor>0 && Math.random()<mul.item) { p.it.armor=0; p.fa=true; p.fc=1; addL('AI穿上防弹衣','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; }
-    if (p.it.flag>0 && p.fc>0 && Math.random()<mul.item) { p.fa=true; p.fc=1; p.it.flag=0; addL('AI激活旗帜','fl'); rdAll(); setTimeout(function(){aiGo()},400); return; } }
-  if (p.it.book>0 && !p.ba && p.hp<=2 && Math.random()<mul.item) { p.it.book=0; p.ba=true; addL('AI激活了我没死之书','su'); rdAll(); }
-  if (p.it.wash>0 && isLoader && safeCount<=1 && Math.random()<mul.item) {
-    p.it.wash=0; var np; do{np=Math.floor(Math.random()*G.s.ch)}while(np===G.bp); G.bp=np; G.br=false; addL('AI用了洗枪!','sk'); rdAll(); setTimeout(function(){aiGo()},400); return; }
-  if (p.it.swap>0 && p.hp>opponent.hp+1 && Math.random()<mul.item) { p.it.swap=0; var oh=p.hp; p.hp=opponent.hp; opponent.hp=oh; addL('AI交换了HP!','du'); rdAll(); setTimeout(function(){aiGo()},400); return; }
-  if (p.it.watch>0 && !p.wa && safeCount===0 && p.hp>skipHp && Math.random()<mul.item) { p.wa=true; p.it.watch=0; p.wp=1; addL('AI用了反转怀表','in'); rdAll(); setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()},300); return; }
-  if (p.it.check>0 && !G.br && !isLoader && Math.random()<mul.item*0.8) { p.it.check=0; G.br=true; addL('AI查看了子弹','in'); rdAll(); setTimeout(function(){aiGo()},400); return; }
-  if (p.it.freeze>0 && safeCount>0 && Math.random()<mul.item*0.5) { p.it.freeze=0; G.freezeTarget=0; addL('AI使用了冰冻','in'); rdAll(); }
-  var shouldShoot = false;
-  if (safeCount >= 0) {
-    if (safeCount >= Math.floor(G.s.ch*0.4)) shouldShoot = true;
-    else if (safeCount >= 1 && Math.random() < mul.acc) shouldShoot = true;
-    else if (Math.random() < mul.bluf) shouldShoot = true;
-  } else {
-    if (G.cc >= G.s.ch-2 && Math.random() < 0.7) shouldShoot = false;
-    else shouldShoot = Math.random() < 0.4 + mul.acc * 0.3;
+  var dc = G.aiCustom || {};
+  var cfg = {
+    easy: {caut:0.25,item:0.25,aggr:0.3,bluf:0.7,skipHp:3,react:1200},
+    medium: {caut:0.55,item:0.55,aggr:0.5,bluf:0.4,skipHp:2,react:800},
+    hard: {caut:0.85,item:0.85,aggr:0.75,bluf:0.15,skipHp:1,react:500},
+    custom: {caut:dc.caut/100||0.5,item:dc.item/100||0.5,aggr:dc.acc/100||0.5,bluf:dc.bluf/100||0.4,skipHp:dc.caut<33?3:(dc.caut<66?2:1),react:700}
+  }[diff] || cfg.medium;
+
+  // Risk assessment
+  var danger = safeCount < 0 ? 0.5 : (safeCount / G.s.ch);
+  var hpRisk = 1 - (p.hp / p.mx);
+  var oppHpLow = opp.hp <= 2;
+
+  // — Item decision tree —
+  // Emergency: medkit when low
+  if (p.it.medkit > 0 && hpRisk > 0.4 && Math.random() < cfg.item) {
+    useItem(idx, 'medkit'); setTimeout(aiGo, 400); return; }
+  // Defensive: armor/flag when HP critical
+  if (hpRisk > 0.5 && !p.fa && Math.random() < cfg.item) {
+    if (p.it.armor > 0) { useItem(idx, 'armor'); setTimeout(aiGo, 400); return; }
+    if (p.it.flag > 0 && p.fc > 0) { useItem(idx, 'flag'); setTimeout(aiGo, 400); return; }
   }
-  if (!G.s.noSk && p.hp > G.s.sk && !shouldShoot && safeCount <= 1 && p.hp > skipHp) { doSkip(); return; }
-  if (p.it.rapid > 0 && G.st > 0) { p.it.rapid = 0; addL('AI连射!','in'); rdAll(); }
-  setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()}, shouldShoot?500:700);
+  // Insurance: book when near death
+  if (p.it.book > 0 && !p.ba && hpRisk > 0.6 && Math.random() < cfg.item) {
+    useItem(idx, 'book'); }
+  // Tactical: check when unsure
+  if (p.it.check > 0 && !G.br && !isLoader && danger < 0.5 && Math.random() < cfg.item * 0.7) {
+    useItem(idx, 'check'); setTimeout(aiGo, 400); return; }
+  // Tactical: wash when dangerous
+  if (p.it.wash > 0 && isLoader && danger < 0.3 && Math.random() < cfg.item * 0.6) {
+    useItem(idx, 'wash'); setTimeout(aiGo, 400); return; }
+  // Tactical: swap when we have advantage
+  if (p.it.swap > 0 && p.hp > opp.hp + 1 && Math.random() < cfg.item * 0.4) {
+    useItem(idx, 'swap'); setTimeout(aiGo, 400); return; }
+  // Tactical: watch as last resort
+  if (p.it.watch > 0 && !p.wa && danger < 0.2 && p.hp > cfg.skipHp && Math.random() < cfg.item * 0.3) {
+    useItem(idx, 'watch'); setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()},300); return; }
+  // Tactical: freeze to mess opponent
+  if (p.it.freeze > 0 && danger > 0.3 && oppHpLow && Math.random() < cfg.item * 0.4) {
+    useItem(idx, 'freeze'); }
+
+  // — Shoot / Skip decision —
+  var willShoot = false;
+  if (safeCount >= 0) {
+    if (danger >= 0.5) willShoot = true;           // Very safe
+    else if (danger >= 0.25 && Math.random() < cfg.aggr) willShoot = true;  // Somewhat safe
+    else if (Math.random() < cfg.bluf) willShoot = true;  // Bluff
+    // Hard mode: more aggressive when opponent is low
+    if (diff === 'hard' && oppHpLow && Math.random() < 0.6) willShoot = true;
+  } else {
+    // Unknown chamber: guess based on remaining
+    var blanksLeft = G.s.ch - G.cc - 1;
+    if (blanksLeft <= 1 && Math.random() < 0.6) willShoot = false; // Too risky
+    else willShoot = Math.random() < 0.35 + cfg.aggr * 0.4;
+  }
+
+  // Skip if it's too dangerous and we can afford it
+  if (!G.s.noSk && p.hp > G.s.sk && !willShoot && danger < 0.35 && p.hp > cfg.skipHp) {
+    doSkip(); return; }
+
+  // Rapid fire ready
+  if (p.it.rapid > 0 && G.st > 0) { p.it.rapid = 0; addL('AI连射准备!','in'); rdAll(); }
+
+  // Fire!
+  setTimeout(function(){if(G.phase==='play'&&!G.bf)pull()}, cfg.react);
+}
+
+function useItem(pidx, typ) {
+  var p = G.p[pidx];
+  if (!p.it[typ] || p.it[typ] <= 0) return;
+  // Call the existing item system
+  var btn = document.querySelector('#prow .pp:nth-child(' + (pidx+1) + ') .ibtn[onclick*="' + typ + '"]');
+  if (btn) { btn.click(); return; }
+  // Fallback: manually call useI
+  useI(pidx, typ);
 }
 
 // ====== DUEL ======
