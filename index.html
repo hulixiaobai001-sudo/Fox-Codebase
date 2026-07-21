@@ -727,7 +727,7 @@ function showHostLobby(code) {
     '</div>' +
     '<div id="p2pJoinerInfo" style="font-size:.85em;color:#c0a090;margin:8px 0">⏳ 等待对方加入...</div>';
   $('p2pStatus').textContent = '';
-  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button><button class="p2p-scan-btn" onclick="startP2P()" style="border-color:#633;color:#866">🔙 返回</button>';
 }
 
 // —— JOINER ——
@@ -918,7 +918,7 @@ function wsHandle(msg) {
       $('p2pStatus').textContent = '✅ 已连接，等待主机开始...';
       $('p2pSteps').textContent = '已加入房间';
       $('p2pQrArea').innerHTML = '<div style="font-size:.9em;color:#c0a090">等待主机设置游戏...</div>';
-      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">离开</button>';
+      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">离开</button><button class="p2p-scan-btn" onclick="startP2P()" style="border-color:#633;color:#866">🔙 返回</button>';
       break;
     }
 
@@ -985,7 +985,7 @@ function wsHandle(msg) {
       $('p2pStatus').textContent = '✅ 匹配成功！';
       $('p2pSteps').textContent = '已与 ' + G.p[1].n + ' 匹配';
       $('p2pQrArea').innerHTML = '<div style="font-size:.9em;color:#c0a090">正在进入游戏...</div>';
-      $('p2pActions').innerHTML = '';
+      $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="startP2P()" style="border-color:#633;color:#866">🔙 返回</button>';
       if (G.isHost) {
         // Host sends game begin and shows item select
         $('scrP2P').classList.remove('on');
@@ -1164,7 +1164,7 @@ function showCustomSettings() {
     '</div>';
   $('p2pActions').innerHTML =
     '<button class="p2p-scan-btn" onclick="confirmCustomSettings()" style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35;font-weight:bold">✅ 确认规则</button>' +
-    '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
+    '<button class="p2p-scan-btn" onclick="startP2P()" style="border-color:#633;color:#866">🔙 返回</button>';
 }
 
 function confirmCustomSettings() {
@@ -1187,11 +1187,10 @@ function showVoteScreen(isHost) {
     '<div style="font-size:.78em;color:#a08070;margin-bottom:14px">双方都同意才能自定义，否则使用默认规则</div>';
   $('p2pStatus').textContent = '';
   $('p2pSteps').textContent = '请投票';
-  if (isHost) {
-    $('p2pActions').innerHTML =
-      '<button class="p2p-scan-btn" onclick="voteCustom(true)" style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35">✅ 开启自定义</button>' +
-      '<button class="p2p-scan-btn" onclick="voteCustom(false)">➡️ 默认规则</button>';
-  }
+  $('p2pActions').innerHTML =
+    '<button class="p2p-scan-btn" onclick="voteCustom(true)" style="background:rgba(255,107,53,.2);border-color:#ff6b35;color:#ff6b35">✅ 开启自定义</button>' +
+    '<button class="p2p-scan-btn" onclick="voteCustom(false)">➡️ 默认规则</button>' +
+    '<button class="p2p-scan-btn" onclick="cancelP2P()" style="border-color:#633;color:#866">🔙 返回</button>';
 }
 
 function voteCustom(yes) {
@@ -1199,12 +1198,7 @@ function voteCustom(yes) {
   sendP2P({ type: 'vote_custom', vote: yes });
   $('p2pSteps').textContent = '已投票，等待对方...';
   $('p2pStatus').textContent = yes ? '✅ 你选择了自定义' : '➡️ 你选择了默认';
-  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="cancelP2P()">取消</button>';
-  if (G.isHost) {
-    // Host waits for joiner's vote - handled in wsHandle
-  } else {
-    // Joiner sends vote, host will tally
-  }
+  $('p2pActions').innerHTML = '<button class="p2p-scan-btn" onclick="startP2P()" style="border-color:#633;color:#866">🔙 返回大厅</button>';
 }
 
 // Handle voting in wsHandle - add to existing handlers
