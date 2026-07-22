@@ -198,7 +198,13 @@ load();
 var _curMs=0,_curSh=0,_curHit=0,_usedItems={},_streak=0,_noSkipStreak=0,_isP2P=false,_isAI=false,_aiDiff='';
 var _detAch=null,_curTab='all';
 
-function T(m){var e=document.createElement('div');e.className='wa-tst';e.innerHTML=m;document.body.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},2600)}
+var _toastTimer=null;
+function T(m){
+  // Prevent multiple overlapping toasts
+  if(_toastTimer){clearTimeout(_toastTimer);var old=document.querySelector('.wa-tst');if(old)old.remove()}
+  var e=document.createElement('div');e.className='wa-tst';e.innerHTML=m;document.body.appendChild(e);
+  _toastTimer=setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);_toastTimer=null},2600);
+}
 function sUT(id){if(!_UT[id]){_UT[id]=Date.now();try{localStorage.setItem(TK,JSON.stringify(_UT))}catch(e){}}}
 
 function checkAll(){

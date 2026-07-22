@@ -433,11 +433,12 @@ var ITEMS = [
   {id:'wash',  name:'洗枪', desc:'随机重置子弹位置，无人知晓新位置', ico:'W'},
   {id:'medkit',name:'急救包', desc:'立即回复2HP', ico:'M'},
   {id:'armor', name:'防弹衣', desc:'挡一次伤害，一次性消耗', ico:'A'},
-  {id:'rapid', name:'连射', desc:'空枪后本回合可再开一枪', ico:'R'},
-  {id:'freeze',name:'冰冻', desc:'击中后对手下回合强制跳过', ico:'Z'},
-  {id:'swap',  name:'交换', desc:'与对手交换当前HP', ico:'S'}
+  {id:'swap',  name:'交换', desc:'与对手交换当前HP', ico:'S'},
+  {id:'niangao',name:'年糕', desc:'回复1HP，本回合无法暴击，每5回合自动获得一个', ico:'N'},
+  {id:'xinjie', name:'心结', desc:'本回合你受的伤害对方也会承受等量伤害（书触发时无法使用）', ico:'X'},
+  {id:'kongqiang',name:'空枪', desc:'这一枪往天上打 · 本回合免疫伤害', ico:'K'}
 ];
-var itemIco = {w:'⏱',B:'📖',F:'🏴',E:'🔍',W:'🔄',M:'💉',A:'🛡',R:'🔫',Z:'❄',S:'🌪'};
+var itemIco = {w:'⏱',B:'📖',F:'🏴',E:'🔍',W:'🔄',M:'💉',A:'🛡',S:'🌪',N:'🍡',X:'💔',K:'🔫'};
 
 var G = {
   mode:'local', phase:'setup', isHost:true,
@@ -448,7 +449,8 @@ var G = {
   s: {hp:5, ch:6, bu:1, sk:1, it:4, noSk:false},
   cp:0, ld:-1, mult:1, rd:0, bp:-1, cc:0, br:false, rs:false, bf:false,
   de:false, da:false, st:0, ps:0, tr:0, crC:0.1, certShown:false, log:[],
-  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[], aiDiff:'medium', aiCustom:{caut:50, item:50, acc:50, bluf:30}
+  p2p:null, dc:null, connStep:0, freezeTarget:undefined, extraBullets:[], aiDiff:'medium', aiCustom:{caut:50, item:50, acc:50, bluf:30},
+  xinjie:false, kongqiang:false, niangaoTimer:0, noCrit:false
 };
 
 function $(id) { return document.getElementById(id); }
@@ -1475,6 +1477,20 @@ function initGame() {
 function nxtRd() {
   tickFlag();
   G.rd++;
+  // Reset per-round flags
+  G.noCrit = false;
+  G.xinjie = false;
+  G.kongqiang = false;
+  // 年糕自动获得：每5回合
+  G.niangaoTimer = (G.niangaoTimer || 0) + 1;
+  if (G.niangaoTimer >= 5) {
+    G.niangaoTimer = 0;
+    if (!G.p[0].it.niangao) G.p[0].it.niangao = 1;
+    else G.p[0].it.niangao++;
+    if (!G.p[1].it.niangao) G.p[1].it.niangao = 1;
+    else G.p[1].it.niangao++;
+    addL('🍡 年糕出锅了! 双方各获得一个年糕', 'su');
+  }
   G.tr++;
   G.rs = false;
   G.bf = false;
@@ -1596,12 +1612,31 @@ function pull() {
     G.bf = true;
     var dmg = G.mult;
     if (G.da) { dmg += 2; addL('决斗伤害+2!', 'du'); }
-    if (Math.random() < G.crC) { dmg = Math.ceil(dmg * 1.5); addL('暴击! x1.5!', 'cr'); }
+    if (!G.noCrit && Math.random() < G.crC) { dmg = Math.ceil(dmg * 1.5); addL('暴击! x1.5!', 'cr'); }
 
     var target = G.p[dt];
     var oh = target.hp;
+
+    // 空枪免疫
+    if (sh.kongqiang || G.kongqiang) {
+      dmg = 0;
+      addL(sh.n + ' 朝天开枪，免疫了伤害!', 'fl');
+    }
+
     if (target.fa && tryFlag(dt)) dmg = 0;
     target.hp = Math.max(0, target.hp - dmg);
+
+    if (dmg > 0) addL('砰! 第' + cd + '发 — 击中' + target.n + '，' + oh + '→' + target.hp + 'HP', 'da');
+    else addL('砰! 第' + cd + '发 — 旗帜挡下了!', 'fl');
+
+    // 心结反馈伤害
+    if (dmg > 0 && G.xinjie) {
+      G.xinjie = false;
+      var shd = Math.min(dmg, sh.hp);
+      sh.hp = Math.max(0, sh.hp - shd);
+      addL('💔 心结! ' + sh.n + ' 也受到了 ' + shd + ' 点伤害', 'du');
+      if (sh.hp <= 0) { sh.al = false; addL(sh.n + ' 倒下了!', 'da'); gameOver(dt); return; }
+    }
 
     if (dmg > 0) addL('砰! 第' + cd + '发 — 击中' + target.n + '，' + oh + '→' + target.hp + 'HP', 'da');
     else addL('砰! 第' + cd + '发 — 旗帜挡下了!', 'fl');
@@ -1769,15 +1804,33 @@ function useI(pidx, typ) {
     p.fc = 1;
     addL(p.n + ' 穿上防弹衣', 'fl');
     rdAll();
-  } else if (typ === 'rapid') {
-    p.it.rapid = 1;
-    addL(p.n + ' 装填连射，空枪后可再开一枪', 'in');
+  } else if (typ === 'niangao') {
+    p.it.niangao = 0;
+    p.hp = Math.min(p.mx, p.hp + 1);
+    G.noCrit = true;
+    addL(p.n + ' 吃了年糕! 回复1HP，本回合无法暴击', 'su');
     rdAll();
-  } else if (typ === 'freeze') {
-    p.it.freeze = 0;
-    G.freezeTarget = (pidx === 0) ? 1 : 0;
-    addL(p.n + ' 使用了冰冻! 击中后对手强制跳过', 'in');
+  } else if (typ === 'xinjie') {
+    if (p.ba || p.bu) { addL('我没死之书触发状态下无法使用心结', 'da'); return; }
+    p.it.xinjie = 0;
+    G.xinjie = true;
+    addL(p.n + ' 系上了心结! 伤害将与你同在', 'in');
     rdAll();
+  } else if (typ === 'kongqiang') {
+    p.it.kongqiang = 0;
+    G.bf = true;
+    addL(p.n + ' 朝天开了一枪! 本回合免疫伤害', 'fl');
+    // End turn
+    G.st = 0; G.ps = 0;
+    G.cp = (pidx === 0) ? 1 : 0;
+    var np = G.cp;
+    var nsh = G.p[np];
+    if (nsh.wp > 0) { G.ps = nsh.wp; nsh.wp = 0; addL(nsh.n + ' 因怀表惩罚需开' + (G.ps + 1) + '枪', 'da'); }
+    rdAll(); enActs(); upBan();
+    if (G.mode === 'ai' && G.cp === 1) setTimeout(function() { aiGo(); }, 700);
+    if (G.mode === 'p2p') { sendAction({ type: 'shoot', hit: false, cc: G.cc, cp: G.cp }); sendState(); }
+    rdAll();
+    return;
   } else if (typ === 'swap') {
     p.it.swap = 0;
     var op = G.p[(pidx === 0) ? 1 : 0];
@@ -1866,17 +1919,13 @@ function doSkip() {
   if (dmg > 0) addL(p.n + ' 跳过了! 失去' + dmg + 'HP', 'sk');
   else addL(p.n + ' 跳过了! 旗帜挡下伤害', 'sk');
 
-  var avail = ITEMS.filter(function(it) {
-    return p.it[it.id] <= 0 && it.id !== 'flag';
-  }).map(function(it) { return it.id; });
-
-  if (avail.length > 0) {
-    var got = avail[Math.floor(Math.random() * avail.length)];
-    p.it[got] = 1;
-    var names = {};
-    ITEMS.forEach(function(it) { names[it.id] = it.name; });
-    addL('获得道具: ' + names[got], 'su');
-  }
+  var totalPool = ITEMS.map(function(it) { return it.id; });
+  var got = totalPool[Math.floor(Math.random() * totalPool.length)];
+  if (!p.it[got]) p.it[got] = 0;
+  p.it[got]++;
+  var names = {};
+  ITEMS.forEach(function(it) { names[it.id] = it.name; });
+  addL('获得道具: ' + names[got], 'su');
 
   G.st = 0;
   G.ps = 0;

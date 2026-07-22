@@ -318,7 +318,7 @@ function showPanel(tab){
   if(!p){
     p=document.createElement('div');p.className='pp-panel';p.id='ppPanel';
     var b=document.createElement('div');b.className='pp-box';b.id='ppBox';
-    b.innerHTML='<h2>🎮 更多</h2><div class="sub">分享 · 好友 · 录像 · 彩蛋 · 设置</div>';
+    b.innerHTML='<h2>🎮 更多</h2><div class="sub">公告 · 分享 · 好友 · 录像 · 彩蛋 · 设置</div>';
     var tabs=document.createElement('div');tabs.className='pp-tabs';tabs.id='ppTabs';
     b.appendChild(tabs);
     var cnt=document.createElement('div');cnt.id='ppContent';cnt.style.cssText='min-height:120px';
@@ -335,8 +335,8 @@ function showPanel(tab){
 
 function renderTabs(){
   var tabs=$('ppTabs');tabs.innerHTML='';
-  ['share','friends','replay','egg','setting'].forEach(function(t){
-    var names={share:'📤分享',friends:'👥好友',replay:'📹录像',egg:'🎪彩蛋',setting:'⚙️设置'};
+  ['news','share','friends','replay','egg','setting'].forEach(function(t){
+    var names={news:'📢公告',share:'📤分享',friends:'👥好友',replay:'📹录像',egg:'🎪彩蛋',setting:'⚙️设置'};
     var tb=document.createElement('button');tb.className='pp-tab'+(t===P.tab?' on':'');tb.textContent=names[t]||t;
     tb.onclick=function(){showPanel(t)};tabs.appendChild(tb);
   });
@@ -346,12 +346,34 @@ function renderContent(){
   var cnt=$('ppContent');
   if(!cnt)return;
   switch(P.tab){
+    case 'news':renderNews(cnt);break;
     case 'share':renderShare(cnt);break;
     case 'friends':renderFriends(cnt);break;
     case 'replay':renderReplay(cnt);break;
     case 'egg':renderEgg(cnt);break;
     case 'setting':renderSetting(cnt);break;
   }
+}
+
+function renderNews(c){
+  var html = '<div style="font-size:.8em;color:#fc3;margin-bottom:8px">📢 西部对决 · 公测公告</div>';
+  html += '<div style="font-size:.7em;color:#c0a090;line-height:1.8;margin-bottom:10px">' +
+    '🎉 西部对决 v1.0.0-beta 正式公测！<br><br>' +
+    '🆕 最新更新:<br>' +
+    '• 新道具：年糕/心结/空枪（替换连射/冰冻）<br>' +
+    '• 跳过获得随机道具（不限自选池）<br>' +
+    '• 新增观战模式<br>' +
+    '• 新增5套主题色<br>' +
+    '• 150成就系统<br>' +
+    '• DeepSeek AI接入<br><br>' +
+    '📋 道具说明:<br>' +
+    '🍡 年糕 — 回复1HP，本回合无法暴击，每5回合自动获得<br>' +
+    '💔 心结 — 本回合你受的伤害对方也承受等量（书触发时无效）<br>' +
+    '🔫 空枪 — 朝天开枪，本回合免疫伤害<br><br>' +
+    '🐛 遇到问题请在GitHub提Issue<br>' +
+    '🦊 感谢游玩！' +
+    '</div>';
+  if(c) c.innerHTML = html;
 }
 
 function renderShare(c){
